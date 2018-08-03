@@ -324,7 +324,7 @@ public class HotCodePushPlugin extends CordovaPlugin {
                 LogUtils.d();
 
                 if(url.contains("/data/user/0/com.efeiyi.bigwiki/files/cordova-hot-code-push-plugin") && 
-                        url.contains("www/pages/index/index.html") && !url.contains("ReturnUrl")) {
+                        url.contains("www/pages/index/index.html") && !url.contains("returnUrl")) {
                     
                     if(webView.canGoBack()) {
                         webView.clearHistory();
@@ -332,6 +332,15 @@ public class HotCodePushPlugin extends CordovaPlugin {
                     }
                     
                 }
+
+                if(url.contains("file:///android_asset/www/pages/index/index.html") && !url.contains("returnUrl")) {
+
+                    if (webView.canGoBack()) {
+                        webView.clearHistory();
+                    }
+                }
+
+
                 
                 
 
