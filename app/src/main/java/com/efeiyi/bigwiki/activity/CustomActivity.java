@@ -20,7 +20,7 @@ public class CustomActivity extends BaseActivity {
     protected void setUpListener() {
 
     }
-
+//
     @Override
     protected void init() {
 
