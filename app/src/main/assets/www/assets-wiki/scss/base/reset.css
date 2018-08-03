@@ -1,0 +1,65 @@
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img {
+  margin: 0;
+  padding: 0; }
+
+fieldset, img {
+  border: 0; }
+
+address, caption, cite, code, dfn, th, var, em, i {
+  font-style: normal;
+  font-weight: normal; }
+
+ul, ol {
+  list-style: none; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700; }
+
+a, a:active, a:hover {
+  text-decoration: none; }
+
+input, button {
+  padding-top: 0;
+  padding-bottom: 0;
+  font-family: "Microsoft YaHei";
+  border: 0; }
+
+select, input {
+  vertical-align: middle; }
+
+select, input, textarea {
+  font-size: 12px;
+  margin: 0; }
+
+input[type="text"], input[type="password"], textarea {
+  outline-style: none;
+  -webkit-appearance: none; }
+
+textarea {
+  resize: none; }
+
+table {
+  border-collapse: collapse; }
+
+/*-reset-*/
+html, body {
+  background: #f6f6f6; }
+
+body {
+  max-width: 10rem;
+  margin: 0 auto;
+  position: relative; }
+
+.container {
+  margin-top: 1.0133333333rem;
+  position: relative;
+  z-index: 2; }
+
+.is-footer {
+  padding-bottom: 1.4266666667rem; }
+
+/*vue*/
+[v-cloak] {
+  display: none; }
+
+/*# sourceMappingURL=reset.css.map */

@@ -1,0 +1,311 @@
+@charset "utf-8";
+@import "base";
+
+html, body {
+  height: 100%;
+  background-color: #FFFFFF;
+}
+
+@mixin perWidth($w) {
+	width: $w;
+}
+
+@mixin perHidth($h) {
+	height: $h;
+}
+
+// 定义一个方法
+@mixin clearfix {
+  zoom: 1;
+  &:after {
+    display: block;
+    clear: both;
+    content: '';
+  }
+}
+
+@mixin icon($url, $w, $h, $left, $right, $top) {
+  position: absolute;
+  @include width($w);
+  @include height($h);
+  background: url($url);
+  @if $left != null {
+    left: $left;
+  }
+
+  @if $right != null {
+    right: $right;
+  }
+
+  @if $top != null {
+    top: $top;
+  }
+  background-size: 100% 100%
+}
+
+@mixin getCode($c) {
+	position: absolute;
+	top: 0;
+	right: 0;
+	@include fontSize(32rem);
+	color: $c;
+	line-height: 72rem/$font-size-base
+}
+
+@mixin isSubmit($c) {
+  @include perWidth(100%);
+  @include perHidth(100%);
+  @include fontSize(32rem);
+  background-color: $c;
+  color: #FFFFFF;
+  border: none;
+  outline: none;
+}
+
+@mixin onPrompt($w, $h, $f, $top, $left, $line) {
+	@include width($w);
+	@if $h != null {
+		@include height($h);
+	}
+	background: rgba(0, 0, 0, 0.7);
+	text-align: center;
+	color: #FFFFFF;
+	@include fontSize($f);
+	position: fixed;
+	top: $top;
+	left: $left;
+	@if $line != null {
+		line-height: $line/$font-size-base;
+	}
+}
+
+.showPwd {
+  @include icon("../../assets/images/login/showPwd.png", 38rem, 25rem, null, 0, 50%);
+  margin-top: -12.5rem/$font-size-base;
+}
+
+.hidePwd {
+  @include icon("../../assets/images/login/hidePwd.png", 38rem, 25rem, null, 0, 50%);
+  margin-top: -12.5rem/$font-size-base;
+}
+
+.wait {
+	@include getCode(#AAAAAA);
+}
+
+.conduct {
+	@include getCode(#4183EA);
+}
+
+.notSubmit {
+	@include isSubmit(#C8C8C8);
+}
+
+.yesSubmit {
+	@include isSubmit(#4183EA);
+}
+
+.select {
+  @include icon('../../assets/images/login/select.png', 22rem, 22rem, 0, 0, 0);
+  //margin-top: 5rem/$font-size-base;
+}
+
+.notSelect {
+	@include icon('../../assets/images/login/notSelect.png', 22rem, 22rem, 0, 0, 50%);
+	margin-top: -11rem/$font-size-base;
+}
+// 遮罩层
+.mask {
+  @include perWidth(100%);
+  @include perHidth(100%);
+  background: rgba(0, 0, 0, 0);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+// 提示框
+.prompt {
+	margin-left: -214rem/$font-size-base;
+	@include onPrompt(428rem, null, 25rem, 33%, 50%, 100rem);
+	p {
+		@include perWidth(70%);
+		margin: 0 auto;
+	}
+}
+
+// 成功提示框
+.success {
+	@include onPrompt(422rem, 263rem, 25rem, 30%, 50%, null);
+	margin-left: -211rem/$font-size-base;
+	i {
+		@include icon('../../assets/images/login/success.png', 78rem, 78rem, 50%, 0, 67rem/$font-size-base);
+		margin-left: -39rem/$font-size-base
+	}
+	p {
+		margin-top: 165rem/$font-size-base
+	}
+}
+
+.maskBox {
+  @include perWidth(100%);
+  @include perHidth(100%);
+  background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  .promptBox {
+    @include width(694rem);
+    @include height(395rem);
+    background: #FFFFFF;
+    border-radius: 20rem/$font-size-base;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -197rem/$font-size-base;
+    margin-left: -347rem/$font-size-base;
+    .content {
+      @include height(274rem);
+      border-bottom: 1px solid #000000;
+      position: relative;
+      p {
+        @include fontSize(32rem);
+        @include perWidth(85%);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .options {
+      @include height(119rem);
+      @include clearfix;
+      div {
+        @include perWidth(50%);
+        @include perHidth(100%);
+        float: left;
+        text-align: center;
+        position: relative;
+
+        p {
+          position: absolute;
+          top: 50%;
+          left: 0;
+          @include perWidth(100%);
+          @include height(90rem);
+          margin-top: -45rem/$font-size-base;
+          line-height: 90rem/$font-size-base;
+          @include fontSize(32rem);
+        }
+      }
+
+			div:first-child {
+				p:first-child {
+					border-right: 1px solid #000000;
+				}
+
+			}
+
+      div:last-child {
+        color: #4183EA
+      }
+    }
+
+  }
+}
+
+.topPrompt{
+	margin-left: 28rem/$font-size-base;
+	margin-top: 58rem/$font-size-base;
+}
+
+.binding {
+  .binding-from {
+    position: fixed;
+    top: 76rem/$font-size-base;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    .binding-input {
+      @include width(694rem);
+      //@include perHidth(100%);
+      position: absolute;
+      top: 144rem/$font-size-base;
+      left: 0;
+      //bottom: 0;
+      right: 0;
+      margin: 0 auto;
+      div.mobile {
+        margin-top: 0;
+      }
+      div.code {
+        margin-top: 54rem/$font-size-base;
+        position: relative;
+        top: 0;
+        left: 0;
+      }
+      div.pwd {
+        margin-top: 54rem/$font-size-base;
+        position: relative;
+        top: 0;
+        left: 0;
+      }
+      input {
+        @include perWidth(100%);
+        @include height(72rem);
+        @include fontSize(28rem);
+        border-bottom: 2rem/$font-size-base solid #E8E9EB;
+      }
+      .hint {
+        margin-top: 12rem/$font-size-base;
+        p {
+          color: #AAAAAA;
+          @include fontSize(20rem);
+
+				}
+			}
+		}
+
+		.operation {
+			@include width(340rem);
+			@include height(155rem);
+			margin: 0 auto;
+			margin-top: 157rem/$font-size-base;
+			div {
+				@include perHidth(50%);
+				p {
+					@include fontSize(24rem);
+					color: #C8C8C8;
+					text-align: center;
+					margin-top: 22rem/$font-size-base;
+				}
+			}
+		}
+
+  }
+  .three {
+    width: 100%;
+    @include height(52rem);
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    .dec {
+      @include perHidth(100%);
+      line-height: 52rem/$font-size-base;
+      span {
+        position: relative;
+        @include fontSize(24rem);
+        color: #AAAAAA;
+        padding-left: 30rem/$font-size-base;
+      }
+      a {
+        color: #4183EA;
+        cursor: pointer;
+      }
+    }
+  }
+}

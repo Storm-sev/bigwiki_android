@@ -1,0 +1,140 @@
+@charset "utf-8";
+$font-size-base: 75;
+@mixin width($num) {
+  width: $num/$font-size-base
+}
+
+@mixin height($num) {
+  height: $num/$font-size-base
+}
+
+@mixin fontSize($num) {
+  font-size: $num/$font-size-base
+}
+
+@mixin abs($type) {
+  position: absolute;
+  @if $type==left {
+    top: 0;
+    left: 0
+  }
+  @if $type==center {
+    top: 50%;
+    left: 50%
+  }
+  @if $type==vertical {
+    top: 50%;
+  }
+  @if $type==right {
+    top: 0;
+    right: 0
+  }
+}
+
+@mixin marginTopMid($num) {
+  margin-top: -$num/(2*$font-size-base);
+}
+
+@mixin marginLeftMid($num) {
+  margin-left: -$num/(2*$font-size-base);
+}
+
+@mixin absMarginMiddle($num) {
+  margin-top: -$num/(2*$font-size-base);
+  margin-left: -$num/(2*$font-size-base);
+}
+
+@mixin square($num) {
+  width: $num/$font-size-base;
+  height: $num/$font-size-base;
+}
+
+@mixin icon($url, $width, $height) {
+  background: $url no-repeat;
+  -webkit-background-size: $width/($font-size-base) auto;
+  background-size: $width/($font-size-base) auto;
+  width: $width/($font-size-base);
+  height: $height/($font-size-base);
+}
+
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img, span, div, article, header {
+  margin: 0;
+  padding: 0;
+  font-family: 'PingFangSC-normal', 'Microsoft YaHei';
+}
+
+fieldset, img {
+  border: 0
+}
+
+address, caption, cite, code, dfn, th, var, em, i {
+  font-style: normal;
+  font-weight: normal
+}
+
+ul, ol {
+  list-style: none
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+}
+
+a, a:active, a:hover {
+  text-decoration: none;
+}
+
+input, button {
+  padding-top: 0;
+  padding-bottom: 0;
+  font-family: "Microsoft YaHei";
+  border: 0;
+}
+
+select, input {
+  vertical-align: middle
+}
+
+select, input, textarea {
+  font-size: 12px;
+  margin: 0
+}
+
+input[type="text"], input[type="password"], textarea {
+  outline-style: none;
+  -webkit-appearance: none
+}
+
+textarea {
+  resize: none
+}
+
+table {
+  border-collapse: collapse
+}
+
+/*-reset-*/
+html, body {
+  background: #f6f6f6;
+}
+
+body {
+  max-width: 750rem/$font-size-base;
+  margin: 0 auto;
+  position: relative;
+}
+
+.container {
+  margin-top: 76rem/$font-size-base;
+  position: relative;
+  z-index: 2;
+}
+
+.is-footer {
+  padding-bottom: 107rem/$font-size-base;
+}
+
+/*vue*/
+[v-cloak] {
+  display: none;
+}

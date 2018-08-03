@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="wap-font-scale" content="no">
+    <title>修改手机号_非遗大百科</title>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/register.css?t=201807311146">
+</head>
+<body>
+
+<div class="register" id="register">
+    <wk-header :data="headData"></wk-header>
+    <div class="register-from">
+        <p class="describe">您正在修改非遗大百科账号绑定的手机号,请进行身份验证</p>
+        <form>
+            <div class="register-input" style="height: auto;">
+                <div class="pwd">
+                    <input @focus="readFocus(0)" @blur="readFocus(1)" v-model="pwd" :type="inputType" name=""
+                           placeholder="请输入密码" maxlength="20">
+                    <i :class="{hidePwd:inputType == 'password',showPwd:inputType == 'text'}" @click="showPwd"></i>
+                </div>
+                <div class="operation">
+                    <div>
+                        <button :class="{yesSubmit: isSubmit,notSubmit: !isSubmit}" @click="onSubmit($event)">下一步
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div v-show="isPrompt || isSuccess" class="mask" style="display: none"></div>
+        <div v-show="isPrompt" class="prompt" style="display: none" v-cloak>
+            <p>{{msg}}</p>
+        </div>
+
+        <div v-show="isSuccess" class="success" style="display: none" v-cloak>
+            <i></i>
+            <p>{{msg}}</p>
+        </div>
+
+        <div v-show="isPromptBox" class="maskBox" style="display: none" v-cloak>
+            <div class="promptBox">
+                <div class="content">
+                    <p>{{msg}}</p>
+                </div>
+                <div class="options1">
+                    <div @click="closePrompt">我知道了</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../assets-wiki/js/jquery.min.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/system.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script>
+    Vue.directive('focus', {
+        // 当绑定元素插入到 DOM 中。
+        inserted: function (el) {
+            // 聚焦元素
+            el.focus()
+        }
+    })
+
+    var reg = new RegExp(/[A-Za-z].*[0-9]|[0-9].*[A-Za-z]/);
+    var app = new Vue({
+        el: '#register',
+        data: {
+            headData: {
+                title: '修改手机号',
+                isBack: true
+            },
+            inputType: 'password',
+            isPrompt: false, // 是否提示
+            isPromptBox: false, // 带操作的提示
+            isSubmit: false, // 是否可以提交
+            isAgree: true, // 是否同意并且阅读 
+            isSuccess: false, // 是否注册成功
+            msg: "", // 提示语
+            codeType: 1, // 验证码 0 可点击发送  1等待不可发送
+            second: 60, // 60秒后重新发送
+            phone: '', // 手机号码
+            pwd: '', // 密码
+            validateRule: { // 验证规则
+                pwd: {
+                    maxLength: 20,
+                    minLength: 6
+                },
+                code: {
+                    maxLength: 4
+                }
+            },
+            wait: true, // ture可执行  false等待中 
+            readProtocol: true
+        },
+        watch: {
+            pwd: 'monitor',   // 监听密码数据变化
+            code: 'monitor'   // 监听验证码数据变化
+        },
+        components: {
+            wkHeader: wkHeader,  //导航
+        },
+        mounted: function () {
+            var user = myLocalStorage.getter('__user__'); // 获取用户登录信息
+            this.phone = user.phone;
+        },
+        methods: {
+            // 显示密码
+            showPwd: function () {
+                this.inputType = this.inputType == 'password' ? 'text' : 'password';
+            },
+
+            onSubmit: function (e) {
+                e.preventDefault(); //阻止form默认事件
+                var _this = this;
+                // 可以提交
+                if (_this.isSubmit) {
+                    // 提交数据
+                    _this.login();
+                }
+
+            },
+            // 监听数据
+            monitor(curVal, oldVal) {
+                if (this.pwd.length >= this.validateRule.pwd.minLength) {
+                    this.isSubmit = 1;
+                } else {
+                    this.isSubmit = 0;
+                }
+            },
+            // 登录
+            login() {
+                var _this = this;
+                var params = {
+                    url: api.login,
+                    type: 'POST',
+                    data: {
+                        params: JSON.stringify({
+                            "loginType": -1,
+                            "loginName": _this.phone,
+                            "password": _this.pwd
+                        })
+                    },
+                    sCallback: function (res) {
+                        _this.handleRes(res, function (data) {
+                            // console.log("data --- ", data)
+                            myLocalStorage.setter("updatePhone", true); // 是否可以修改
+                            if(data.code == 0) {
+                                window.location.href = rootName + "/pages/login/phone.html"
+                            }
+                        })
+                    }
+                }
+                httpRequest(params); // 发送ajax请求
+            },
+            // 关闭带操作提示框
+            closePrompt() {
+                this.isPromptBox = false;
+            },
+            // 提示
+            myPrompt(msg, code) {
+                var _this = this;
+                if (!code || code != 5 && code != 15) {
+                    // 普通提示框
+                    _this.msg = msg;
+                    _this.isPrompt = true;
+                    // 2秒后自动隐藏
+                    setTimeout(function () {
+                        _this.isPrompt = false;
+                    }, 500);
+                } else {
+                    // 带操作的提示框 账号未注册
+                    _this.isPromptBox = true;
+                    _this.msg = '您输入的手机号' + _this.phone + '已注册,请您直接登录';
+                }
+            },
+            // 统一处理结果
+            handleRes(res, callback) {
+                // alert("res -- >", res);
+                var _this = this;
+                if (res.code == 0) {
+                    callback && callback(res);
+                } else {
+                    // console.log("res -- >", res);
+                    _this.myPrompt((res.detailMsg ? res.detailMsg : res.msg), res.code);
+                    return;
+                }
+            },
+            //获取焦点隐藏底部我已阅读并同意部分
+            readFocus(flag) {
+                switch (flag) {
+                    case 0://获取焦点
+                        this.readProtocol = false
+                        break;
+                    case 1://失去焦点
+                        this.readProtocol = true
+                        break;
+                }
+            }
+        }
+    });
+</script>
+<script type="text/javascript" src="../../cordova.js"></script>
+</body>
+</html>

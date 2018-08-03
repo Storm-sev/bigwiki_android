@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="wap-font-scale" content="no">
+    <title>非遗大百科-关于我们</title>
+    <script src="../../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <link rel="icon" type="image/x-icon" href="../../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" href="../../../assets-wiki/css/my.css?t=201807311146">
+</head>
+<body>
+
+<div id="my" class="my" v-cloak>
+    <wk-Header :data="headData"></wk-Header>
+    <!--//End 导航-->
+
+    <article class="container">
+        <div class="setting">
+            <div class="about">
+                <div class="main">
+                    <div class="img"><img src="../../../assets-wiki/images/my/icon-company@2x.png" alt=""></div>
+                    <div class="title"><h1>公司简介</h1></div>
+                    <div class="text">永新华韵文化发展有限公司依托华夏五千年传统文化的底蕴，整合高层次全方位非物质文化遗产资源，与联合国教科文组织、中国非物质文化遗产保护协会达成合作，系其在非遗领域合作伙伴。以“非物质文化遗产大数据平台”为核心，传播中国和世界非物质文化遗产资源。</div>
+                </div>
+                <ul class="links">
+                    <!--<li class="item">-->
+                        <!--<a href="/pages/my/setting/spread.html" class="a-default icon-arrows-right">开屏页面</a>-->
+                    <!--</li>-->
+                    <li class="item" v-if="openScreen">
+                        <a href="javascript:;" class="a-default icon-arrows-right" @click="btnOpen()">开屏页面</a>
+                    </li>
+                    <li class="item">
+                        <a :href="rootName +'/my/setting/privacy.html'" class="a-default icon-arrows-right">隐私政策</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </article>
+</div>
+
+
+<!--//End 底部-->
+<script src="../../../assets-wiki/js/system.js?t=201807311146"></script>
+<script src="../../../assets-wiki/js/tpls.js?t=201807311146"></script>
+<script src="../../../assets-wiki/js/utils.js?t=201807311146"></script>
+<script src="../../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script>
+    var app = new Vue({
+        el: '#my',
+        data: {
+            headData: {
+                title: '关于我们',
+                isBack: true
+            },
+            msgList: [],
+
+            //ios Android 显示开屏页面
+            openScreen: false
+        },
+        components: {
+            wkHeader
+        },
+        methods: {
+            //点击开屏页面
+            btnOpen: function () {
+                callApp(function () {
+                    getOpen();
+                })
+
+            }
+        },
+        mounted: function () {
+            var _this = this;
+
+            callApp(function () {
+                //app
+                _this.openScreen = true;
+            },function () {
+                //H5
+                _this.openScreen = false;
+            })
+
+
+
+
+
+        }
+    });
+
+
+
+
+</script>
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1273697800'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s19.cnzz.com/z_stat.php%3Fid%3D1273697800%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript" src="../../../cordova.js"></script>
+</body>
+</html>

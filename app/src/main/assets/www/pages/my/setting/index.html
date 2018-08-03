@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="wap-font-scale" content="no">
+    <title>非遗大百科-设置</title>
+    <script src="../../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <link rel="icon" type="image/x-icon" href="../../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" href="../../../assets-wiki/css/my.css?t=201807311146">
+    <style>
+        .modal-share {
+            display: none;
+        }
+    </style>
+    <script src="../../../assets-wiki/js/swiper.min.js?t=201807311146"></script>
+</head>
+<body>
+
+<div id="my" class="my" v-cloak>
+    <wk-Header :data="headData"></wk-Header>
+    <!--//End 导航-->
+
+    <article class="container">
+        <div class="setting">
+            <ul>
+                <li class="item" v-for="item in list">
+                    <a class="a-default" :href="item.href" @click="_setup(item.id)">{{item.name}}<i class="icon-arrows-right" :class="{active: item.iv_float}">{{item.cache}}</i></a>
+                </li>
+            </ul>
+            <div class="logout" @click="logout" v-if="isLogout">退出登录</div>
+        </div>
+    </article>
+
+
+    <div v-show="isSuccess" class="success" style="display: none" v-cloak>
+        <i></i>
+        <p>{{msg}}</p>
+    </div>
+
+    <div v-show="isMask" class="mask">
+        <div class="content">
+            <div class="loading"></div>
+            <div class="info">清除缓存中</div>
+        </div>
+    </div>
+
+    <div v-show="isPrompt" class="prompt" v-cloak>
+        <p>清除成功</p>
+    </div>
+</div>
+
+
+<!--//End 底部-->
+<script src="../../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script src="../../../assets-wiki/js/system.js?t=201807311146"></script>
+<script src="../../../assets-wiki/js/utils.js?t=201807311146"></script>
+<script src="../../../assets-wiki/js/tpls.js?t=201807311146"></script>
+
+<script>
+    var app = new Vue({
+        el: '#my',
+        data: {
+            headData: {
+                title: '设置',
+                isBack: true
+            },
+            isLogout: false,
+            isSuccess: false,
+            msg: '',
+            list: [
+                {id:2, name: '系统设置', href: 'JavaScript:;', click: 1, cache: '', iv_float: false},
+                {id:3, name: '清除缓存', href: 'JavaScript:;', click: 2, cache: '', iv_float: true},
+//                {id:0, name: '关于我们', href: rootName + '/pages/my/setting/about.html', click: 0, cache: '', iv_float: false},
+//                {id:1, name: '用户协议', href: rootName + '/pages/my/setting/protocol.html', click: 0, cache: '', iv_float: false}
+                //ios android路径
+                {id:0, name: '关于我们', href: rootName + setiing + '/pages/my/setting/about.html'},
+                {id:1, name: '用户协议', href: rootName + setiing + '/pages/my/setting/protocol.html'}
+            ],
+            isMask: false,
+            isPrompt: false
+        },
+        components: {
+            wkHeader
+        },
+        mounted: function () {
+            this._setiingBtn();
+            this._initLogout();
+        },
+        methods: {
+            //ios Android系统设置
+            _setup(msg){
+                var _this = this;
+                if(msg == 2){
+                    //系统设置
+                    btnSetting();
+                };
+                if(msg == 3){
+                    //清除缓存
+                    //ios Android 存储缓存大小
+                    _this.isMask = true;
+                    removeData(function() {
+                        _this._userData('0MB'); // 回显缓存数
+                        _this.isMask = false;
+                        _this.isPrompt = true;
+                        setTimeout(function () {
+                            _this.isPrompt = false;
+                        }, 500)
+                    });
+                };
+            },
+
+            //是否是app中打开，是：显示 "系统设置、清除缓存" 否则  "隐藏"
+            _setiingBtn: function () {
+                var _this = this;
+                callApp(function() {
+                    //ios Android获取缓存大小
+                    var data = localStorage.getItem('cacheData');
+                    _this._userData(data);
+                }, function() {
+                    // h5
+                    _this.list.splice(0,2);
+                })
+            },
+            //ios Android获取缓存大小
+            _userData(data){
+                this.list.forEach(function (val, index) {
+                    if (val.id == 3) {
+                        val.cache = data;    //调用app接口返回缓存数据大小
+                    }
+                })
+            },
+            _initLogout: function () {
+                var _info = myLocalStorage.getter('__user__');
+                if (!_info) {
+                    this.isLogout = false
+                } else {
+                    this.isLogout = true
+                }
+            },
+            logout: function () {
+                var _this = this;
+                $.ajax({
+                    url: domain + '/user/logoff',
+                    type: 'GET',
+                    dataType: "JSON",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    // crossDomain: true,
+                    success: function (res) {
+
+                        localStorage.clear()
+                            //隐藏退出按钮
+                            _this._initLogout = true
+                            //展示退出成功信息
+                            _this.isSuccess = true
+                            _this.msg = '退出成功'
+                            setTimeout(function () {
+                                window.location.href = getHttpParam('returnUrl')
+                            }, 1000)
+
+                    },
+                    error: function (error) {
+                        ('error->', error)
+                        params.eCallback && params.sCallback(error);
+                    }
+                })
+            }
+        }
+    });
+</script>
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cspan id='cnzz_stat_icon_1273697800'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s19.cnzz.com/z_stat.php%3Fid%3D1273697800%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript" src="../../../cordova.js"></script>
+
+</body>
+</html>

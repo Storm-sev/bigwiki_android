@@ -1,0 +1,159 @@
+@mixin drawerEnter($time, $offset) {
+  transition: all $time;
+  -webkit-transform: translate3d($offset, 0, 0);
+  transform: translate3d($offset, 0, 0);
+}
+
+@mixin fixed($top,$right,$bottom,$left,$zIndex) {
+  position: fixed;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+  z-index: $zIndex;
+}
+
+header {
+  background: #fff;
+  padding: 0 76rem/$font-size-base;
+  @include height(76rem);
+  @include fontSize(28rem);
+  color: #1b1b1b;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  @include fixed(0, 0, auto, 0, 4);
+  border-bottom: 1rem/$font-size-base solid #f4f4f4;
+  .abs-l {
+    @include square(76rem);
+    @include abs(left);
+  }
+  .abs-r {
+    @include square(76rem);
+    @include abs(right);
+  }
+  .icon {
+    @include abs(center);
+    @include marginTopMid(36rem);
+    @include marginLeftMid(36rem);
+    &.menu {
+      @include icon(url(../images/header/header-icon-menu@2x.png), 38rem, 38rem);
+    }
+    &.back {
+      @include icon(url(../images/header/header-icon-back@2x.png), 38rem, 38rem);
+    }
+    &.share {
+      @include icon(url(../images/header/header-icon-share@2x.png), 38rem, 38rem);
+    }
+  }
+}
+
+
+$drawerWith:480rem/$font-size-base;
+
+
+.drawer {
+  background: #eee;
+  width: $drawerWith;
+  @include fixed(0,0,0,0,5);
+  @include drawerEnter(0s, -$drawerWith);
+  transition: all .2s;
+  .content {
+    background: #fff;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+
+    //头像
+    .avatar {
+      text-align: center;
+      padding-top: 100rem/$font-size-base;
+      .img {
+        font-size: 0;
+        img {
+          width: 120rem/$font-size-base;
+          height: 120rem/$font-size-base;
+          -webkit-border-radius: 120rem/$font-size-base;
+          border-radius: 120rem/$font-size-base;
+        }
+      }
+      .link {
+        color: #4183EA;
+        margin-top: 28rem/$font-size-base;
+        margin-bottom: 10rem/$font-size-base;
+        a {
+          font-size: 28rem/$font-size-base;
+          line-height: 40rem/$font-size-base;
+          color: #4183EA;
+        }
+      }
+      .info {
+        font-size: 20rem/$font-size-base;
+        line-height: 30rem/$font-size-base;
+        color: #aaa;
+      }
+      .name {
+        margin-top: 28rem/$font-size-base;
+        color: #1b1b1b;
+        font-size: 28rem/$font-size-base;
+        display: inline-block;
+        a {
+          color: #1b1b1b;
+        }
+      }
+    }
+    //链接
+    .items {
+      padding-left: 28rem/$font-size-base;
+      margin-top: 80rem/$font-size-base;
+      flex-flow: column;
+      display: flex;
+      .item {
+        line-height: 120rem/$font-size-base;
+        font-size: 28rem/$font-size-base;
+        color: #1b1b1b;
+        flex: 1;
+        padding-left: 98rem/$font-size-base;
+        border-bottom: 1rem/$font-size-base solid #f1f1f2;
+        position: relative;
+        &:after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 22rem/$font-size-base;
+          @include marginTopMid(44rem);
+        }
+        &:nth-child(1):after {
+          @include icon(url(../images/login/icon-msg@2x.png), 44rem, 44rem);
+        }
+        &:nth-child(2):after {
+          @include icon(url(../images/login/icon-opinion@2x.png), 44rem, 44rem);
+        }
+        &:nth-child(3):after {
+          @include icon(url(../images/login/icon-setting@2x.png), 44rem, 44rem);
+        }
+      }
+    }
+  }
+}
+
+.header{
+  //进入
+  &.enter {
+    .drawer {
+      @include drawerEnter(.2s, 0);
+    }
+    .overlay {
+      background: #242424;
+      @include fixed(0,0,0,0,4);
+      @include drawerEnter(0s, 0);
+      opacity: .32;
+    }
+  }
+  //离开
+  .leave {
+
+  }
+  z-index: 5;
+}

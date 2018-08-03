@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <title>体验馆</title>
+    <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" href="../../assets-wiki/css/information.css?t=201807311146">
+</head>
+<body>
+<div id="information" class="information">
+    <wk-header :data="self.head" :share-data="share" v-if="is.header"></wk-header>
+    <share-tip v-if="!is.header"></share-tip>
+
+    <tamplate v-show="!is.loading">
+        <article class="container details" :class="{isShare:!is.header}" v-show="!is.blank">
+            <div class="main-title">
+                <h1 v-text="self.detail.title"></h1>
+                <div class="txt">
+                    <span class="news-time" v-text="self.detail.time"></span>
+                </div>
+            </div>
+            <div class="main-content" v-if="self.detail.content">
+                <div v-for="item in self.detail.content">
+                    <div class="txt" v-text="item.text"></div>
+                    <div class="img" v-if="item.picture"><img :src="item.picture" alt=""></div>
+                </div>
+            </div>
+        </article>
+        <article v-show="is.blank">
+            <div class="blank404">
+                <div class="content">
+                    <img class="pic" src="../../assets-wiki/images/icon-no-data@2x.png" alt="">
+                    <div class="name">暂无信息</div>
+                    <div class="txt">当前没有更多信息，请稍后查询…</div>
+                </div>
+            </div>
+        </article>
+    </tamplate>
+    <Loading :msg="is.loading"></Loading>
+</div>
+
+
+</body>
+<script src="../../assets-wiki/js/system.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/information.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script>
+    var app = new Vue({
+        el: '#information',
+        data: {
+            self: {
+                head: {
+                    title: '',
+                    isBack: true,
+                    isShare: true
+                },
+                detail: {}
+            },
+            is: {
+                blank: Boolean,
+                loading:true,
+                header:true,
+            },
+            share:{}
+        },
+        components: {
+            wkHeader, //导航
+            Loading:shopLoad,
+            shareTip:appShareTip
+        },
+        methods: {
+            _getExperienceDetail: function () {
+                getExperienceDetail((res) => {
+                    this.self.detail = res
+                    this.share = appDetailShare(res,hrefUrl.experience + getHttpParam('id'))
+                    this.is.blank = false
+                    this.is.loading = false
+                })
+            },
+            isShare: function () {
+                var share = getHttpParam('share')
+                if(share){
+                    this.is.header = false
+                }
+            }
+        },
+        mounted: function () {
+            this._getExperienceDetail()
+            this.isShare()
+        },
+    })
+</script>
+<script type="text/javascript" src="../../cordova.js"></script>
+
+</html>

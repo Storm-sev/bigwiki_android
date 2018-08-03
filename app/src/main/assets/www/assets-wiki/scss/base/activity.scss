@@ -1,0 +1,60 @@
+@charset "utf-8";
+//活动列表
+@mixin Icon($name,$width,$height){
+  @include icon(url(../images/activity/#{$name}@2x.png), $width, $height);
+}
+
+.activity-item {
+  position: relative;
+  -webkit-transition: all 1s ease-in-out;
+  margin:0 28rem/$font-size-base;
+  .link {
+    border-bottom: 1rem/$font-size-base solid rgba(221, 221, 221, 0.6);
+    padding: 32rem/$font-size-base 0 20rem/$font-size-base 0;
+    display: block;
+    font-size: 0;
+    img {
+      width: 100%;
+      -webkit-border-radius: 2rem/$font-size-base;
+      border-radius: 2rem/$font-size-base;
+    }
+    .desc {
+      position: relative;
+      h3 {
+        @include fontSize(28rem);
+        color: #1b1b1b;
+        line-height: 33rem/$font-size-base;
+        margin-top: 22rem/$font-size-base;
+        font-weight: normal;
+      }
+      .info {
+        @include fontSize(20rem);
+        line-height: 28rem/$font-size-base;
+        color: #aaa;
+        margin-top: 8rem/$font-size-base;
+        .coord {
+          em {
+            width: 6rem/$font-size-base;
+            display: inline-block;
+          }
+        }
+        .time {
+          margin-left: 60rem/$font-size-base;
+          line-height: 28rem/$font-size-base;
+        }
+      }
+      .icon-hot {
+        @include Icon(activity-icon-recommend, 58rem, 37rem);
+        position: absolute;
+        right: 0;
+        top: -5rem/$font-size-base;
+      }
+    }
+    &:last-child {
+      border: 0;
+    }
+  }
+
+}
+
+

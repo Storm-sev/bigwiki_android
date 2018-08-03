@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="wap-font-scale" content="no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>百科_非遗大百科</title>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/mescroll.min.css?t=201807311146">
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/search.css?t=201807311146">
+    <script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
+</head>
+<body>
+
+<div class="search" id="search" v-cloak>
+    <!--<wk-header :data="pageObj.headData"></wk-header>-->
+    <!--//End 导航-->
+    <div>
+        <div class="s-top">
+            <div class="s-search">
+                <div class="s-input">
+                    <input class="s-icon" type="image" src="../../assets-wiki/images/ency/search.png" name="">
+                    <input v-model="pageObj.keyword" class="s-content" type="text" name="keyword" id="keyword"
+                           placeholder="搜索关键词" @focus="onFocus" @keydown.enter="search(1)">
+                    <!-- <input type="" name="" class="s-content" autofocus="autofocus"> -->
+                </div>
+                <div class="s-cancel">
+                    <a href="javascript:void(0)" @click="cancel">取消</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 历史记录-->
+        <div v-show="pageObj.record" class="s-option mescroll-touch"
+             style="bottom: 100px;overflow-y: scroll;height: 100%">
+            <div class="s-history" v-show="pageObj.history">
+                <div class="s-htitle">
+                    <p>历史记录</p>
+                    <i @click.stop="deleteAll($event)"></i>
+                </div>
+                <div class="s-list">
+                    <div v-for="(v, index) in pageObj.storage" @click.stop="onHistory($event)">
+                        <p @click="onSelectedKeyword">{{v.keyword}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="s-hot">
+                <div class="s-otitle">
+                    <p>热门搜索</p>
+                </div>
+                <div class="s-list">
+                    <div v-for="(v, index) in pageObj.recommend" @click.stop="onHistory($event)">
+                        <p @click="onSelectedKeyword">{{v.keyword}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mescroll" :class="{mescroll: true, 'not-data-back': pageObj.pdlist.length <= 0}">
+            <wk-ency :datas="pageObj.pdlist" :class="{'no-data': pageObj.pdlist.length <= 0}"></wk-ency>
+        </div>
+    </div>
+    <!--//End 内容-->
+
+
+</div>
+<script src="../../assets-wiki/js/vue.min.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/jquery.min.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/jquery.lazyload.min.js?t=201807311146?v=1.9.1"></script>
+<!-- <script src="../../assets-wiki/js/system.js?t=201807311146"></script> -->
+<script src="../../assets-wiki/js/mescroll.min.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script src="../../assets-wiki/data/category.js?t=201807311146"></script>
+<script src="search-model.js?t=201807311146"></script>
+<script>
+    var app = new Vue({
+        el: '#search',
+        data: {
+            mescroll: null,
+            pageObj: {
+                headData: {
+                    title: '搜索',
+                    isBack: true
+                },
+                keyword: '', // 搜索关键字
+                selectedIndex: 2,
+                datas: [],
+                history: false, // 历史记录
+                record: false, // 记录页面
+                pdlist: [],
+                params: {}, // 接口参数
+                total: 0, // 总数据量
+                storage: [], // 历史记录
+                recommend: [], // 热门推荐
+                ynum: 0,
+                selectedKeyword: true,
+                pageNum: 0
+            }
+        },
+        components: {
+            wkHeader: wkHeader,  //导航
+            wkFooter: wkFooter,  //底部
+            wkEncy: wkEncy, // 百科列表
+        },
+        updated: function () {
+            // 懒加载
+            var self = this;
+            self.$nextTick(function () {
+                // $("#mescroll").trigger('scroll');
+                $("img.lazy").lazyload({
+                    placeholder: "../../assets-wiki/images/default/default.png",
+                    // effect: "fadeIn",
+                    threshold: 200
+                });
+            })
+        },
+        mounted: function () {
+            var self = this;
+            self.pageObj.keyword = ''
+            // $('#keyword').trigger("click").focus();
+            self.mescroll = new MeScroll("mescroll", {
+                up: {
+                    auto: false, // 默认不触发
+                    callback: self.upCallback, //上拉回调
+                    //以下参数可删除,不配置
+                    isBounce: false, //此处禁止ios回弹,解析(务必认真阅读,特别是最后一点): http://www.mescroll.com/qa.html#q10
+                    //page:{size:8}, //可配置每页8条数据,默认10
+                    toTop: { //配置回到顶部按钮
+                        src: "../../assets-wiki/images/shop/return_dii.png", //默认滚动到1000px显示,可配置offset修改
+                        //html: null, //html标签内容,默认null; 如果同时设置了src,则优先取src
+                        //offset : 1000
+                    },
+                    empty: { //配置列表无任何数据的提示
+                        warpId: "dataList",
+                        icon: "../../assets-wiki/images/icon-no-data@2x.png",
+                        tip: "<div class=\"upwarp-nodata\"><p>暂无信息</p><p>当前没有更多信息，请稍后查询…</p></div>",
+                    },
+                    onScroll: function (mescroll, y, isUp) {
+                        // 每次滚动都重新记录
+                        self.pageObj.ynum = y;
+                        var searchListData = {
+                            pageObj: self.pageObj,
+                        }
+                        mySessionStorage.setter("searchListData", searchListData);
+                    }
+                },
+
+                down: {
+                    auto: false
+                }
+            });
+
+            // 获取历史记录 本地存储
+            var array = myLocalStorage.getter("storage");
+            if (array && array.length > 0) {
+                array = array.reverse();
+                if (array.length > 10) {
+                    self.pageObj.storage = array.slice(0, 10);//支取前5个
+                } else {
+                    self.pageObj.storage = array; // 查询本地存储
+                    // console.log(self.pageObj.storage)
+                }
+                self.pageObj.history = true;
+            }
+
+            // 热门推荐
+            self.pageObj.recommend = recommend;
+            self.pageInit();
+
+        },
+        methods: {
+            pageInit: function () {
+                var self = this;
+                var searchListData = mySessionStorage.getter("searchListData");
+                if (searchListData) {
+                    // searchListData.pageObj.pdlist = []; // 清空 防止闪烁
+                    self.pageObj = searchListData.pageObj;
+                    if (self.pageObj.ynum != 0) {
+                        self.$nextTick(function () {
+                            self.mescroll.scrollTo(self.pageObj.ynum, 0);
+                        })
+                    }
+                    // self.search(); // 查询
+                } else {
+                    // $('#keyword').trigger("click").focus();
+                    self.onFocus()
+                }
+            },
+            upCallback: function (page) {
+                var self = this;
+                if(self.pageObj.pageNum > page.num) {
+                    page.num = (self.pageObj.pageNum + 1)
+                } else {
+                    self.pageObj.pageNum = page.num;
+                }
+                self.getDatas(page, self.pageObj.params, function (curPageData) {
+                    // console.log("curPageData -- >", curPageData, self.total);
+                    //如果是第一页需手动制空列表 (代替clearId和clearEmptyId的配置)
+                    if (page.num == 1) self.pageObj.pdlist = [];
+                    //更新列表数据
+                    self.pageObj.pdlist = self.pageObj.pdlist.concat(curPageData);
+                    //记录缓存
+                    var searchListData = {
+                        pageObj: self.pageObj,
+                    }
+                    if(curPageData.length <=0) {
+                        self.mescroll.hideTopBtn(); // 隐藏返回顶部
+                    }
+                    mySessionStorage.setter("searchListData", searchListData);
+                    // self.mescroll.endSuccess(curPageData.length);
+                    self.mescroll.endBySize(curPageData.length, self.pageObj.total);
+                }, function (err) {
+                    //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+                    self.mescroll.endErr();
+                })
+            },
+
+            onFocus: function () {
+                // 获取焦点后展示历史记录页面
+                this.pageObj.record = true;
+                this.mescroll.hideTopBtn();
+            },
+
+            // 查询
+            search: function (code) {
+                // alert("查询数据")
+                if(code == 1) { 
+                    this.pageObj.pdlist = [];
+                    this.pageObj.pageNum = 0; 
+                }
+                this.pageObj.params['keyword'] = this.pageObj.keyword;
+                this.pageObj.record = false;
+                this.mescroll.resetUpScroll(); // 重置page.num  上拉  访问数据
+                this.mescroll.scrollTo(0, 0); // 回到页面顶部
+                // alert("重置数据")
+                $('#keyword').trigger("click").blur(); // 失去焦点
+                // 记录搜索历史记录
+                this.onRecord();
+            },
+
+            // 取消
+            cancel: function () {
+                // this.record = false;
+                if (getHttpParam('page') == 'index') {
+                    window.location.href = rootName + "/pages/index/index.html"
+                } else {
+                    window.location.href = rootName + "/pages/ency/index.html"
+                }
+            },
+
+            // 历史、推荐选择
+            onHistory: function (e) {
+                // alert("11111");
+                // self.mescroll.scrollTo(0, 0);
+                $("#mescroll").scrollTop(0);
+                // alert("22222")
+                this.pageObj.keyword = e.target.innerText;
+                this.search(1); // 查询
+                this.pageObj.record = false; // 隐藏历史记录
+            },
+
+            deleteAll: function (e) {
+                myLocalStorage.setter('storage', []); // 清空历史记录
+                this.pageObj.storage = []; // 清空当前页面缓存的历史记录
+                this.pageObj.history = false;
+            },
+
+            onSelectedKeyword: function () {
+                this.selectedKeyword = false
+            },
+            // 记录历史记录
+            onRecord: function () {
+                var _this = this;
+                var h = myLocalStorage.getter("storage"); // 查询本地存储
+
+                if (h && h.length > 0) {
+                    // 不保存重复的
+                    if (JSON.stringify(h).indexOf(JSON.stringify(_this.pageObj.keyword)) == -1) {
+                        if (_this.pageObj.keyword) {
+                            if (h.length >= 10) {
+                                h = h.slice(1, 10)
+                            }
+                            h.push({'keyword': _this.pageObj.keyword})
+                            myLocalStorage.setter('storage', h); // 更新本地存储
+                        }
+                    } else {//如果是重复的需要把重复的放到第一位
+                        for (let i = 0; i < h.length; i++) {
+                            if (h[i].keyword == _this.pageObj.keyword) {
+                                h.splice(i, 1)
+                            }
+                        }
+                        h.push({'keyword': _this.pageObj.keyword})
+                        myLocalStorage.setter('storage', h); // 更新本地存储
+                    }
+                    _this.pageObj.storage = h.reverse();
+                } else {
+                    // 第一次生成本地存储
+                    _this.pageObj.storage.push({'keyword': _this.pageObj.keyword});
+                    myLocalStorage.setter('storage', _this.pageObj.storage);
+                }
+                _this.pageObj.history = true;
+                this.selectedKeyword = true
+
+
+            },
+
+            getDatas(page, params, successCallback, errorCallback) {
+                var _this = this;
+                params['offset'] = page.num;
+                params['limit'] = page.size;
+                var param = {
+                    url: api.search,
+                    data: {
+                        condition: JSON.stringify(params)
+                    },
+                    sCallback: function (res) {
+                        if (res.total != -1) {
+                            _this.pageObj.total = res.total; // 记录总数据条数
+                        }
+
+                        // 成功
+                        if (res.code == 0 && res.data.length > 0) {
+                            successCallback && successCallback(bulidData(res.data)); // 处理数据
+                        } else {
+                            var listData = [];
+                            successCallback && successCallback(listData); // 处理数据
+                        }
+                    },
+                    eCallback: function (err) {
+                        errorCallback && errorCallback(err);
+                    }
+                }
+
+                httpRequest(param);
+            }
+        }
+    });
+</script>
+<script type="text/javascript" src="../../cordova.js"></script>
+</body>
+</html>

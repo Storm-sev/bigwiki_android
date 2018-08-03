@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="../../assets-wiki/js/flexible.min.js?t=201807310944"></script>
+    <title></title>
+    <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" href="../../assets-wiki/css/information.css?t=201807310944">
+</head>
+<body style="top: 0px; position: fixed;">
+<div id="information" class="information">
+    <wk-header :data="self.head" :share-data="share" v-if="is.header"></wk-header>
+    <share-tip v-if="!is.header"></share-tip>
+
+    <template v-show="!is.loading">
+        <article class="container details" :class="{isShare:!is.header}" v-show="!is.loading">
+            <div class="main-img">
+                <img :src="self.detail.headImg" alt="">
+            </div>
+            <div class="main-title" v-if="self.detail.title">
+                <h1 v-text="self.detail.title"></h1>
+                <div class="txt">
+                    <p v-if="self.detail.address"><i class="icon address"></i><span v-text="self.detail.address"></span>
+                    </p>
+                    <p><i class="icon time"></i><span v-text="self.detail.time"></span></p>
+                </div>
+            </div>
+            <div class="main-content" v-if="self.detail.content">
+                <div class="title">活动介绍</div>
+                <div v-for="item in self.detail.content">
+                    <div class="txt" v-html="item.text"></div>
+                    <div class="img"><img :src="item.picture" alt=""></div>
+                </div>
+                <div class="statement">
+                    <div class="dt">活动声明</div>
+                    <div class="dd">
+                        <p>活动均为活动发起人发布，非遗大百科的活动内容仅供访问者使用参考。</p>
+                        <p>非遗大百科对因使用活动内容而产生的相关后果不承担任何商业和法律责任。</p>
+                        <p>
+                            非遗大百科的一切活动内容都是为了更好的服务用户。非遗大百科不保证所有活动信息、文本、图形、链接的真实性、有效性、安全性。请在参加活动前，与活动发起人具体确认核实相关情况，注意人身安全和财产安全。</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!--<article v-show="is.blank">-->
+        <!--<div class="blank404">-->
+        <!--<div class="content">-->
+        <!--<img class="pic" src="../../assets-wiki/images/icon-no-data@2x.png" alt="">-->
+        <!--<div class="name">暂无信息</div>-->
+        <!--<div class="txt">当前没有更多信息，请稍后查询…</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</article>-->
+        <!--//End 底部-->
+    </template>
+
+    <Loading :msg="is.loading"></Loading>
+
+    <no-network v-show="is.timeout"></no-network>
+</div>
+
+
+<script src="../../assets-wiki/js/system.js?t=201807310944"></script>
+<script src="../../assets-wiki/js/utils.js?t=201807310944"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201807310944"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201807310944"></script>
+<script src="../../assets-wiki/js/information.js?t=201807310944"></script>
+<script>
+    var app = new Vue({
+        el: '#information',
+        data: {
+            self: {
+                head: {
+                    title: '',
+                    isBack: true,
+                    isShare: true
+                },
+                detail: {},
+
+            },
+            is: {
+                blank: Boolean,
+                loading: true,
+                header: true,
+                timeout:false
+            },
+            share: {}
+        },
+        computed:{
+            isShare:function () {
+                return getHttpParam('share') ? true : false
+            }
+        },
+        components: {
+            wkHeader, //导航
+            Loading: shopLoad,
+            shareTip:appShareTip,
+            noNetwork
+        },
+        mounted: function () {
+            var _this = this
+            this.getNewsDetail()
+            this.isShare()
+            //超时显示无网络图标
+            setTimeout(function () {
+                if (_this.is.loading) {
+                    _this.is.timeout = true
+                    _this.is.loading = false
+                }
+            }, overTime)
+        },
+        methods: {
+            getNewsDetail: function () {
+                getInformationDetail(1, (res) => {
+                    if (res.code == 0) {
+                        //处理时间格式
+                        res.data.time = differTime(res.data.startDate.replace(new RegExp(/-/gm), "/"), res.data.endDate.replace(new RegExp(/-/gm), "/"))
+                        this.self.detail = res.data
+                        document.title = res.data.title + '_非遗大百科'
+                        this.share = appDetailShare(res.data, hrefUrl.actidetails+getHttpParam('id'))
+                        this.is.blank = false
+                    } else {
+                        this.is.blank = true
+                    }
+                    setTimeout(() => {
+                        this.is.loading = false
+                    }, 500)
+                })
+            },
+            isShare: function () {
+                var share = getHttpParam('share')
+                if(share){
+                    this.is.header = false
+                }
+            }
+        }
+    })
+</script>
+<script type="text/javascript" src="../../cordova.js"></script>
+
+</body>
+</html>

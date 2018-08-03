@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <!-- 忽略页面中的数字识别为电话, 忽略email识别 -->
+    <meta name="format-detection" content="telephone = no,email = no">
+    <!-- 设置屏幕的缩放 -->
+    <meta name="viewport" content="user-scalable = no, initial-scale = 1, maximum-scale = 1,minimum-scale = 1,
+    width = device-width">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <!--  -->
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="Content-type" content="text/html" charset="utf-8">
+    <title>首页开始</title>
+    <!--<script type="text/javascript" src="cordova.js"></script>-->
+    <!--<script type="text/javascript" src="js/home.js"></script>-->
+    <!--<script type="text/javascript" charset="utf-8" src="cordova-plugin-camera/cordova.js"></script>-->
+    <script type="text/javascript" charset="UTF-8" src="cordova-plugin-setting/setting.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    var destinationType;
+
+    document.addEventListener('deviceready', onDeviceReady, false);
+
+    function onDeviceReady() {
+
+      destinationType = navigator.camera.DestinationType;
+
+    }
+
+    //take photo
+    function capturePhoto() {
+      if (!navigator.camera) {
+        alert('camera');
+      }
+      console.log('diaoyong onkeyup=');
+      navigator.camera.getPicture(onPhotoDataSuccess, onFail, {
+        quality: 100,
+        destinationType: destinationType.DATA_URL
+      });
+
+    }
+
+    function onPhotoDataSuccess(imageData) {
+      var smallImage = document.getElementById('smallImage');
+      smallImage.src = "data:image/jpeg;base64," + imageData;
+    }
+
+
+    function onFail(message) {
+      alert('拍照失败');
+    }
+
+    function showCache() {
+      console.log('android ---- JS');
+      navigator.setting.showCache(0, onSuccess, onError);
+      // document.getElementById("showCache").innerHTML = cacheSize;
+
+    }
+
+    function onSuccess(cacheSize) {
+      console.log("----huoqu cacheSize" + cacheSize);
+      document.getElementById("showCache").innerHTML = cacheSize;
+
+    }
+
+    function onError(message) {
+      console.log("----huoqu shibai");
+    }
+
+    // 清理缓存
+    function cleanCache() {
+      console.log("home.html  clean cache");
+      navigator.setting.cleanCache(0, onCleanCacheSuccess, onCleanCacheError)
+    }
+
+    function onCleanCacheSuccess() {
+      console.log("clean cache onSuccess");
+      // 弹出dialog 或者 不弄
+
+    }
+
+    function onCleanCacheError(message){
+      console.log("clean cache onClean");
+
+    }
+
+    function share(){
+
+    var title = "storm"
+    var content = "fuck"
+    var imageUrl = "http://p1.qzone.la/upload/20150222/yk961fx2.jpg"
+    var htmlUrl = "http://www.baidu.com"
+
+    navigator.setting.share(title,content,imageUrl,htmlUrl);
+
+    }
+
+    function showGuide(){
+      navigator.setting.showGuidePager(0);
+
+    }
+  </script>
+</head>
+
+<body>
+<div class="home">
+    <div class="div-userInfo">
+        <i><img src="img/logo.png" id="smallImage"></i>
+        <input onclick="capturePhoto();" class="changIcon" type="button" name="button" value="更改头像">
+    </div>
+
+    <div class="div-userInfo">
+        用户名
+        <input onclick="navigator.prompt.showToast('js 调用')" class="changUserName" type="button" name="button" value="User">
+    </div>
+    <div class="div-userInfo">手机号
+        <input onclick="navigator.prompt.showDialog('对话框显示','你确定,啊?')" class="changePhone" type="button" name="button" value="13838383838">
+    </div>
+    <div onclick="navigator.setting.startSettingActivity();" class="div-userInfo">系统设置
+    </div>
+    <div onclick="showCache();" class="div-userInfo">清除缓存
+        <p onclick="cleanCache()" id="showCache">0M</p>
+    </div>
+    <div onclick="share();" class="div-userInfo">分享
+
+    </div>
+
+    <div onclick="showGuide();" class="div-userInfo">跳转到引导页面
+
+    </div>
+</div>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/home.js"></script>
+</body>
+
+</html>

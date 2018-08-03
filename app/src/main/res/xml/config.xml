@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.efeiyi.bigwiki" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <feature name="Whitelist">
+        <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
+        <param name="onload" value="true" />
+    </feature>
+    <name>HelloCordova</name>
+    <description>
+        A sample Apache Cordova application that responds to the deviceready event.
+    </description>
+    <author email="dev@cordova.apache.org" href="http://cordova.io">
+        Apache Cordova Team
+    </author>
+    <content src="pages/index/index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <allow-intent href="market:*" />
+    <allow-navigation href="http://*/*" />
+    <allow-navigation href="https://*/*" />
+    <allow-navigation href="data:*" />
+    <access origin="*" />
+    <access origin="http://*/*" />
+    <access origin="https://*/*" />
+    <preference name="loglevel" value="DEBUG" />
+    <feature name="SettingPlugin">
+        <param name="android-package" value="org.apache.cordova.setting.SettingPlugin" />
+    </feature>
+    <chcp>
+        <auto-download enabled="true" />
+        <auto-install enabled="true" />
+        <native-interface version="1" />
+        <config-file url="http://wiki.diich.com/wiki_resource/android/www/chcp.json" />
+    </chcp>
+    <preference name="loadUrlTimeoutValue" value="60000" />
+    <feature name="HotCodePush">
+        <param name="android-package" value="com.nordnetab.chcp.main.HotCodePushPlugin" />
+        <param name="onload" value="true" />
+    </feature>
+</widget>

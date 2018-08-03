@@ -1,0 +1,19 @@
+.loading {
+  background: rgba(255,255,255,.9);
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 4;
+  overflow: hidden;
+  img {
+    width: 60rem/$font-size-base;
+    height: 60rem/$font-size-base;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    @include marginLeftMid(60rem);
+    @include marginTopMid(60rem);
+  }
+}

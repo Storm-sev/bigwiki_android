@@ -1,0 +1,200 @@
+@charset "utf-8";
+@import "base";
+@import "libs/swiper";
+@import "base/ency-data-list";
+@import "base/category";
+
+// 定义一个方法
+@mixin clearfix {
+  zoom: 1;
+  &:after {
+    display: block;
+    clear: both;
+    content: '';
+  }
+}
+
+/** 公用样式 **/
+.not-data-back{
+  background-color: #FFFFFF !important;
+}
+
+//没有数据
+.no-data {
+  width: 100%;
+  height: 311rem/$font-size-base;
+  margin-top: 50rem/$font-size-base;
+  // position: absolute;
+  // top: 25%;
+  // left: 0;
+  background-color: #FFFFFF
+}
+
+.ency-footer {
+  @include height(107rem);
+}
+
+.category-links {
+  margin: 0
+}
+
+// header {
+//    background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0)); /* 标准的语法 */
+//    border: none;
+//    // height: 347rem/$font-size-base;
+//   .icon.menu {
+//       background: url("/assets-wiki/images/shop/Group_shop.png");
+//       background-repeat: no-repeat;
+//       background-size: 100% auto;
+//     }
+// }
+
+.ency {
+  // 轮播图
+  .slider {
+    position: relative;
+    width: 750rem/$font-size-base;
+    height: 715rem/$font-size-base;
+    // &:before {
+    //   content: "";
+    //   display: block;
+    //   height: 347rem/$font-size-base;
+    //   width: 100%;
+    //   position: absolute;
+    //   top: 0;
+    //   left: 0;
+    //   background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0)); /* 标准的语法 */
+    //   z-index: 2
+    // }
+    img {
+      width: 100%;
+      display: block;
+    }
+    .title {
+      position: absolute;
+      top: 40rem/$font-size-base;
+      left: 41rem/$font-size-base;
+      width: 413rem/$font-size-base;
+      height: 143rem/$font-size-base;
+      z-index: 1;
+      line-height: 55rem/$font-size-base;
+      h1 {
+        @include fontSize(48rem);
+        color: #ffffff
+      }
+
+      .type {
+        @include fontSize(24rem);
+        color: #ffffff;
+        font-weight: lighter;
+      }
+
+      .type:before{
+        content: "";
+        width: 20rem/$font-size-base;
+        height: 1rem/$font-size-base;
+        background: #ffffff;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 10rem/$font-size-base;
+      }
+
+      .type:after{
+        content: "";
+        width: 20rem/$font-size-base;
+        height: 1rem/$font-size-base;
+        background: #ffffff;
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 10rem/$font-size-base;
+      }
+
+      .belong {
+        @include fontSize(28rem);
+        color: #ffffff;
+        font-weight: lighter;
+      }
+    }
+
+    .search {
+      background-color: #ffffff;
+      width: 694rem/$font-size-base;
+      height: 98rem/$font-size-base;
+      position: absolute;
+      // top: 519rem/$font-size-base;
+      // top: 571rem/$font-size-base;
+      left: 28rem/$font-size-base;
+      bottom: 179rem/$font-size-base;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.84);
+      .operation {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        .icon {
+          position: absolute;
+          top: 38.5rem/$font-size-base;
+          left: 35rem/$font-size-base;
+          width: 27rem/$font-size-base;
+          height: 27rem/$font-size-base;
+        }
+        .keyword {
+          width: 80%;
+          height: 100%;
+          margin: 0 auto;
+          display: block;
+          font-size: 24rem/$font-size-base;
+          margin-left: 62rem/$font-size-base;
+          padding-left: 18rem/$font-size-base;
+          background: rgba(255, 255, 255, 0);
+        }
+      }
+
+    }
+  }
+
+
+  // 五大分类
+  .classify {
+    background: #fff;
+    padding-top: 53rem/$font-size-base;
+    padding-bottom: 50rem/$font-size-base;
+    padding-left: 28rem/$font-size-base;
+    padding-right: 28rem/$font-size-base;
+  }
+
+  .mescroll{
+      position: fixed;
+      top: 76rem/$font-size-base;
+      // top: 0;
+      bottom: 80rem/$font-size-base;
+      height: auto;
+      .upwarp-tip, .downwarp-tip {
+        font-size: 24rem/$font-size-base !important;
+      }
+      .mescroll-empty {
+        padding-top: 0;
+        .empty-icon {
+            width: 155rem/$font-size-base;
+            height: 164rem/$font-size-base;
+            margin-left: 30rem/$font-size-base;
+        }
+        .upwarp-nodata {
+            p {
+              &:nth-child(1) {
+                  font-size: 32rem/$font-size-base !important;
+                  color: #1b1b1b;
+                  line-height: 45rem/$font-size-base;
+                  margin-top: 51rem/$font-size-base;
+              }
+              &:nth-child(2) {
+                  font-size: 28rem/$font-size-base !important;
+                  color: #aaa;
+                  line-height: 40rem/$font-size-base;
+                  margin-top: 5rem/$font-size-base;
+              }
+            }
+          }
+      }
+  }
+}

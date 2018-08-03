@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="wap-font-scale" content="no">
+    <title>首页</title>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" href="../../assets-wiki/css/my.css?t=201807311146">
+</head>
+<body>
+
+<div id="my" class="my">
+    <wk-Header :data="headData"></wk-Header>
+    <!--//End 导航-->
+
+    <article class="container">
+        <div class="information">
+            <ul>
+                <li class="avatar"><span>头像</span><span><img :src="avatar" alt=""></span></li>
+                <li><span>用户名</span><span v-text="user.name"></span></li>
+                <li @click="updatePhone()"><span>手机号</span><span v-text="user.phone"></span></li>
+            </ul>
+        </div>
+    </article>
+</div>
+
+<!--//End 底部-->
+<script src="../../assets-wiki/js/system.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script>
+    var app = new Vue({
+        el: '#my',
+        data: {
+            headData: {
+                title: '我的信息',
+                isBack:true
+            },
+            avatar:"../../assets-wiki/images/login/icon-avatar-default@2x.png",
+            user:{}
+        },
+        components: {
+            wkHeader
+        },
+        mounted: function () {
+            this._getUserInfo();
+        },
+        methods: {
+            _getUserInfo:function () {
+                var _info = myLocalStorage.getter('__user__');
+                if(!_info){
+                    window.location.href =  rootName + '/pages/login/login.html'
+                }
+                this.user = _info
+            },
+            updatePhone: function() {
+                window.location.href = rootName + "/pages/login/pwd.html" // 跳转密码页面
+            }
+        }
+    });
+</script>
+<script type="text/javascript" src="../../cordova.js"></script>
+</body>
+</html>

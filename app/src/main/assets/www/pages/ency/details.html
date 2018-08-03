@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="wap-font-scale" content="no">
+    <title>百科首页</title>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/ency-details.css?t=201807311146">
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/mescroll.min.css?t=201807311146">
+    <script src="../../assets-wiki/js/swiper.min.js?t=201807311146"></script>
+     <script src="../../assets-wiki/js/vue.min.js?t=201807311146"></script>
+    <script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
+    <script src="../../assets-wiki/js/shop-details.js?t=201807311146"></script>
+</head>
+<body>
+<!-- 图集展示区域 -->
+<!-- <atl-area :area="area" :urlset="urlset" @child-say="imgSet"></atl-area> -->
+
+<div class="ency-details" id="details" v-cloak>
+    <wk-header :data="headData" :share-data="share" v-if="is.header" ></wk-header>
+    <share-tip v-if="!is.header"></share-tip>
+    <div id="mescroll" class="content">
+        <div :class="{topShow: true, 'ency-top': !is.header}" >
+            <!-- 视频 -->
+            <!-- <div class="video" v-show="pageObj.video" style="display: none;">
+                <video id="video" controls="controls" loop="loop"  x5-playsinline="" playsinline="" webkit-playsinline="" poster="/assets-wiki/images/ency/000247589.jpg" @click="pause">  
+                    <source src="/assets-wiki/video/WeChatSight96.mp4" type="video/mp4" />  
+                </video> -->
+               <!--  <div v-show="palyButiion" class="circle" @click.stop="play">
+                    <div class="triangle-right" ></div>
+                </div> -->
+            <!-- </div> -->
+            <div class="image" v-show="pageObj.img" style="display: none;">
+               <img class="lazy" :data-original="pageObj.img ? pageObj.img :'../../assets-wiki/images/default/head694*374.png'">
+            </div>    
+
+            <div class="introduce">
+                <h1>{{pageObj.title}}</h1>
+                <div class="region">
+                    <div v-if="pageObj.marking">
+                        <span>类别</span>
+                        <span>{{pageObj.marking}}</span>
+                    </div>
+                    <div v-if="pageObj.area">
+                        <span>地域</span>
+                        <span>{{pageObj.area}}</span>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="inheritor" v-if="type==2 && pageObj.master.head != ''">
+                <div class="head">
+                    <img :src="pageObj.master.head">
+                </div>
+                <div class="brief">
+                    <p class="name">{{pageObj.master.name}}</p>
+                    <p class="leve">{{pageObj.master.level}}</p>
+                </div>
+            </div>
+
+            <div class="project" v-if="type==2 && pageObj.master.head != ''">
+                <p class="name">所属项目</p>
+                <p class="type">{{pageObj.master.projectName}}</p>
+            </div>
+
+          <!--   <div class="inheritor" v-show="type==2">
+                <div class="head">
+                    <img src="../../assets-wiki/images/ency/000247589.jpg">
+                </div>
+                <div class="brief">
+                    <p class="name">张同禄</p>
+                    <p class="leve">国家级非遗传承人/国家一级演员</p>
+                </div>
+            </div>
+
+            <div class="project" v-show="type==2">
+                <p class="name">所属项目</p>
+                <p class="type">昆曲</p>
+            </div> -->
+        </div>
+        <!-- 代表性传承人-->
+        <in-herit v-if="type == 0" :inherit="pageObj.representative"></in-herit>
+        <!-- 非遗在中国-->
+        <efei-china :China="pageObj.china"></efei-china>
+        <!-- 非遗项目-->
+        <efei-project :project="pageObj.project"></efei-project>
+        <!--基本信息-->
+        <info-datails :datas="pageObj.basic"></info-datails>
+        <!-- 代表性作品-->
+        <wo-rksdeta :wodata="pageObj.works" :title="title" @btn-init="btnArea" @work-id="workId"></wo-rksdeta>
+        <!-- 内容-->
+        <bas-datails :datas="pageObj.basData" @show-area="imgSet" @show-id="showId"></bas-datails>
+        <!--菜单按钮-->
+        <bt-nmenu :datas="listmenu"></bt-nmenu>
+        <!--返回顶部-->
+        <return-bas></return-bas>
+
+        <shop-load :msg="msg"></shop-load>
+    </div>
+    <!-- 图集展示区域-->
+    <atl-area :urlset="urlset" :area="area" @child-say="btnArea"></atl-area>
+    
+    <!--//End 内容-->
+    <!-- <div class="ency-footer">
+         <wk-footer :selected="selectedIndex"></wk-footer>
+    </div> -->
+    <!--//End 底部-->
+</div>
+
+
+<script src="../../assets-wiki/js/jquery.min.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/mescroll.min.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/jquery.lazyload.min.js?t=201807311146?v=1.9.1"></script>
+<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script src="../../assets-wiki/data/dictionary.js?t=201807311146"></script>
+<script src="../../assets-wiki/data/category.js?t=201807311146"></script>
+<script src="ency-model.js?t=201807311146"></script>
+<script>
+    var defUrl = "http://resource.efeiyi.com/image/uploads/head.png";
+    var defShare = "https://general-h5.oss-cn-beijing.aliyuncs.com/images/icon-default.png"; // 分享默认图片
+    var defAddress = "http://m.diich.com/info/"
+    var app = new Vue({
+        el: '#details',
+        data: {
+            share: {
+                title:'',
+                content:'',
+                imageUrl:'',
+                htmlUrl:'' //只需传入如下名称即可：news/details.html?id=10
+            },
+            is: {
+                header: true
+            },
+            headData: {
+                title: '',
+                isBack: true,
+                isShare: true
+            },
+            selectedIndex:2,
+            palyButiion: true, // 视频播放按钮
+            pageObj: {
+                // 项目代表性传承人
+                representative: {
+                    inher: [], 
+                },
+                // 项目基本信息
+                basic: {}, 
+                master: {
+                    head: ""
+                }
+            },
+            type: "", // 类型
+            title: "",
+            area: "",
+            urlset: [],
+            listmenu: [],
+            msg: true
+        },
+        components: {
+            wkHeader: wkHeader,  //导航
+            wkFooter: wkFooter,  //底部
+            inHerit: inHerit, // 代表性传承人
+            efeiChina: efeiChina, // 非遗在中国
+            InfoDatails: InfoDatails, //基本模板
+            BasDatails: BasDatails, //图片 视频 文本内容
+            woRksdeta: woRksdeta, // 代理性作品
+            atlArea: atlArea,
+            efeiProject: efeiProject, // 传承项目
+            atlArea: atlArea, // 图集展示
+            btNmenu: btNmenu,
+            returnBas: returnBas, // 返回顶部
+            shopLoad: shopLoad, //正在加载
+            shareTip:appShareTip, // app分享
+        },
+        mounted:function () {
+            if(getHttpParam("share")) {
+                this.is.header = false;
+                // console.log(this.is.header)
+            }
+            this.pageInit();
+        },
+        updated: function() {
+            // 懒加载
+            var self = this;
+            self.$nextTick(function() {
+                // $("#mescroll").trigger('scroll');
+                $("#mescroll img.lazy").lazyload({
+                    placeholder: "../../assets-wiki/images/default/default.png",
+                    // effect: "fadeIn",
+                    threshold :200
+                });
+            })
+        },
+        methods:{
+            pageInit: function() {
+                var _this = this;
+                var type = getHttpParam("type"); // 获取传递过来的参数 并处理
+                var id = getHttpParam("id"); // 获取传递过来的参数 并处理
+                _this.type = type;
+                // console.log("type:" + _this.type, "id:" + id);
+                // 查询数据
+                getData(type, id, function(pageObj) {
+                    // console.log("pageObj -- >", pageObj.basData[0].urlset)
+
+                    _this.headData.title = pageObj.title;
+                    $(document).attr("title", pageObj.title+"_非遗大百科"); // 页面title
+                    // 默认图片
+                    if(!pageObj.img) {
+                        pageObj.img = "../../assets-wiki/images/default/head750_374.png";
+                    }
+
+
+                    // console.log(pageObj.basic.infotext)
+
+                    _this.pageObj = pageObj;
+                    // 分享
+                    _this.share.title =  pageObj.title; //分享标题
+                    _this.share.htmlUrl = "ency/details.html?type="   
+                    + getHttpParam("type") +"&id=" 
+                    +  getHttpParam("id");
+                    _this.share.imageUrl = defShare; // 分享默认图片
+                    _this.share.content = defAddress; // 内容
+                    _this.msg = false;
+                    _this.bulidMenu(); // 构建菜单
+                }, function(err) {
+                    //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+                    _this.mescroll.endErr();
+                });
+            },
+            //接受图集展示的状态
+            imgSet(res){
+                this.area = res;
+                console.log('---d>',this.urlset)
+            },
+            pause: function() {
+                $('#video').trigger('pause');
+                this.palyButiion = true;
+            },
+            //接收图集展示的状态
+            btnArea: function(data){
+                this.area = data;
+            },
+            workId: function(id) {
+                var _this = this;
+                if(_this.pageObj.works && _this.pageObj.works.length > 0) {
+                    for(var i = 0; i < _this.pageObj.works.length; i++) {
+                        if(_this.pageObj.works[i].id == id) {
+                            // index = i;
+                            _this.urlset = this.pageObj.works[i].rest;
+                            continue;
+                        }
+                    }
+                } 
+                _this.$nextTick(function() {
+                    getSwiper();
+                    myLazyload()
+                })
+            },
+            showId: function(id) {
+                var _this = this;
+                console.log(_this.urlset)
+                if(_this.pageObj.basData && _this.pageObj.basData.length > 0) {
+                    var arr = [];
+                    for(var i = 0; i <_this.pageObj.basData.length; i++) {
+                        if(_this.pageObj.basData[i].id == id) {
+                             arr = _this.pageObj.basData[i].temp;
+                             continue;
+                        }
+                    }
+                    _this.urlset = arr;
+                }
+        
+                _this.$nextTick(function() {
+                    getSwiper();
+                    myLazyload();
+                })
+                // var _this = this;
+                // if(_this.pageObj.basData && _this.pageObj.basData.length > 0) {
+                //     var arr = [];
+                //     // for(var i = 0; i <_this.pageObj.basData.length; i++) {
+                //     //     arr.push(_this.pageObj.basData[i].reset);
+                //     // }
+                //     // _this.urlset = arr;
+                //     var _urlset=_this.pageObj.basData[0].urlset
+                //     for (let i = 0; i < _urlset.length; i++) {
+                //         arr.push({
+                //                 "name": "",
+                //                 "type": "0",
+                //                 "newUrl": _urlset[i],
+                //                 "basImg": "../../assets-wiki/images/default/head694_320.png"
+                //             }
+                //         )
+                //     }
+                //     _this.urlset = arr
+                // }
+        
+                // _this.$nextTick(function() {
+                //     getSwiper();
+                //     myLazyload();
+                // })
+            },
+            bulidMenu: function() {
+                var _this = this;
+                var menu = [];
+                if(_this.pageObj.basic != null) {
+                    var obj = {};
+                    obj.name = _this.pageObj.basic.name;
+                    obj.id = _this.pageObj.basic.id;
+                    menu.push(obj);
+                }
+
+                if(_this.pageObj.basData.length > 0) {
+                    var basDatas = _this.pageObj.basData;
+                    for(var i = 0; i < basDatas.length; i++) {
+                        var obj = {};
+                        obj.name = basDatas[i].title;
+                        obj.id = basDatas[i].id;
+                        menu.push(obj)
+                    }
+                }
+                _this.listmenu = menu;
+                
+            }
+
+        }
+    });
+
+    // 赋值 分享content
+    function shareContent(data) {
+        // console.log(app.$data.share.content);
+        if(!app.$data.share.content) {
+            app.$data.share.content = data;
+        }
+
+    }
+
+    // 获取数据
+    function getData(type, id, successCallback, errorCallback) {
+        var url = "";
+        if(type == "0") {
+            url = api.projectDetails; // 项目
+        } else if(type == "1") {
+            url = api.masterDetails; // 传承人
+        } else if(type == "2") {
+            url = api.worksDetails; // 作品
+        }
+        // 发送请求
+        var param = {
+            url: url,
+            data: {
+                id: id
+            },
+            sCallback: function (res) {
+                // console.log("res --- >", res);
+                if(res.code == 0 && res.data) {
+                    // 项目
+                    if(type == "0") {
+                        var b = bulidProject(res.data);
+                        if(b.works.length > 0) {
+                            app.$data.title = "代表性传承人"
+                        }
+                        // console.log("b --- 》", b)
+                        successCallback && successCallback(b); // 处理数据
+                    }
+                    // 传承人
+                    if(type == "1") {
+                        successCallback && successCallback(bulidMaster(res.data)); // 处理数据
+                    }
+                    // 作品
+                    if(type == "2") {
+                        successCallback && successCallback(bulidWorks(res.data)); // 处理数据
+                    }
+                } else {
+                    successCallback && successCallback([]); // 处理数据
+                }
+            },
+            eCallback: function (err) {
+                errorCallback && errorCallback(err);
+            }
+        }
+        httpRequest(param);
+    }
+
+    // 构建作品详情数据
+    function bulidWorks(data) {
+        var _this = this
+        console.log("data --- >", data);
+        var arr = data.contentFragmentList;
+        var obj = {
+            basic: {
+                id: "",
+                // len: "",
+                infotext: []
+            },
+            master: {
+                head: ""
+            },
+            basData: []
+        };
+        for(var i = 0; i < arr.length; i++) {
+             // 标题
+            if(arr[i].attributeId == "28") { 
+                obj.title = arr[i].content
+                continue;
+            }
+            // 背景图
+            if(arr[i].attributeId == "25") { // 图片、 视频
+                var resourceList = arr[i].resourceList;
+                if(resourceList.length > 0) {
+                    if(resourceList[0].type == "0") {
+                        // 图片
+                        if(resourceList[0].uri.indexOf('http') < 0) {
+                            obj.img = oss.picUrl + oss.works + resourceList[0].uri + oss.handle.domain + oss.handle.encyDetails;
+                        } else {
+                            obj.img = resourceList[0].uri;
+                        }
+                    } else {
+                        // 视频
+                        if(resourceList[0].uri.indexOf('http') < 0) {
+                            obj.video = oss.picVideo + oss.works + resourceList[0].uri;
+                        } else {
+                            obj.video = resourceList[0].uri;
+                        }
+                    }
+                    continue;
+                }
+            }
+            if(arr[i].content || arr[i].resourceList.length > 0  
+                && arr[i].attributeId != "188" 
+                && arr[i].attributeId != "189" 
+                && arr[i].attributeId != "196" 
+                && arr[i].attributeId != "197"
+                && arr[i].attributeId != "198"
+                && arr[i].attributeId != "199"
+                && arr[i].attributeId != "201") {
+                // 基本信息
+                if(arr[i].attribute.dataType != "1" && arr[i].attribute.dataType != "5") {
+                    if(arr[i].attributeId != "113" && arr[i].attributeId != "111") {
+                        // 基本信息
+                        var b = {};
+                        b.title = arr[i].attribute.cnName;
+                        // 性别、 居住城市
+                        if(arr[i].attributeId == "16" || arr[i].attributeId == "55" 
+                            || arr[i].attributeId == "49" || arr[i].attributeId == "57"
+                            || arr[i].attributeId == "73") {
+                            b.text = getTextByTypeAndCode(arr[i].attribute.dataType, arr[i].content);
+                        } else {
+                            b.text = arr[i].content;
+                        }
+                        b.id = arr[i].id;
+                        obj.basic.infotext.push(b);
+                    }
+                } else {
+                    // 图文 basData
+                    // shareContent(arr[i].content); // 构建分享内容content
+                    var b = {};
+                    b.id = arr[i].id;
+                    b.title = arr[i].attribute.cnName;
+                    b.content = clearHtml(arr[i].content);
+                    b.h_text = ""; // 图片标题
+                    b.reset = {}; // 图文
+                    b.imgs = []; // 记录所有的图片
+                    var resourceList = arr[i].resourceList;
+                    b.temp = [];
+                    if(resourceList.length > 0) {
+                        for(var j = 0; j < resourceList.length; j++) {
+                            var o = {};
+                            o.type = resourceList[j].type
+                            o.basImg = resourceList[j].description;
+                            if(resourceList[j].uri.indexOf('http') < 0) {
+                                o.url = oss.picUrl + oss.works 
+                                    + resourceList[j].uri + oss.handle.domain 
+                                    + oss.handle.ossImageTitle;
+                                o.newUrl = oss.picUrl + oss.works + resourceList[j].uri;
+                            } else {
+                                o.url = resourceList[j].uri;
+                            }
+                            b.temp.push(o);
+                        }
+                        // console.log("temp -- >", b.temp);
+                        b.reset = b.temp[0]; // 图文混排图片
+                        b.reset.len = b.temp.length;
+                    }
+                    obj.basData.push(b);
+                }
+                obj.basic.id = "9527";
+                obj.basic.len = obj.basic.infotext.length;
+            }
+        }
+
+        // console.log('obj==>',obj)
+
+        // 所属传承人
+        if(data.ichMaster) {
+            var master = data.ichMaster.contentFragmentList;
+            for(var i = 0; i < master.length; i++) {
+                // 头像
+                if(master[i].attributeId == "113") {
+                    if(master[i].resourceList[0].uri.indexOf('http') < 0) {
+                        obj.master.head = oss.picUrl + oss.master 
+                        + master[i].resourceList[0].uri 
+                        + oss.handle.domain + oss.handle.ossHeadPortrait;
+                    } else {
+                        obj.master.head = master[i].resourceList[0].uri;
+                    }
+                }
+
+                // 非遗级别
+                if(master[i].attributeId == "111") {
+                    obj.master.level = getTextByTypeAndCode(master[i].attribute.dataType, master[i].content);
+                }
+
+                // 名字
+                if(master[i].attributeId == "13") {
+                    obj.master.name = master[i].content;
+                }
+
+                // 默认图片
+                if(!obj.master.hasOwnProperty('head')) {
+                    obj.master.head = "../../assets-wiki/images/default/head_portrait.png";
+                }
+            }
+
+            // 传承人所属项目
+            if(data.ichMaster.ichProject) {
+                var project = data.ichMaster.ichProject.contentFragmentList;
+                for(var i = 0; i < project.length; i++) {
+                    if(project[i].attributeId == "4") {
+                         obj.master.projectName= project[i].content;
+                    }
+                }
+            }
+
+        }
+        return obj;
+    }
+
+    // 构建传承人详情数据
+    function bulidMaster(data) {
+        console.log("data -- >", data);
+        var arr = data.contentFragmentList;
+        var obj = {
+            basic: {
+                id: "",
+                len: "",
+                infotext: []
+            },
+            basData: []
+        };
+      
+        for(var i = 0; i < arr.length; i++) {
+            // 标题
+            if(arr[i].attributeId == "13") { 
+                obj.title = arr[i].content
+                continue;
+            }
+            // 背景图
+            if(arr[i].attributeId == "10") { // 图片、 视频
+                var resourceList = arr[i].resourceList;
+                if(resourceList.length > 0) {
+                    if(resourceList[0].type == "0") {
+                        // 图片
+                        if(resourceList[0].uri.indexOf('http') < 0) {
+                            obj.img = oss.picUrl + oss.master + resourceList[0].uri + oss.handle.domain + oss.handle.encyDetails;
+                        } else {
+                            obj.img = resourceList[0].uri;
+                        }
+                    } else {
+                        // 视频
+                        if(resourceList[0].uri.indexOf('http') < 0) {
+                            obj.video = oss.picVideo + oss.master + resourceList[0].uri;
+                        } else {
+                            obj.video = resourceList[0].uri;
+                        }
+                    }
+                    continue;
+                }
+            }
+
+            // 非遗在中国
+            // if(arr[i].attributeId == "11") {
+            //     if(!obj.china) {
+            //         obj.china = {};
+            //     }
+            //     obj.china.id = arr[i].content; // id
+            // }
+
+//             var reg = new RegExp("[\\u4E00-\\u9FFF]+","g");
+// 　　if(reg.test(val)){  
+
+            if(arr[i].attributeId == "111") {
+                if(!obj.china) {
+                    obj.china = {};
+                }
+                obj.china.level = getTextByTypeAndCode(arr[i].attribute.dataType, arr[i].content);
+            }
+
+            if(arr[i].content || arr[i].resourceList.length > 0  
+                && arr[i].attributeId != "188" 
+                && arr[i].attributeId != "189" 
+                && arr[i].attributeId != "196" 
+                && arr[i].attributeId != "197"
+                && arr[i].attributeId != "198"
+                && arr[i].attributeId != "199"
+                && arr[i].attributeId != "201") {
+                // 基本信息
+                if(arr[i].attribute.dataType != "1" && arr[i].attribute.dataType != "5") {
+                    if(arr[i].attributeId != "113" && arr[i].attributeId != "111") {
+                        // 基本信息
+                        var b = {};
+                        b.title = arr[i].attribute.cnName;
+                        // 性别、 居住城市
+                        if(arr[i].attributeId == "16" || arr[i].attributeId == "55"
+                            || arr[i].attributeId == "49" || arr[i].attributeId == "57"
+                            || arr[i].attributeId == "17") {
+                            b.text = getTextByTypeAndCode(arr[i].attribute.dataType, arr[i].content);
+                        } else {
+                            b.text = arr[i].content;
+                        }
+                        b.id = arr[i].id;
+                        obj.basic.infotext.push(b);
+                    }
+                } else {
+                    // 图文 basData
+                    // if(arr[i].content) {
+                    var b = {};
+                    b.id = arr[i].id;
+                    b.title = arr[i].attribute.cnName;
+                    b.content = clearHtml(arr[i].content);
+                    b.h_text = ""; // 图片标题
+                    b.reset = {}; // 图文
+                    b.imgs = []; // 记录所有的图片
+                    var resourceList = arr[i].resourceList;
+                    b.temp = [];
+                    if(resourceList.length > 0) {
+                        for(var j = 0; j < resourceList.length; j++) {
+                            var o = {};
+                            o.type = resourceList[j].type
+                            o.basImg = resourceList[j].description;
+                            if(resourceList[j].uri.indexOf('http') < 0) {
+                                o.url = oss.picUrl + oss.master 
+                                    + resourceList[j].uri + oss.handle.domain 
+                                    + oss.handle.ossImageTitle;
+                                o.newUrl = oss.picUrl + oss.master + resourceList[j].uri;
+                            } else {
+                                o.url = resourceList[j].uri;
+                            }
+                            b.temp.push(o);
+                        }
+                        // console.log("temp -- >", b.temp);
+                        b.reset = b.temp[0]; // 图文混排图片
+                        b.reset.len = b.temp.length;
+                    }
+                    obj.basData.push(b);
+                }    
+                // }
+                obj.basic.id = "9527";
+                obj.basic.len = obj.basic.infotext.length;
+            }
+            
+            
+        }
+        // 类型
+        // obj.marking = data.ichCategory.name; // 类型
+        // if(data.ichProject) {
+        //     var contentFragmentList = data.ichProject.contentFragmentList;
+        //     for(var i = 0; i < contentFragmentList.length; i++) {
+        //         if(contentFragmentList[i].attributeId == "4") {
+        //             obj.marking = contentFragmentList[i].content;
+        //         }
+        //     }
+        // }
+        // obj.marking = 
+
+        // // 非遗项目
+        // if(data.ichProject) {
+        //     obj.project = {};
+        //     obj.project.level = data.ichProject.ichCategory.name;
+        //     if(data.ichProject.contentFragmentList.length > 0) {
+        //         var array = data.ichProject.contentFragmentList;
+        //         for(var i = 0; i < array.length; i++) {
+        //             if(array[i].attributeId == "4") { // 项目名称
+        //                 obj.project.name = array[i].content;
+        //                 continue;
+        //             }
+        //             if(array[i].attributeId == "2") {
+        //                 obj.project.id = array[i].content; // 项目编码
+        //             }
+        //         }
+        //     }
+        // }
+        return obj;
+    }
+
+    // 构建项目详情数据
+    function bulidProject(data) {
+        console.log("data --- >", data);
+        var arr = data.contentFragmentList;
+        var obj = {
+            representative: {
+                inher: [], 
+            }, // 代表性传承人
+            basic: {
+                id: "",
+                len: "",
+                name: "基本信息",
+                infotext: []
+            },
+            basData: [],
+            works: [] 
+        };
+        for(var i = 0; i < arr.length; i++) {
+            // 标题
+            if(arr[i].attributeId == "4") { 
+                obj.title = arr[i].content
+                continue;
+            }
+            // 背景图
+            if(arr[i].attributeId == "1") { // 图片、 视频
+                var resourceList = arr[i].resourceList;
+                if(resourceList.length > 0) {
+                    if(resourceList[0].type == "0") {
+                        // 图片
+                        if(resourceList[0].uri.indexOf('http') < 0) {
+                            obj.img = oss.picUrl + oss.project + resourceList[0].uri + oss.handle.domain + oss.handle.encyDetails;
+                        } else {
+                            obj.img = resourceList[0].uri;
+                        }
+                    } else {
+                        // 视频
+                        if(resourceList[0].uri.indexOf('http') < 0) {
+                            obj.video = oss.picVideo + oss.project + resourceList[0].uri;
+                        } else {
+                            obj.video = resourceList[0].uri;
+                        }
+                    }
+                    continue;
+                }
+            }
+            if(arr[i].attributeId == "33") { // 地域
+                var n = getTextByTypeAndCode(arr[i].attribute.dataType, arr[i].content);
+                obj.area = n;
+                continue;
+            }
+
+            if(data.ichCategory) {
+                obj.marking = data.ichCategory.name; // 类型
+            }
+            
+            // 非遗在中国
+            if(arr[i].attributeId == "2") {
+                if(!obj.china) {
+                    obj.china = {};
+                }
+                obj.china.id = arr[i].content; // id
+            }
+
+            if(arr[i].attributeId == "41") {
+                if(!obj.china) {
+                    obj.china = {};
+                }
+                obj.china.level = getTextByTypeAndCode(arr[i].attribute.dataType, arr[i].content);
+            }
+
+            if(arr[i].content || arr[i].resourceList.length > 0 
+                && arr[i].attributeId != "188" 
+                && arr[i].attributeId != "189" 
+                && arr[i].attributeId != "196" 
+                && arr[i].attributeId != "197"
+                && arr[i].attributeId != "198"
+                && arr[i].attributeId != "199"
+                && arr[i].attributeId != "201") {
+                // 基本信息
+                if(arr[i].attribute.dataType != "1" && arr[i].attribute.dataType != "5"){
+                  if(arr[i].attributeId != "113" && arr[i].attributeId != "111") {
+                        // 基本信息
+                        var b = {};
+                        b.title = arr[i].attribute.cnName;
+                        b.id = arr[i].id;
+                        obj.basic.infotext.push(b);
+                        //  性别、 居住城市、认证级别
+                        if(arr[i].attributeId == "41" || arr[i].attributeId == "16" 
+                            || arr[i].attributeId == "55" || arr[i].attributeId == "49"
+                            || arr[i].attributeId == "57" || arr[i].attributeId == "142") {
+                            b.text = getTextByTypeAndCode(arr[i].attribute.dataType, arr[i].content); // 
+                        } 
+                        // else if( arr[i].attributeId == "108" ) {
+                        //      b.text = getTextByTypeAndCode(101, arr[i].content); // 国家代码
+                        // } 
+                        else {
+                            b.text = arr[i].content;
+                        }
+                    }
+                } else {
+                    // if(arr[i].content) {
+                    var b = {};
+                    b.id = arr[i].id;
+                    b.title = arr[i].attribute.cnName;
+                    b.content = clearHtml(arr[i].content);
+                    b.h_text = ""; // 图片标题
+                    b.reset = {}; // 图文
+                    b.imgs = []; // 记录所有的图片
+                    var resourceList = arr[i].resourceList;
+                    b.temp = [];
+                    if(resourceList.length > 0) {
+                        for(var j = 0; j < resourceList.length; j++) {
+                            var o = {};
+                            o.type = resourceList[j].type
+                            o.basImg = resourceList[j].description;
+                            if(resourceList[j].uri.indexOf('http') < 0) {
+                                o.url = oss.picUrl + oss.project 
+                                    + resourceList[j].uri + oss.handle.domain 
+                                    + oss.handle.ossImageTitle;
+                                o.newUrl = oss.picUrl + oss.project + resourceList[j].uri;
+                            } else {
+                                o.url = resourceList[j].uri;
+                            }
+                            b.temp.push(o);
+                        }
+                        // console.log("temp -- >", b.temp);
+                        b.reset = b.temp[0]; // 图文混排图片
+                        b.reset.len = b.temp.length;
+                    }
+                    obj.basData.push(b);
+                    // }
+                }
+                obj.basic.id = "9527";
+                obj.basic.len = obj.basic.infotext.length;
+            }
+        }
+
+        // 代表性传承人
+        if(data.ichMasterList.length > 0) {
+            var inher = [];
+            var ichMasterList = data.ichMasterList
+            for(var i = 0; i < ichMasterList.length; i++) {
+                var ichMaster = ichMasterList[i].contentFragmentList;
+                var newIchMaster = {
+                    id: ichMasterList[i].id, // 传承人ID
+                };
+                for(var j = 0; j < ichMaster.length; j++) {
+                    if(ichMaster[j].attributeId == "13") {
+                        newIchMaster.name = ichMaster[j].content; // 传承人名称
+                    }
+
+                    if(ichMaster[j].attributeId == "113") {
+                        newIchMaster.imgUrl = oss.picUrl + oss.master + ichMaster[j].resourceList[0].uri 
+                        + oss.handle.domain + oss.handle.ossHeadPortrait; //头像
+                    }
+
+                    // 级别
+                    if(ichMaster[j].attributeId == "111") {
+                        newIchMaster.type = getTextByTypeAndCode(ichMaster[j].attribute.dataType, ichMaster[j].content); 
+                    }
+
+                }
+                
+                // 默认图片
+                if(!newIchMaster.hasOwnProperty('imgUrl')) {
+                    newIchMaster.imgUrl = "../../assets-wiki/images/default/head_portrait.png";
+                }
+                inher.push(newIchMaster);
+            }
+            obj.representative.inher = inher; 
+        }
+
+        // 代表性作品
+        if(data.worksList) {
+            var works = [];
+            for(var i = 0; i < data.worksList.length; i++) {
+                var cObj = {
+                    id: data.worksList[i].id,
+                    rest: []
+                };
+                var cfList = data.worksList[i].contentFragmentList;
+                for(var j = 0; j < cfList.length; j++) {
+                    // 名称
+                    if(cfList[j].attributeId == "28") {
+                        cObj.name = cfList[j].content;
+                    }
+
+                    // 简介
+                    if(cfList[j].attributeId == "31") {
+                        cObj.content = cfList[j].content;
+                    }
+
+                    // 背景图
+                    if(cfList[j].attributeId == "25") {
+                        if(cfList[j].resourceList.length > 0) {
+                            var resourceList = cfList[j].resourceList;
+                            for(var k = 0; k < resourceList.length; k++) {
+                                var newObj = {};
+                                newObj.type = resourceList[k].type;
+                                newObj.name = resourceList[k].description;
+                                if(resourceList[k].type == 0) {
+                                    // 图片
+                                    newObj.url = resourceList[k].url;
+                                    if(resourceList[k].uri.indexOf('http') < 0) {
+                                        newObj.url = oss.picUrl + oss.works + resourceList[k].uri;
+                                        newObj.newUrl = oss.picUrl + oss.works + resourceList[k].uri;
+                                    } else {
+                                        newObj.url = resourceList[k].url;
+                                        newObj.newUrl = resourceList[k].url;
+                                    }
+                                } else {
+                                    // 视频
+                                    newObj.basImg = resourceList[k].thumbnailUri == "" ? defUrl : resourceList[k].thumbnailUri ;
+                                    if(resourceList[k].uri.indexOf('http') < 0) {
+                                        newObj.url = oss.picVideo + oss.works + resourceList[k].uri;
+                                    } else {
+                                        newObj.url = resourceList[k].url;
+                                    }
+                                }
+                                cObj.rest.push(newObj);
+                            }
+                        }
+                    }
+                }
+                works.push(cObj)
+            }
+            obj.works = works;
+        }
+        return obj;
+    }
+
+    function getSwiper() {
+        var mySwiper = new Swiper('.swiper-container', {
+            prevButton:'.swiper-button-prev',
+            nextButton:'.swiper-button-next',
+            pagination: '.swiper-pagination',
+            paginationType : 'fraction',
+            onSlideChangeEnd: function(swiper){
+                //alert(swiper.activeIndex);        //切换结束时，告诉我现在是第几个slide
+                var domVideo = $(".area .swiper-slide")[swiper.activeIndex];
+                var type = $(domVideo).attr("type");
+                if(type == 1){
+                    $(domVideo).find("video").trigger("play").parent().parent().siblings().find("video").trigger("pause");
+                    $(domVideo).find("span").hide().parent().parent().siblings().find("span").show();
+                }else{
+                    $(domVideo).siblings().find("video").trigger("pause");
+                    $(domVideo).siblings().find("span").show();
+                }
+                app.$nextTick(function() {
+                    myLazyload();
+                })
+            }
+
+        })
+    }
+
+    function myLazyload() {
+        $("#area img.lazy").lazyload({
+            placeholder: "../../assets-wiki/images/default/default.png",
+        });
+    }
+</script>
+<script type="text/javascript" src="../../cordova.js"></script>
+
+</body>
+</html>

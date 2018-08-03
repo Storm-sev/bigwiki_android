@@ -1,0 +1,303 @@
+@charset "utf-8";
+@import "base";
+@import "libs/swiper";
+@import "base/ency-data-list";
+
+// 清空浮动
+@mixin clearfix{
+  zoom: 1;
+  &:after{
+    display: block;
+    clear: both;
+    content: '';
+  }
+}
+
+@mixin perWidth($w) {
+	width: $w;
+}
+
+@mixin perHidth($h) {
+	height: $h;
+}
+
+@mixin b-color($rgb) {
+	background-color: $rgb
+}
+
+@mixin canvas {
+	@include b-color(#ffffff);
+ 	@include width(750rem);
+}
+
+@mixin spilthHidden {
+	// 超出部分变成...
+	text-overflow : ellipsis; 
+	white-space : nowrap; 
+	overflow : hidden; 
+}
+
+@mixin distance {
+	position: fixed;
+	left: 0;
+	top: 160rem/$font-size-base;
+}
+
+html, body {
+    height: 100%;
+    // @include b-color(#ffffff);
+}
+
+// 三角形
+.triangle{
+    display: block;
+    width: 0;
+    height: 0;
+    border-left: 10rem/$font-size-base solid transparent;
+    border-right: 10rem/$font-size-base solid transparent;
+    border-top: 16rem/$font-size-base solid #4183EA;
+}
+
+.no-triangle {
+	display: block;
+    width: 0;
+    height: 0;
+    border-left: 10rem/$font-size-base solid transparent;
+    border-right: 10rem/$font-size-base solid transparent;
+    border-top: 16rem/$font-size-base solid #919191;
+}
+	
+
+// 遮罩层
+.mask {
+	width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.active {
+	color: #4183EA
+}
+
+.router-slid-enter-active, .router-slid-leave-active {
+  transition: all .4s ease;
+}
+.router-slid-enter, .router-slid-leave-active {
+  opacity: 0;
+}
+.ency-list {
+	.content {
+		.menu {
+			position: fixed;
+		    top: 76rem/$font-size-base;
+		    left: 0;
+		    z-index: 2;
+		    @include perWidth(100%);
+		    @include clearfix; 
+		    @include height(84rem);
+		    line-height: 84rem/$font-size-base;
+		    border-bottom: 2px solid #F1F1F2;
+		    @include b-color(#ffffff);
+		    .term {
+		    	float: left;
+    			@include perWidth(25%);
+    			@include height(84rem);
+    			text-align: center;
+    			@include fontSize(26rem);
+    			p {
+    				@include perHidth(100%);
+    				position: relative;
+    				display: inline-block;
+    				margin-left: -18rem/$font-size-base ;
+    				span {
+    					display: block;
+						@include spilthHidden;
+						max-width: 140rem/$font-size-base;
+    				}
+    				i {
+    					@include perHidth(100%);
+    					position: absolute;
+    					top: 50%;
+    					right: -28rem/$font-size-base;
+    					margin-top: -8rem/$font-size-base
+    				}
+    			}
+
+    			.name-list {
+ 					@include canvas;
+ 					@include distance;
+ 					li {
+ 						border-top: 2px solid #F1F1F2;
+ 					}
+    			}
+
+    			.classifyList {
+    				@include canvas;
+    				@include clearfix;
+				   	@include distance;
+				    border-top: 2px solid #F1F1F2;
+				    @include height(410rem);
+				    ul:first-child {
+						@include perWidth(40%);
+						float: left;
+						@include b-color(#F6F6F6);
+						@include perHidth(100%);
+						overflow: auto;
+				    }
+
+				    .ul-list {
+				    	@include perWidth(60%);
+				    	float: left;
+				    	@include perHidth(100%);
+    					overflow: auto;
+				    }
+
+				    li {
+				    	@include perWidth(100%);
+				    	@include height(80rem);
+				    	&:first-child{
+				    		p {
+				    			border: none
+				    		}
+				    	}
+				    	p{
+				    		border-top: 2px solid #F1F1F2;
+				    		@include perWidth(80%);
+				    		text-align: left;
+				    		@include spilthHidden;
+				    	}
+				    }
+    			}
+		    }
+		}
+	}
+	.mescroll{
+    	position: fixed;
+    	top: 152rem/$font-size-base;
+    	left: 0;
+    	bottom: 0;
+    	height: auto;
+    	.upwarp-tip, .downwarp-tip {
+	    	font-size: 24rem/$font-size-base !important;
+	  	}
+	    .mescroll-empty {
+	    	//padding-top: 0;
+			position: absolute;
+			top:50%;
+			left: 0;
+			margin-top: -226rem/$font-size-base;
+	    	.empty-icon {
+	      		width: 155rem/$font-size-base;
+	      		height: 164rem/$font-size-base;
+	      		margin-left: 30rem/$font-size-base;
+	    	}
+	    	.upwarp-nodata {
+	      		p {
+	        		&:nth-child(1) {
+	          			font-size: 32rem/$font-size-base !important;
+	          			color: #1b1b1b;
+	          			line-height: 45rem/$font-size-base;
+	          			margin-top: 51rem/$font-size-base;
+	        		}
+	        		&:nth-child(2) {
+	          			font-size: 28rem/$font-size-base !important;
+	          			color: #aaa;
+	          			line-height: 40rem/$font-size-base;
+	          			margin-top: 5rem/$font-size-base;
+	        		}
+	      		}
+	  	  	}
+	  	}
+	}
+
+	.no-y {
+		overflow-y: hidden
+	}
+
+	.not-data-back{
+		background-color: #FFFFFF !important;
+	}
+
+	//没有数据
+	.no-data {
+		width: 100%;
+		height: 311rem/$font-size-base;
+		position: absolute;
+		top: 25%;
+		left: 0;
+		background-color: #FFFFFF
+	}
+
+	/** 百科列表改版 **/
+	.one {
+		width: 694rem/$font-size-base;
+		height: 240rem/$font-size-base;
+
+		background-color: #FFFFFF;
+		margin: 32rem/$font-size-base auto;
+		box-shadow: 1px 6px 31px #E7E8E9;
+		.describe {
+			// padding-left: 32rem/$font-size-base;
+			// padding-top: 32rem/$font-size-base;
+			width: 374rem/$font-size-base;
+			// display: inline-block;
+			float: left;
+			margin-left: 32rem/$font-size-base;
+			margin-top: 32rem/$font-size-base;
+			h1 {
+				font-size: 32rem/$font-size-base;
+				display: -webkit-box;
+			    -webkit-box-orient: vertical;
+			    -webkit-line-clamp: 1;
+			    overflow: hidden;
+			}
+
+			p {
+				font-size: 20rem/$font-size-base;
+				color: #949494
+			}
+			.type {
+				padding-top: 12rem/$font-size-base;
+				display: -webkit-box;
+			    -webkit-box-orient: vertical;
+			    -webkit-line-clamp: 1;
+			    overflow: hidden;
+			}
+			.brief {
+				padding-top: 24rem/$font-size-base;
+				line-height: 36rem/$font-size-base;
+				display: -webkit-box;
+			    -webkit-box-orient: vertical;
+			    -webkit-line-clamp: 2;
+			    overflow: hidden;
+			}
+		}
+		.cover {
+			width: 224rem/$font-size-base;
+			height: 178rem/$font-size-base;
+			// display: inline-block;
+			// padding-left: 32rem/$font-size-base;
+			float: right;	
+			margin-top: 32rem/$font-size-base;
+			margin-right: 32rem/$font-size-base;
+			// padding-top: 64rem/$font-size-base;
+			img {
+				width: 100%;
+				height: 100%
+			}
+		}
+
+		.widthAuto {
+			width: auto;
+			padding-right: 32rem/$font-size-base;
+		}
+
+		.hide {
+			display: none;
+		}
+	}
+}

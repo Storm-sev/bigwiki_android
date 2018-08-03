@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<manifest android:hardwareAccelerated="true" android:versionCode="3" android:versionName="1.0.2" package="com.efeiyi.bigwiki" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="27" />
+    <meta-data android:name="UMENG_APPKEY" android:value="5afd4b20f43e4807a9000197" />
+    <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:resizeable="true" android:smallScreens="true" android:xlargeScreens="true" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <application android:hardwareAccelerated="true" android:icon="@mipmap/app_icon" android:label="@string/app_name" android:name=".app.MApplication" android:supportsRtl="true">
+        <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:name=".activity.SplashActivity" android:theme="@style/SplashTheme" android:windowSoftInputMode="adjustResize">
+            <intent-filter android:label="@string/launcher_name">
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity" />
+        <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:launchMode="singleTask" android:name=".activity.MainHtmlActivity" android:theme="@style/AppTheme" android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="bigwiki.com" android:scheme="efeiyi" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true" tools:targetApi="m">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="bigwiki.com" android:scheme="efeiyiwiki" />
+            </intent-filter>
+        </activity>
+        <activity android:launchMode="singleTop" android:name=".activity.GuideActivity" android:theme="@style/SplashTheme" />
+        <activity android:name=".activity.CustomActivity" android:theme="@style/AppTheme" />
+        <activity android:launchMode="singleTop" android:name=".activity.SharedDetailActivity" android:theme="@style/AppTheme" />
+        <service android:name=".service.UpdateService" />
+        <provider android:authorities="com.efeiyi.bigiWiki.fileProvide" android:exported="false" android:grantUriPermissions="true" android:name="android.support.v4.content.FileProvider">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
+        </provider>
+        <activity android:name="com.tencent.tauth.AuthActivity" android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tencent1106987534" />
+            </intent-filter>
+        </activity>
+        <activity android:configChanges="orientation|keyboardHidden|screenSize" android:name="com.tencent.connect.common.AssistActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity android:configChanges="keyboardHidden|orientation|screenSize" android:exported="true" android:name=".wxapi.WXEntryActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+    </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+</manifest>

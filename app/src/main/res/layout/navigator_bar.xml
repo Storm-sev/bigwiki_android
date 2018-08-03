@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottom_navigator"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true">
+
+    <!--<RadioGroup-->
+        <!--android:id="@+id/rg_navigator"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@drawable/bg_navigator_all"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:paddingBottom="3dp">-->
+
+        <!--<RadioButton-->
+            <!--android:id="@+id/rb_home"-->
+            <!--style="@style/navigatorBarStyle"-->
+            <!--android:drawableBottom="@drawable/bg_home_selector" />-->
+
+
+        <!--<RadioButton-->
+            <!--android:id="@+id/rb_news"-->
+            <!--style="@style/navigatorBarStyle"-->
+            <!--android:drawableBottom="@drawable/bg_news_selector" />-->
+
+
+        <!--<RadioButton-->
+            <!--android:id="@+id/rb_wiki"-->
+            <!--style="@style/navigatorBarStyle"-->
+            <!--android:drawableBottom="@drawable/bg_wiki_selector" />-->
+
+        <!--<RadioButton-->
+            <!--android:id="@+id/rb_active"-->
+            <!--style="@style/navigatorBarStyle"-->
+            <!--android:drawableBottom="@drawable/bg_active_selector" />-->
+
+        <!--<RadioButton-->
+            <!--android:id="@+id/rb_actihall"-->
+            <!--style="@style/navigatorBarStyle"-->
+            <!--android:drawableBottom="@drawable/bg_actihall_selector" />-->
+
+
+    <!--</RadioGroup>-->
+
+
+</RelativeLayout>

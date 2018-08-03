@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D馆</title>
+    <!--<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>-->
+    <meta http-equiv="Content-Type" content="text/html; charset=GBK">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Pragma" content="no-cache">
+    <!--兼容iphone-->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/3d.css?t=201807311146">
+    <script src="../../assets-wiki/js/vue.min.js?t=201807311146"></script>
+    <script src="../../assets-wiki/js/jquery.min.js?t=201807311146"></script>
+
+    <!-- 轮播图 -->
+    <script src="../../assets-wiki/js/swiper.min.js?t=201807311146"></script>
+
+
+    <!--百科数据交互-->
+    <script src="model.js?t=201807311146"></script>
+
+
+
+</head>
+<body>
+<div class="box" id="app">
+
+        <div>
+            <!-- 返回上一级 -->
+            <Re-Datails></Re-Datails>
+            <!--左右按钮  -->
+            <Btn-Datails :leri="leri"></Btn-Datails>
+
+
+
+            <!--交互-->
+            <div class="content">
+                <!--banner-->
+                <Ban-Datails :dowm="dowm" :datas="bannerData"></Ban-Datails>
+
+                <!--全景按钮  -->
+                <div class="pan_btn">
+                  <a href="javascript:;" @click="panBtn()">全景</a>
+                </div>
+
+                <!-- 3D全景展示 -->
+                <div class="pan_tion" id="pan_tion" v-show="pan"></div>
+
+                <!-- 百科按钮 -->
+                <div class="clop_btn" v-if="clop">
+                  <a href="javascript:;" @click="panClop()">百科</a>
+                </div>
+
+
+                <!-- 详情 -->
+                <div class="master_detail" v-if="detail">
+
+                    <!--详情内容  -->
+                    <div class="detail_content">
+                        <!-- 标题人物 -->
+                        <mu-title :musetitle="musetitle"></mu-title>
+
+                        <!-- 代表性传承人 -->
+                        <in-herit :inherit="init"></in-herit>
+
+                        <!-- 非遗在中国 -->
+                        <efei-china :China="China"></efei-china>
+
+                        <!--基本信息-->
+                        <Info-Datails></Info-Datails>
+
+                        <!--图片 视频 文本内容-->
+                        <Bas-Datails :datas="basData" @show-area="therSet"></Bas-Datails>
+
+                        <!--菜单按钮-->
+                        <bt-nmenu :datas="listmenu"></bt-nmenu>
+
+                    </div>
+                </div>
+
+                <!-- 图集展示区域 -->
+                <atl-area :area="area" :urlset="urlset" @child-say="therSet"></atl-area>
+
+
+
+
+
+
+            </div>
+
+        </div>
+      </div>
+
+<script src="../../assets-wiki/js/shop-details.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<!--全景展示-->
+<script src="../../assets-wiki/js/three.min.js?t=201807311146" type="text/javascript" charset="utf-8"></script>
+<script src="../../assets-wiki/js/panorama-ndyname-viewer.js?t=201807311146" type="text/javascript" charset="utf-8"></script>
+<script>
+  var app = new Vue({
+      el: "#app",
+      data: {
+          num: 1,          //默认第一页数据
+          bannerData: "",  //banner数据
+          //全景图片
+          pan_img: "../../assets-wiki/pics/1.jpg",
+          //全景图展示状态
+          pan: false,
+          //内容显示状态
+          detail: false,
+          //下拉按钮状态
+          dowm: false,
+          //左右按钮状态
+          leri: true,
+          //百科显示状态
+          clop: false,
+          //标题
+          musetitle:"",
+          //代表性传承人
+          init:{
+              "title":"代表性传承人",
+              "inher":[
+                  {"imgUrl":"../../assets-wiki/pics/timg-44.png","name":"于魁智","type":"国家级非遗传承人／国家一级演员"},
+                  {"imgUrl":"../../assets-wiki/pics/timg-44.png","name":"于魁智","type":"国家级非遗传承人／国家一级演员"},
+                  {"imgUrl":"../../assets-wiki/pics/timg-44.png","name":"于魁智","type":"国家级非遗传承人／国家一级演员"},
+                  {"imgUrl":"../../assets-wiki/pics/timg-44.png","name":"于魁智","type":"国家级非遗传承人／国家一级演员"},
+                  {"imgUrl":"../../assets-wiki/pics/timg-44.png","name":"于魁智","type":"国家级非遗传承人／国家一级演员"},
+                  {"imgUrl":"../../assets-wiki/pics/timg-44.png","name":"于魁智","type":"国家级非遗传承人／国家一级演员"},
+                  {"imgUrl":"../../assets-wiki/pics/timg-44.png","name":"于魁智","type":"国家级非遗传承人／国家一级演员"},
+                  {"imgUrl":"../../assets-wiki/pics/timg-44.png","name":"于魁智","type":"国家级非遗传承人／国家一级演员"},
+                  {"imgUrl":"../../assets-wiki/pics/timg-44.png","name":"于魁智","type":"国家级非遗传承人／国家一级演员"},
+                  {"imgUrl":"../../assets-wiki/pics/timg-44.png","name":"于魁智","type":"国家级非遗传承人／国家一级演员"}
+              ]
+          },
+          //非遗在中国
+          China:"",
+          //视频 图片 内容
+          basData:"",
+          //图集展示状态
+          area: false,
+          //图集数据
+          urlset: "",
+          //菜单列表数据
+          listmenu:"",
+      },
+      components:{
+          btNmenu: btNmenu,             //菜单按钮
+        ReDatails: ReDatails,         //返回上一级 按钮
+        BtnDatails: BtnDatails,       //左右按钮
+        BanDatails: BanDatails,       //banner题图
+        muTitle:muTitle,              //标题人物
+        inHerit:inHerit,              //代表性传承人
+        efeiChina:efeiChina,          //非遗在中国
+        InfoDatails: InfoDatails,     //基本模板
+        BasDatails: BasDatails,        //图片、视频、文本内容
+        atlArea:atlArea
+      },
+      methods: {
+        //全景展示
+        panBtn: function(){
+          var _this = this;
+          //隐藏内容
+          this.detail = false;
+          //显示全景图
+          this.pan = true;
+          //显示百科按钮
+          this.clop = true;
+          var NDY = new PanoramaNdynameViewer({
+              panorama: _this.pan_img,
+              container: pan_tion
+          });
+        },
+
+        // 点击百科显示内容
+        panClop: function(){
+            //显示内容
+            this.detail = true;
+            //隐藏全景图
+            this.pan = false;
+            //显示下拉列表
+            this.dowm = true;
+            //隐藏左右按钮
+            this.leri = false;
+
+            var clientHeight = document.documentElement.clientHeight + "px";
+            $('html,body').animate({scrollTop:clientHeight},500);
+            $(".banner h3").css?t=201807311146("margin-top","0");
+        },
+       //图集展示
+       therSet(res){
+         this.area = res;
+       },
+
+
+
+          //百科交互数据
+          _getDias: function (page, atlasId, callback ) {
+              var _this = this;
+              _this.msg = true;       //加载前显示
+              var _url = "http://123.57.173.1:8080/items/getListByObjectId";
+              var data = {
+                  objectId: 11,   //传承人馆ID
+                  currPage: page,   //页数
+                  pageSize: 1    //数量/页
+              };
+
+
+              get3dData(_url, data, function (obj) {
+                  //是否有数据total 1有  0无
+//                  _this.total = obj.total;
+                  //题图数据导入
+                  _this.bannerData = obj.banner;
+                  //推荐传承人数据导入
+                  _this.mmend = obj.area;
+                  //标题
+                  _this.musetitle = obj.muse;
+
+                  //非遗在中国
+                  _this.China = obj.china;
+                  //基本信息数据导入
+                  _this.info = obj.info;
+
+
+                  //图文 显示数据导入
+//                  _this.basData = obj.basData;
+                  //右侧菜单
+//                  _this.listmenu = obj.listmenu;
+                  //图集展示
+//                  _this.urlset = obj.urlset;
+
+                  callback && callback(obj)            //swiper回调  post请求之后执行
+
+                  _this.msg = false;                   //正在加载状态
+
+                  console.log('==========',obj.area);
+              }, atlasId);
+
+          }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      },
+      mounted: function(){
+
+
+          //刷新页面加载数据
+          this._getDias(this.num);
+
+
+
+
+
+
+
+
+
+
+
+
+          //展示图集
+          var _this = this;
+          _this.$watch('area', function (newValue, oldValue) {
+              var mySwiper = new Swiper('.swiper-container', {
+                  prevButton:'.swiper-button-prev',
+                  nextButton:'.swiper-button-next',
+                  pagination: '.swiper-pagination',
+                  paginationType : 'fraction',
+                  //循环轮播
+                  // loop: true,
+                  // //持续时间
+                  // speed: 1000,
+                  // //循环播放
+                  // autoplay: 4000,
+                  // //触摸后轮播不停止(为false时,默认停止位true)
+                  // autoplayDisableOnInteraction: false
+                  onSlideChangeEnd: function(swiper){
+//                alert(swiper.activeIndex);        //切换结束时，告诉我现在是第几个slide
+                      var domVideo = $(".area .swiper-slide")[swiper.activeIndex];
+                      var type = $(domVideo).attr("type");
+                      if(type == 2){
+                          $(domVideo).find("video").trigger("play").parent().parent().siblings().find("video").trigger("pause");
+                      }else{
+                          $(domVideo).siblings().find("video").trigger("pause");
+                      }
+                  }
+
+              })
+
+          })
+
+
+
+
+      }
+  })
+
+
+
+
+</script>
+
+
+<script type="text/javascript" src="../../cordova.js"></script>
+
+</body>
+</html>

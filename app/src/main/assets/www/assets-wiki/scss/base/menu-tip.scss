@@ -1,0 +1,49 @@
+@charset "utf-8";
+//子导航
+.menu-bar {
+  background: #fff;
+  position: fixed;
+  top: 76rem/$font-size-base;
+  left: 0;
+  right: 0;
+  z-index: 2;
+
+  .swiper-slide {
+    line-height: 84rem/$font-size-base;
+    padding: 0 26rem/$font-size-base;
+    width: auto;
+    position: relative;
+    text-align: center;
+    a {
+      @include fontSize(26rem);
+      color: #1B1B1B;
+      &.active {
+        color: #4183EA;
+      }
+    }
+  }
+  border-bottom: 1rem/$font-size-base solid #f1f1f2;
+}
+//登录提示信息
+.tool-tip {
+  background: #f6f6f6;
+  line-height: 60rem/$font-size-base;
+  text-align: center;
+  color: #aaa;
+  font-size: 26rem/$font-size-base;
+  position: fixed;
+  top: 162rem/$font-size-base;
+  right: 0;
+  left: 0;
+  z-index: 2;
+  .link {
+    color: #4183EA;
+  }
+  .close {
+    @include icon(url(../images/news/news-icon-close@2x.png), 33rem, 33rem);
+    position: absolute;
+    top: 50%;
+    right: 28rem/$font-size-base;
+    @include marginTopMid(33rem);
+  }
+}

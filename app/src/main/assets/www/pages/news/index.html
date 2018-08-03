@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <title>活动首页</title>
+    <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" href="../../assets-wiki/css/information.css?t=201807311146">
+</head>
+<body>
+<div id="information" class="information news">
+    <wk-header :data="self.head"></wk-header>
+
+    <template v-show="!self.is.loading">
+        <article class="container">
+            <menu-bar :data="self.menu" @send="receiveChannelId" id="nav"></menu-bar>
+            <!--//End-->
+            <tool-tip @send="receiveTip" :data="self.is.toolTip" ref="tip"></tool-tip>
+            <!--//End-->
+
+            <div class="list mescroll" :class="{style1: hasNoToolTip, style2:hasNoSlider}" id="mescroll">
+                <div class="slider" v-show="isSlider">
+                    <wk-swiper :swiper="self.slider" id="swiper1"></wk-swiper>
+                </div>
+                <news-item :data="self.list"></news-item>
+                <div id="dataList" class="no-data" v-show="!self.list.length"></div>
+            </div>
+            <!--//End-->
+        </article>
+
+        <wk-footer :selected="self.selectedIndex"></wk-footer>
+        <!--//End 底部-->
+    </template>
+
+    <Loading :msg="self.is.loading"></Loading>
+
+    <no-network v-show="self.timeout"></no-network>
+</div>
+
+
+<script src="../../assets-wiki/js/system.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/swiper.min.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/mescroll.min.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/jquery.lazyload.min.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/jx-tpls.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/information.js?t=201807311146"></script>
+<script>
+    var app = new Vue({
+        el: '#information',
+        data: {
+            self: {
+                head: {
+                    title: '资讯'
+                },
+                menu: [
+                    {id: 0, name: '推荐', href: rootName + '/pages/news/index.html?channelId=0'},
+                    {id: 1, name: '权威发布', href: rootName + '/pages/news/index.html?channelId=1'},
+                    {id: 2, name: '资讯', href: rootName + '/pages/news/index.html?channelId=2'},
+                    {id: 3, name: '观察', href: rootName + '/pages/news/index.html?channelId=3'},
+                    {id: 4, name: '人物', href: rootName + '/pages/news/index.html?channelId=4'},
+                    {id: 5, name: '视觉', href: rootName + '/pages/news/index.html?channelId=5'},
+                    // {id: 6, name: '专题', href: rootName + '/pages/news/index.html?channelId=6'},
+                    {id: 7, name: '我说', href: rootName + '/pages/news/index.html?channelId=7'}
+                ],
+                slider: [],
+                list: [],
+                is: {
+                    toolTip: Boolean,  //登录提示条
+                    slider: true,
+                    loading: true,
+                    timeout: false
+                },
+                receive: {
+                    channelId: 0,  //频道id
+                    page: {
+                        num:1
+                    }
+                },
+                add: {
+                    noData: false,
+                    noToolTip: false
+                },
+                selectedIndex: 1,
+                total:10
+            },
+            mescroll: null
+        },
+        components: {
+            wkHeader, //导航
+            menuBar, //导航
+            wkFooter, //底部
+            toolTip, //底部
+            newsItem, //活动列表
+            wkSwiper, //轮播图
+            Loading: shopLoad,
+            noNetwork,
+        },
+        computed: {
+            hasNoToolTip() {
+                return !this.self.is.toolTip
+            },
+            hasNoSlider() {
+
+            },
+            isSlider() {
+                return getHttpParam('channelId') == 0 ? true : false
+            }
+        },
+        mounted: function () {
+            var _this = this
+            document.title = '资讯' + '_非遗大百科'
+            // this.initMescroll()
+
+            //子频道
+            var nevSwiper = new Swiper('#nav', {
+                freeMode: true,
+                slidesPerView: 'auto',
+                freeModeSticky: true
+            })
+            this._getSlider()
+            this._initPage()
+
+            //超时显示无网络图标
+            setTimeout(function () {
+                if (_this.self.is.loading) {
+                    _this.self.is.timeout = true
+                    _this.self.is.loading = false
+                }
+            }, overTime)
+
+            if (getHttpParam('channelId') > 0 || myLocalStorage.getter('__closeTip__')) {
+                this.self.is.toolTip = false
+            }
+            this.mescroll = new MeScroll('mescroll', {
+                up: {
+                    callback: _this.upCallback,
+                    isBounce: false, //此处禁止ios回弹,解析(务必认真阅读,特别是最后一点)
+                    page: {
+                        size: 10
+                    },
+                    empty: { //配置列表无任何数据的提示
+                        warpId: "dataList",
+                        icon: "../../assets-wiki/images/icon-no-data@2x.png",
+                        tip: "<div class='upwarp-nodata'><p>暂无信息</p><p>当前没有更多信息，请稍后查询…</p></div>",
+                    },
+                    onScroll: function (mescroll, y, isUp) {
+                        _this.self.scroll = y
+                        mySessionStorage.setter('newsData', _this.self)
+                        _this.$nextTick(() => {
+                            $("#mescroll").trigger('scroll');
+                            $("img.lazy").lazyload({
+                                placeholder: "../../assets-wiki/images/default/default.png",
+                                threshold: 30
+                            });
+                        })
+                    }
+                },
+                down: {
+                    auto: false
+                }
+            })
+        },
+        updated() {
+            this.$nextTick(() => {
+                $("#mescroll").trigger('scroll');
+                $("img.lazy").lazyload({
+                    placeholder: "../../assets-wiki/images/default/default.png",
+                    threshold: 30
+                });
+            })
+        },
+        methods: {
+            upCallback: function (page) {
+                if(this.self.receive.page.num > page.num) {
+                    page.num = (this.self.receive.page.num + 1)
+                }
+                if(page.num > this.self.total){
+                    page.num = this.self.total
+                }
+                var params = {
+                    type: 0, //资讯
+                    current: parseInt(page.num),//条数/页
+                    pageSize: page.size, //页数
+                    channelId: getHttpParam('channelId'),
+                }
+                getNewsIndex(params, (res, total) => {
+                    var data = []
+                    this.self.total = total/page.size
+                    for (var i = 0; i < res.length; i++) {
+                        if (res[i].source && res[i].source.length > 10) {
+                            res[i].source = res[i].source.slice(0, 10) + '...'
+                        }
+                        if (res[i].imgUrls.length) {
+                            for (var j = 0; j < res[i].imgUrls.length; j++) {
+                                res[i].imgUrls[j] = res[i].imgUrls[j] + '?x-oss-process=style/information-list'
+                            }
+                        }
+
+                    }
+                    data.push(res)
+                    //如果是第一页需手动制空列表
+                    if (page.num == 1) this.self.list = []
+                    this.self.receive.page = page
+                    // this.self.total = total/page.size
+                    //更新列表数据
+                    this.self.list = this.self.list.concat(data[0])
+                    this.self.list = this.self.list.slice(0,total)
+                    this.mescroll.endBySize(data[0].length, total)
+                    //没有数据添加class
+                    this.self.add.noData = !data[0].length ? true : false
+                    this.self.is.loading = false
+                })
+            },
+            //获取轮播图
+            _getSlider: function () {
+                var params = {
+                    objectId: 3,
+                    currPage: 1,
+                    pageSize: 5
+                }
+                getSlider(params, (res) => {
+                    this.self.slider = res
+                    this.$nextTick(function () {
+                        let mySwiper = new Swiper('#swiper1', {
+                            autoplay: 5000,
+                            pagination: '.swiper-pagination',
+                            loop: true,
+                            autoplayDisableOnInteraction: false
+                        })
+                    })
+                })
+            },
+            //频道传递过来的数据
+            receiveChannelId: function (id) {
+                this.self.is.loading = true
+                this.self.receive.channelId = getHttpParam('channelId')
+                this.self.receive.page.num = 1
+                this.self.list = []
+
+                this.upCallback(this.self.receive.page, (res) => {
+                    this.self.is.loading = false
+                })
+            },
+            //登录提示条传递过来的数据
+            receiveTip: function (res) {
+                this.self.is.toolTip = false
+            },
+            //初始化页面
+            _initPage: function () {
+                var data = mySessionStorage.getter('newsData')
+                if (data) {
+                    this.self = data
+                    this.scroll = data.scroll
+                    this.$nextTick(() => {
+                        this.mescroll.scrollTo(this.scroll, 0);
+                    })
+                }
+            }
+        }
+    })
+</script>
+<script type="text/javascript" src="../../cordova.js"></script>
+
+</body>
+</html>

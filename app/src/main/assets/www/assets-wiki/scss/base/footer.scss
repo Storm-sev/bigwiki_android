@@ -1,0 +1,102 @@
+@charset "utf-8";
+
+$base:75;
+@mixin footIcon($name,$w,$h) {
+  @include icon(url(../images/footer/#{$name}@2x.png), $w, $h);
+}
+
+@mixin iconFoot($name) {
+  background:url(../images/footer/#{$name}@2x.png) no-repeat;
+  -webkit-background-size: 48rem/$base auto;
+  background-size: 48rem/$base auto;
+  width: 48rem/$base;
+  height: 48rem/$base;
+}
+
+
+footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  @include height(107rem);
+  padding-top: 19rem/$base;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  .content {
+    flex: 1;
+    display: flex;
+    background: #fff;
+    border-top: 1rem/$base solid #f3f3f3;
+  }
+
+  .link {
+    background: #fff;
+    flex: 1;
+    text-align: center;
+    @include fontSize(20rem);
+    color: #1b1b1b;
+    align-items: center;
+    justify-content: center;
+    padding-top: 4rem/$base;
+    height: 80rem/$base;
+    position: relative;
+    i {
+      display: inline-block;
+      z-index: 2;
+      position: relative;
+      &.icon-home {
+        @include iconFoot(icon-home);
+      }
+      &.icon-news {
+        @include iconFoot(icon-news);
+      }
+      &.icon-cyclopedia {
+        @include iconFoot(icon-cyclopedia);
+      }
+      &.icon-midbg {
+        @include footIcon(icon-midbg, 150rem, 112rem);
+        position: absolute;
+        top: -25rem/$base;
+        left: 50%;
+        margin-left: -150rem/(2*$base);
+        z-index: 1;
+      }
+      &.icon-activity {
+        @include iconFoot(icon-activity);
+      }
+      &.icon-activate {
+        @include iconFoot(icon-activate);
+      }
+    }
+    .txt {
+      position: relative;
+      margin-top: -4rem/$base;
+      z-index: 2;
+    }
+    &.active {
+      color: #4183ea;
+      .icon-home {
+        @include iconFoot(icon-home-active);
+      }
+      .icon-news {
+        @include iconFoot(icon-news-active);
+      }
+      .icon-cyclopedia {
+        @include iconFoot(icon-cyclopedia-active);
+      }
+      .icon-activity {
+        @include iconFoot(icon-activity-active);
+      }
+      .icon-activate {
+        @include iconFoot(icon-activate-active);
+      }
+    }
+  }
+}
+
+
+
+

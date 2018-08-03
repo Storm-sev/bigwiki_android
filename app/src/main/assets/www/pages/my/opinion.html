@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="wap-font-scale" content="no">
+    <title>意见反馈</title>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" href="../../assets-wiki/css/my.css?t=201807311146">
+</head>
+<body>
+
+<div id="my" class="my">
+    <wk-Header :data="headData"></wk-Header>
+    <!--//End 导航-->
+
+    <article class="container">
+        <div class="opinion">
+            <ul>
+                <li><textarea cols="30" rows="10" placeholder="请输入您的意见或建议" v-model="content"></textarea></li>
+                <li><textarea cols="30" rows="10" placeholder="请留下您的联系方式（手机或邮箱）" v-model="phoneEmail"></textarea></li>
+                <li>您的联系方式有助于我们沟通和解决问题</li>
+                <li>
+                    <button class="btn" :class="{disable:!isClick}" @click="onSubmit">提交</button>
+                </li>
+            </ul>
+
+        </div>
+    </article>
+
+    <div class="modal-error" v-show="modal.show">
+        <div class="title">{{modal.text}}</div>
+    </div>
+
+    <confirm-msg v-show="receive.show" :data="receive"></confirm-msg>
+</div>
+
+
+<!--//End 底部-->
+<script src="../../assets-wiki/js/system.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/jx-tpls.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script>
+    var app = new Vue({
+        el: '#my',
+        data: {
+            headData: {
+                title: '意见反馈',
+                isBack: true
+            },
+            content: "",
+            phoneEmail: "",
+            modal: {
+                show: false,
+                text: ''
+            },
+            receive: {
+                show: false,
+                name: '',
+                content: '',
+                type: 1
+            },
+        },
+        components: {
+            wkHeader,
+            confirmMsg
+        },
+        computed: {
+            isClick: function () {
+                //必须包含中文
+                var reg = new RegExp("[\\u4E00-\\u9FFF]+", "g")
+                if (!reg.test(this.content)) {//不包含中文
+                    return false
+                }
+                return true
+            },
+        },
+        mounted: function () {
+
+        },
+        methods: {
+            //显示成功失败提示框  0是成功  1是失败  2是提交数据不能为空
+            showConfirmMsg: function (flag) {
+                var result = {}
+                switch (flag) {
+                    case 0:
+                        result = {
+                            name: '提交成功',
+                            content: '感谢您的反馈，我们会尽快处理',
+                            type: 0
+                        }
+                        break;
+                    case 1:
+                        result = {
+                            name: '提交失败',
+                            content: '当前网络不稳定，请稍后再试',
+                            type: 1
+                        }
+                        break;
+                }
+                this.receive.show = true
+                this.receive.name = result.name
+                this.receive.content = result.content
+                this.receive.type = result.type
+                this.modal = false
+                setTimeout(() => {
+                    this.receive.show = false
+                    this.$emit('status', false)
+                    this.modal = true
+                }, 1000)
+            },
+            showModalError: function () {
+                this.modal.show = true
+                setTimeout(() => {
+                    this.modal.show = false
+                }, 2000)
+            },
+            onSubmit: function () {
+                var _this = this
+
+                //1.未填写任何信息
+                if (!this.isClick) {
+                    return
+                }
+
+                //2.联系方式不为空的情况下在验证
+                if (this.phoneEmail.length) {
+                    //填写信息
+                    var _phone = ""
+                    var _email = ""
+
+                    //判断手机号邮箱
+                    //1)如果包含@ 和 .com 就是邮箱
+                    // if (this.phoneEmail.indexOf("@") > -1 || this.phoneEmail.indexOf(".com") > -1) {//包含@和.com才通过
+                    //     if (this.phoneEmail.indexOf("@") > -1 && this.phoneEmail.indexOf(".com") > -1) {
+                    //         _email = this.phoneEmail
+                    //     } else {
+                    //         this.modal.text = '您输入的邮箱地址不正确'
+                    //         this.showModalError()
+                    //         return
+                    //     }
+                    // } else {//手机号
+                    //     let reg = /^((13[0-9])|(15[^4])|(166)|(17[0-8])|(18[0-9])|(19[8-9])|(147,145))\d{8}$/
+                    //     if (reg.test(this.phoneEmail)) {//输入的不是手机号
+                    //         _phone = this.phoneEmail
+                    //     } else {
+                    //         this.modal.text = '您输入的手机号不正确'
+                    //         this.showModalError()
+                    //         return
+                    //     }
+                    // }
+                }
+
+                var result = {
+                    "phoneModel": "",//手机型号
+                    "phone": _phone,//手机号
+                    "mail": _email,//邮箱
+                    "content": this.content,
+                    "feedbackType": 1,  // 1 反馈 2 报错
+                    "dataStatus": "a", //插入标记 必传 a添加 d 删除 其他修改
+                }
+                var params = {
+                    url: domain + '/feedback/save',
+                    data: {
+                        params: JSON.stringify(result)
+                    },
+                    sCallback: function (res) {
+                        if (res.code == 0) {
+                            _this.receive.show = true
+                            _this.showConfirmMsg(0)
+                            _this.content = ''
+                            _this.phoneEmail = ''
+                        } else {
+                            _this.receive.show = true
+                            _this.showConfirmMsg(1)
+                        }
+                    }
+                }
+                httpRequest(params)
+            }
+        }
+    });
+</script>
+<script type="text/javascript" src="../../cordova.js"></script>
+
+</body>
+</html>

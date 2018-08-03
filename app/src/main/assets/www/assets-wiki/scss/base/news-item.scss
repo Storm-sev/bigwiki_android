@@ -1,0 +1,91 @@
+@charset "utf-8";
+
+@mixin Icon($name,$width,$height) {
+  @include icon(url(../images/news/#{$name}@2x.png), $width, $height);
+}
+
+//资讯列表
+.news-item {
+  position: relative;
+  -webkit-transition: all 1s ease-in-out;
+  margin: 0 28rem/$font-size-base;
+  .link {
+    border-bottom: 1px solid rgba(221, 221, 221, 0.6);
+    padding: 24rem/$font-size-base 0 20rem/$font-size-base 0;
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    color: #1b1b1b;
+    .desc {
+      flex: 1;
+      position: relative;
+      padding-right: 22rem/$font-size-base;
+      h3 {
+        @include fontSize(32rem);
+        height: 84rem/$font-size-base;
+        line-height: 42rem/$font-size-base;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        font-weight: normal;
+      }
+      .info {
+        color: #a6a6a6;
+        @include fontSize(20rem);
+        margin-top: 20rem/$font-size-base;
+        height: 28rem/$font-size-base;
+        overflow: hidden;
+        display: flex;
+        .source {
+          //flex: 1;
+        }
+        .time {
+          //flex-basis: 160rem/$font-size-base;
+          margin-left: 20rem/$font-size-base;
+        }
+      }
+      .icon-hot {
+        @include Icon(news-icon-hot2, 58rem, 37rem);
+        position: absolute;
+        right: 20rem/$font-size-base;
+        bottom: 0;
+      }
+    }
+    .img {
+      font-size: 0;
+      img {
+        @include width(224rem);
+        -webkit-border-radius: 2rem/$font-size-base;
+        border-radius: 2rem/$font-size-base;
+      }
+      &.len1 {
+        @include width(224rem);
+        @include height(138rem);
+        float: left;
+      }
+    }
+    &:last-child {
+      border: 0;
+    }
+    &.active {
+      flex-direction: column;
+      .desc {
+        padding-right: 0;
+        .icon-hot {
+          bottom: 18rem/$font-size-base;
+        }
+        .info {
+          margin-bottom: 26rem/$font-size-base;
+        }
+      }
+      .img {
+        //flex: 1;
+        display: inline-block;
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+  }
+}
+

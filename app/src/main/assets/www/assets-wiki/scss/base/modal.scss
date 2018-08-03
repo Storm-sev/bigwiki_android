@@ -1,0 +1,167 @@
+@mixin fixed($zIndex) {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: $zIndex;
+}
+
+@mixin borderRadius($num){
+  -webkit-border-radius: $num/$font-size-base;
+  border-radius: $num/$font-size-base;
+}
+
+textarea::-webkit-input-placeholder{
+  color:#aaa;
+}
+
+.modal {
+  position: relative;
+  z-index: 9;
+  .box {
+    @include fixed(3);
+    .content {
+      background: #fff;
+      @include borderRadius(20rem);
+      display: inline-block;
+      position: relative;
+      z-index: 3;
+    }
+  }
+  .mask {
+    background: rgba(36, 36, 36, .32);
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+  }
+  .login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .content {
+      width: 694rem/$font-size-base;
+      height: 320rem/$font-size-base;
+      .main {
+        padding: 44rem/$font-size-base;
+      }
+      .title {
+        @include fontSize(28rem);
+        text-align: center;
+        line-height: 40rem/$font-size-base;
+        color: #aaa;
+      }
+      .items {
+        padding-top: 50rem/$font-size-base;
+        display: flex;
+        justify-content: space-between;
+        .item {
+          flex-basis: 128rem/$font-size-base;
+          @include fontSize(28rem);
+          line-height: 40rem/$font-size-base;
+          color: #333;
+          text-align: center;
+          .icon {
+            @include icon(url(/assets/images/login/login-icon@2x.png), 72rem, 72rem);
+            display: inline-block;
+            &.wechat {
+              background-position: 0 -72rem/$font-size-base;
+            }
+            &.qq {
+              background-position: 0 -144rem/$font-size-base;
+            }
+          }
+        }
+      }
+    }
+  }
+  .report-error {
+    .content {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      @include borderRadius(0);
+      .title {
+        padding: 38rem/$font-size-base 0;
+        text-align: center;
+        font-size: 32rem/$font-size-base;
+        font-weight: 700;
+        color: #1b1b1b;
+        line-height: 45rem/$font-size-base;
+        position: relative;
+        .post {
+          line-height: 56rem/$font-size-base;
+          padding: 0 48rem/$font-size-base;
+          background: #4183EA;
+          border-radius: 24rem/$font-size-base;
+          font-size: 26rem/$font-size-base;
+          color: #fff;
+          position: absolute;
+          top:50%;
+          right: 28rem/$font-size-base;
+          margin-top: -28rem/$font-size-base;
+          &.disable {
+            background: #c8c8c8;
+          }
+        }
+      }
+      .main {
+        margin-top:6rem/$font-size-base;
+        padding: 0 28rem/$font-size-base;
+        .checkbox {
+          li {
+            width: 50%;
+            padding-left: 64rem/$font-size-base;
+            font-size: 28rem/$font-size-base;
+            line-height: 80rem/$font-size-base;
+            border-bottom: 1rem/$font-size-base solid #f1f1f2;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            position: relative;
+            float: left;
+            .icon-radio {
+              @include icon(url(../images/modal/icon-radio@2x.png), 38rem, 38rem);
+              position: absolute;
+              top: 50%;
+              left: 0;
+              @include marginTopMid(38rem);
+              &.selected {
+                background-position: 0 -48rem/$font-size-base;
+              }
+            }
+            &:nth-child(2n) {
+              padding-left: 126rem/$font-size-base;
+              .icon-radio {
+                left: 60rem/$font-size-base;
+              }
+            }
+            &:last-child {
+              border-color: #fff;
+            }
+          }
+        }
+        .text {
+          width: 100%;
+          display: flex;
+          margin-bottom: 28rem/$font-size-base;
+          textarea {
+            background: #F6F6F6;
+            padding: 10rem/$font-size-base 28rem/$font-size-base;
+            border: 0;
+            height: 146rem/$font-size-base;
+            font-size: 28rem/$font-size-base;
+            line-height: 42rem/$font-size-base;
+            color: #1b1b1b;
+            flex: 1;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+          }
+        }
+      }
+    }
+  }
+}

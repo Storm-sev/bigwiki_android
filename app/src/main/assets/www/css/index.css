@@ -1,0 +1,72 @@
+* {
+  margin: 0;
+  padding: 0
+}
+
+/* body  {
+  width: 100%;
+  height: 100%;
+  margin: 3px,3px,3px,3px;
+} */
+
+/* 清除缓存 */
+
+#showCache {
+  float: right;
+  font-size: 14px;
+  margin-right: 10px;
+  height: 100%;
+}
+
+.div-userInfo {
+  width: auto;
+  height: 32px;
+  line-height: 32px;
+  font-size: 14px;
+  margin: 4px 5px;
+  background-color: #80DEEA;
+}
+
+.changePhone {
+  float: right;
+  font-size: 14px;
+  margin-right: 10px;
+  height: 100%;
+  border: none;
+  background: rgba(0, 0, 0, 0);
+}
+
+.changUserName {
+  float: right;
+  font-size: 14px;
+  margin-right: 10px;
+  height: 100%;
+  border: none;
+  background: rgba(0, 0, 0, 0);
+}
+
+#smallImage {
+  /* padding-left: 4px; */
+  width: 30px;
+  height: 30px;
+  border-radius: 100px;
+  border: 1px solid #424242;
+}
+
+*i {
+  margin-left: 4px;
+}
+
+/* 更改照片按钮 */
+
+.changIcon {
+  margin-right: 10px;
+  height: 100%;
+  font-size: 14px;
+  float: right;
+  border: none;
+  background: rgba(0, 0, 0, 0);
+}
+.app{
+background: rgba(0, 0, 0, 0);
+}

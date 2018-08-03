@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="wap-font-scale" content="no">
+    <title>首页</title>
+    <script src="../../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <link rel="icon" type="image/x-icon" href="../../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" href="../../../assets-wiki/css/my.css?t=201807311146">
+</head>
+<body>
+
+<div id="my" class="my">
+    <wk-Header :data="self.head"></wk-Header>
+    <!--//End 导航-->
+
+    <article class="container">
+        <div class="messages">
+            <ul class="details">
+                <li class="item" v-show="is.show">
+                    <img class="icon" src="../../../assets-wiki/images/my/icon-messages@2x.png" alt="">
+                    <div class="text">
+                        <p class="name">{{self.message.title}}<em class="time">{{self.message.time}}</em></p>
+                        <p class="info" v-text="self.message.content"></p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </article>
+</div>
+
+
+<!--//End 底部-->
+<script src="../../../assets-wiki/js/system.js?t=201807311146"></script>
+<script src="../../../assets-wiki/js/tpls.js?t=201807311146"></script>
+<script src="../../../assets-wiki/js/utils.js?t=201807311146"></script>
+<script src="../../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script>
+    var app = new Vue({
+        el: '#my',
+        data: {
+            self: {
+                head: {
+                    title: '系统消息',
+                    isBack: true
+                },
+                message: {}
+            },
+            is:{
+                show:false
+            }
+        },
+        components: {
+            wkHeader
+        },
+        mounted: function () {
+            this.getMessage()
+        },
+        methods: {
+            getMessage: function () {
+                var _this = this
+                var params = {
+                    data:{},
+                    url: domain + '/message/getMessageByIdForFront?id=' + getHttpParam('id') +'&phone=' + myLocalStorage.getter('__user__').phone,
+                    sCallback: function (res) {
+                        //已登录
+                        if(res.code == 0){
+                            var _data = res.data
+                            _this.self.message = {
+                                title: _data.title,
+                                content: _data.content,
+                                time: getDateDiff(getDateTimeStamp(_data.pushDate)),
+                            }
+                            _this.is.show = true
+                        }
+
+                        //未登录或登录失效
+                        if(res.code == 3){
+                            window.location.href =  rootName + '/pages/login/login.html'
+                        }
+                    }
+                }
+                httpRequest(params)
+            }
+        }
+    });
+</script>
+<script type="text/javascript" src="../../../cordova.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="wap-font-scale" content="no">
+    <title>设置新密码</title>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/retrieve.css?t=201807311146">
+</head>
+<body>
+
+<div class="register" id="register">
+    <wk-header :data="headData"></wk-header>
+    <div class="register-from">
+        <form>
+            <div class="register-input" style="height: auto;">
+                <div>
+                     <p class="phone">手机号码 {{phone}}</p>
+                     <p class="depict">完成以下操作，将设置新的登录密码</p>
+                </div>
+               
+                <!-- <div class="mobile">
+                    <input @focus="readFocus(0)" @blur="readFocus(1)" v-model="phone" type="text" name=""
+                           placeholder="手机号码"
+                           maxlength="11">
+                </div> -->
+                <div class="code">
+                    <input @focus="readFocus(0)" @blur="readFocus(1)" v-model="code" type="tel" name=""
+                           placeholder="验证码" maxlength="4">
+                    <p :class="{conduct: codeType == 0, wait: codeType == 1}"
+                       @click="codeType == 0 ?getCode($event): null">获取验证码</p>
+                </div>
+                <div class="pwd">
+                    <input @focus="readFocus(0)" @blur="readFocus(1)" v-model="pwd" :type="inputType" name=""
+                           placeholder="请设置新的6-20位登录密码" maxlength="20">
+                    <i :class="{hidePwd:inputType == 'password',showPwd:inputType == 'text'}" @click="showPwd"></i>
+                </div>
+                <div class="hint">
+                    <p>为了您的账号安全，密码必须包含数字及英文字母</p>
+                </div>
+
+                <div class="operation">
+                    <div>
+                        <button :class="{yesSubmit: isSubmit,notSubmit: !isSubmit}" @click="onSubmit($event)">确认修改
+                        </button>
+                    </div>
+                </div>
+            </div>
+           <!--  <div class="three" v-if="readProtocol">
+                <div class="dec">
+                        <span class="span"> 
+                            <i :class="{select: isAgree, notSelect: !isAgree}" @click="isAgree = !isAgree"></i>
+                            <span>我已阅读并同意</span>
+                            <a :href="rootName+'/pages/my/setting/protocol.html'">“用户协议”</a>
+                            和
+                            <a :href="rootName+'/pages/my/setting/privacy.html'">“隐私政策”</a>
+                        </span>
+                </div>
+            </div> -->
+        </form>
+
+        <div v-show="isPrompt || isSuccess" class="mask" style="display: none"></div>
+        <div v-show="isPrompt" class="prompt" style="display: none" v-cloak>
+            <p>{{msg}}</p>
+        </div>
+
+        <div v-show="isSuccess" class="success" style="display: none" v-cloak>
+            <i></i>
+            <p>{{msg}}</p>
+        </div>
+
+        <div v-show="isPromptBox" class="maskBox" style="display: none" v-cloak>
+            <div class="promptBox">
+                <div class="content">
+                    <p>{{msg}}</p>
+                </div>
+                <div class="options">
+                    <div>
+                        <p @click="closePrompt">取消</p>
+                    </div>
+                    <div>
+                        <p class="login" @click="toLogin()">登录</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="../../assets-wiki/js/system.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script>
+    Vue.directive('focus', {
+        // 当绑定元素插入到 DOM 中。
+        inserted: function (el) {
+            // 聚焦元素
+            el.focus()
+        }
+    })
+
+    var myreg = /^[1][3,4,5,7,8][0-9]{9}$/; // 验证手机号码
+    // var reg = /^[0-9]+[a-zA-Z]+[0-9a-zA-Z]*|[a-zA-Z]+[0-9]+[0-9a-zA-Z]*/ // 密码英文组合正则
+    var reg = new RegExp(/[A-Za-z].*[0-9]|[0-9].*[A-Za-z]/);
+    var app = new Vue({
+        el: '#register',
+        data: {
+            headData: {
+                title: '设置新密码',
+                isBack: true
+            },
+            inputType: 'password',
+            isPrompt: false, // 是否提示
+            isPromptBox: false, // 带操作的提示
+            isSubmit: false, // 是否可以提交
+            isAgree: true, // 是否同意并且阅读 
+            isSuccess: false, // 是否注册成功
+            msg: "", // 提示语
+            codeType: 1, // 验证码 0 可点击发送  1等待不可发送
+            second: 60, // 60秒后重新发送
+            phone: '', // 手机号码
+            pwd: '', // 密码
+            code: '', // 验证码
+            validateRule: { // 验证规则
+                phone: {
+                    maxLength: 11  // 验证长度
+                },
+                pwd: {
+                    maxLength: 20,
+                    minLength: 6
+                },
+                code: {
+                    maxLength: 4
+                }
+            },
+            wait: true, // ture可执行  false等待中 
+            readProtocol: true
+        },
+        watch: {
+            phone: 'monitor', // 监听手机号码数据变化
+            pwd: 'monitor',   // 监听密码数据变化
+            code: 'monitor'   // 监听验证码数据变化
+        },
+        components: {
+            wkHeader: wkHeader,  //导航
+        },
+        mounted: function () {
+            loginRedirectIndex();
+            var phone = getHttpParam("phone");
+            if (phone) {
+                this.phone = phone
+            }
+            console.log(1)
+        },
+        methods: {
+            // 显示密码
+            showPwd: function () {
+                this.inputType = this.inputType == 'password' ? 'text' : 'password';
+            },
+
+            onSubmit: function (e) {
+                e.preventDefault(); //阻止form默认事件
+                var _this = this;
+                // 可以提交
+                if (_this.isSubmit) {
+                    // 是否勾选并且同意了用户协议和隐私政策
+                    // if (!_this.isAgree) {
+                    //     _this.myPrompt("请阅读并同意用户协议与隐藏政策");
+                    //     return;
+                    // }
+
+                    if (!myreg.test(_this.phone)) {
+                        _this.myPrompt("手机号码格式不对");
+                        return;
+                    }
+
+                    if (!reg.test(_this.pwd)
+                        || _this.pwd == ""
+                        || _this.pwd == null
+                        || _this.pwd.length < _this.validateRule.pwd.minLength
+                        || _this.pwd.length > _this.validateRule.pwd.maxLength) {
+                        _this.myPrompt("密码不符合规则");
+                        return;
+                    }
+
+                    if (_this.code == "" || _this.code == null || _this.code.length < _this.validateRule.code.length) {
+                        _this.myPrompt("验证码不能为小于" + _this.validateRule.pwd.size + "位");
+                        return;
+                    }
+
+                    // 提交数据  注册
+                    _this.updatePwd();
+                }
+
+            },
+            // 发送验证码
+            getCode(e) {
+                var _this = this;
+                var time = _this.second;
+                if (_this.codeType == 0) { // 发送验证码 0发 1不发
+                    _this.codeType = 1; // 设置为不发送 防止多次点击
+                    // 验证手机号码
+                    if (_this.phone == "" || !myreg.test(this.phone)) {
+                        _this.myPrompt("发送失败，请检查手机号");
+                        return;
+                    }
+                    var params = {
+                        url: api.forgetPassword,
+                        type: 'GET',
+                        data: {
+                            loginName: _this.phone,
+                        },
+                        sCallback: function (res) {
+                            _this.handleRes(res, function () {
+                                console.log("res -- >", res);
+                                _this.wait = false; // 进去等待状态
+                                _this.myPrompt("验证码发送成功");
+                                e.target.innerText = "重新发送(" + time + "s)";
+                                // 倒计时 
+                                var setTime;
+                                setTime = setInterval(function () {
+                                    // 倒计时结束恢复初始化
+                                    if (time <= 0) {
+                                        clearInterval(setTime);
+                                        e.target.innerText = "获取验证码";
+                                        _this.codeType = 0;
+                                        _this.wait = true;
+                                        return;
+                                    }
+                                    time--;
+                                    e.target.innerText = "重新发送(" + time + "s)"
+                                }, 1000);
+                            })
+                        }
+                    }
+                    httpRequest(params); // 发送ajax请求
+                }
+            },
+            // 监听数据
+            monitor(curVal, oldVal) {
+                if (this.phone.length >= this.validateRule.phone.maxLength && myreg.test(this.phone)) {
+                    if (this.wait) {
+                        this.codeType = 0;
+                    }
+                } else {
+                    this.codeType = 1;
+                }
+
+                if (this.phone.length >= this.validateRule.phone.maxLength
+                    && this.pwd.length >= this.validateRule.pwd.minLength
+                    && this.code.length >= this.validateRule.code.maxLength
+                    ) {
+                    this.isSubmit = 1;
+                } else {
+                    this.isSubmit = 0;
+                }
+            },
+            // 注册
+            updatePwd() {
+                var _this = this;
+                console.log("修改")
+                var params = {
+                    url: api.updataPassword,
+                    type: 'POST',
+                    data: {
+                        // params: JSON.stringify({
+                        //     loginName: _this.phone,
+                        //     code: _this.code,
+                        //     loginType: 5
+                        // }),
+                        loginName: _this.phone,
+                        code: _this.code,
+                        password: _this.pwd
+                    },
+                    sCallback: function (res) {
+                        _this.handleRes(res, function () {
+                            _this.msg = "修改成功";
+                            _this.isSuccess = true;
+                            setTimeout(function () {
+                                _this.isSuccess = false;
+                                _this.msg = "";
+                                _this.login(); // 注册成功自动登录
+                            }, 2000)
+                        })
+                    }
+                }
+                httpRequest(params); // 发送ajax请求
+            },
+            login() {
+                window.location.href = rootName + "/pages/login/login.html?phone=" + this.phone +'&returnUrl=' + getHttpParam('returnUrl');
+            },
+            // 关闭带操作提示框
+            closePrompt() {
+                this.isPromptBox = false;
+            },
+            // 去登录
+            toLogin() {
+                var url = rootName + "/pages/login/login.html";
+                if (this.phone) {
+                    url = url + "?phone=" + this.phone;
+                }
+                window.location.href = url;
+            },
+            // 提示
+            myPrompt(msg, code) {
+                var _this = this;
+                if (!code || code != 5 && code != 15) {
+                    // 普通提示框
+                    // _this.msg = msg;
+                    _this.msg = (code == 11 ? "验证码输入错误，请重试": msg)
+                    _this.isPrompt = true;
+                    // 2秒后自动隐藏
+                    setTimeout(function () {
+                        _this.isPrompt = false;
+                    }, 2000);
+                } else {
+                    // 带操作的提示框 账号未注册
+                    _this.isPromptBox = true;
+                    _this.msg = '您输入的手机号' + _this.phone + '已注册,请您直接登录';
+                }
+            },
+            // 统一处理结果
+            handleRes(res, callback) {
+                // alert("res -- >", res);
+                var _this = this;
+                if (res.code == 0) {
+                    callback && callback(res);
+                } else {
+                    // console.log("res -- >", res);
+                    _this.myPrompt((res.detailMsg ? res.detailMsg : res.msg), res.code);
+                    return;
+                }
+            },
+
+            //获取焦点隐藏底部我已阅读并同意部分
+            readFocus(flag) {
+                switch (flag) {
+                    case 0://获取焦点
+                        this.readProtocol = false
+                        break;
+                    case 1://失去焦点
+                        this.readProtocol = true
+                        break;
+                }
+            }
+        }
+    });
+</script>
+<script type="text/javascript" src="../../cordova.js"></script>
+
+</body>
+</html>

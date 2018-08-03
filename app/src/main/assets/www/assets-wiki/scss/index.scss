@@ -1,0 +1,195 @@
+@charset "utf-8";
+
+$base:75;
+
+@import "base";
+@import "libs/swiper";
+//@import "base/category";
+@import "base/news-item";
+@import "base/activity";
+
+#mescroll {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  height: auto;
+  .upwarp-tip, .downwarp-tip {
+    font-size: 24rem/$base !important;
+  }
+  .mescroll-empty {
+    padding-top: 0;
+    .empty-icon {
+      width: 155rem/$base;
+      height: 164rem/$base;
+      margin-left: 30rem/$base;
+    }
+    .upwarp-nodata {
+      p {
+        &:nth-child(1) {
+          font-size: 32rem/$base !important;
+          color: #1b1b1b;
+          line-height: 45rem/$base;
+          margin-top: 51rem/$base;
+        }
+        &:nth-child(2) {
+          font-size: 28rem/$base !important;
+          color: #aaa;
+          line-height: 40rem/$base;
+          margin-top: 5rem/$base;
+        }
+      }
+    }
+  }
+  .mescroll-hardware {
+    display: none;
+  }
+  .mescroll-upwarp {
+    display: none;
+  }
+  //没有登录提示条
+  &.style1 {
+    top: 163rem/$base
+  }
+
+}
+
+.home {
+  .column {
+    background: #fff;
+    margin-top: 12rem/$font-size-base;
+    padding-top: 12rem/$font-size-base;
+    padding-bottom: 12rem/$font-size-base;
+  }
+  .merge {
+    padding: 32rem/$font-size-base 0;
+    .swiper-slide {
+      @include width(498rem);
+      background: #fff;
+      margin-left: 16rem/$font-size-base;
+      .img {
+        width: 498rem/$font-size-base;
+        height: 268rem/$font-size-base;
+        max-height: 498rem/$font-size-base;
+        font-size: 0;
+        overflow: hidden;
+        img {
+          width: 100%;
+          -webkit-border-radius: 2rem/$font-size-base;
+          border-radius: 2rem/$font-size-base;
+        }
+        .flag {
+          text-align: center;
+          width: 88rem/$font-size-base;
+          //line-height: 36rem/$font-size-base;
+          //border: 1px #fff solid;
+          //border-radius: 4px;
+          position: absolute;
+          top: 20rem/$font-size-base;
+          left: 20rem/$font-size-base;
+          //background: rgba(0,0,0,0.28);
+          //@include fontSize(20rem);
+          //color: #E5DBC9;
+        }
+      }
+
+      .desc {
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 23rem/$font-size-base 20rem/$font-size-base 35rem/$font-size-base 20rem/$font-size-base;
+        color: #aaa;
+        @include fontSize(20rem);
+        h3 {
+          font-weight: normal;
+          @include fontSize(28rem);
+          color: #1b1b1b;
+          line-height: 33rem/$font-size-base;
+          margin-bottom: 8rem/$font-size-base;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+        h4 {
+          height: 26rem/$base;
+          font-weight: normal;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          em {
+            padding: 0 6rem/$font-size-base;
+            display: inline-block;
+          }
+          &.white {
+            color: #fff;
+          }
+        }
+        .info {
+          line-height: 28rem/$font-size-base;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+      &:first-child {
+        margin-left: 28rem/$font-size-base;
+      }
+
+
+
+
+    }
+  }
+}
+
+.category {
+  background: #fff;
+  padding: 28rem/$font-size-base;
+  .search {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    .input {
+      padding: 0 20px 0 78rem/$font-size-base;
+      line-height: 81rem/$font-size-base;
+      color: #8E8E92;
+      @include fontSize(24rem);
+      flex: 1;
+      background: #F1F1F2;
+    }
+    &:after {
+      content: '';
+      @include icon(url(../images/search-icon@2x.png), 30rem, 30rem);
+      @include abs(vertical);
+      @include marginTopMid(27rem);
+      margin-left: 32rem/$font-size-base;
+    }
+  }
+}
+.category-links {
+  display: flex;
+  margin: 30rem/$font-size-base 0 10rem/$font-size-base 0;
+  .item {
+    font-size: 0;
+    text-align: center;
+    color: #1b1b1b;
+    flex: 1;
+    img {
+      @include width(64rem);
+      @include height(64rem);
+    }
+    .txt {
+      @include fontSize(20rem);
+      margin-top: 8rem/$font-size-base;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      font-weight: bold;
+    }
+  }
+}
+
+.swiper-container-horizontal>.swiper-pagination-bullets .swiper-pagination-bullet {
+  margin: 0 4rem/$font-size-base;
+}

@@ -1,0 +1,42 @@
+@charset "utf-8";
+
+$base:75;
+@mixin marginTopMid($num) {
+  margin-top: -$num/(2*$font-size-base);
+}
+
+
+.blank404 {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: #fff;
+  display: flex;
+  z-index: 2;
+  .content1 {
+    width: 100%;
+    height: 278rem/$base;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    @include marginTopMid(278rem);
+    .pic {
+      width: 140rem/$base;
+      margin-left: 10rem/$base;
+    }
+    .name {
+      font-size: 32rem/$base;
+      line-height: 45rem/$base;
+      color: #1b1b1b;
+      margin-top: 28rem/$base;
+      margin-bottom: 5rem/$base;
+    }
+    .txt {
+      font-size: 28rem/$base;
+      line-height: 40rem/$base;
+      color: #aaa;
+    }
+  }
+}

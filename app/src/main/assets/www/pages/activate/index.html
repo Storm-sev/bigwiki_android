@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>活化馆</title>
+
+    <!--<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>-->
+    <meta http-equiv="Content-Type" content="text/html; charset=GBK">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Pragma" content="no-cache">
+    <!--兼容iphone-->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <script src="../../assets-wiki/js/flexible.min.js?t=2018070201"></script>
+    <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/shop.css?t=2018070201">
+    <script src="../../assets-wiki/js/vue.min.js?t=2018070201"></script>
+    <script src="../../assets-wiki/js/jquery.min.js?t=2018070201"></script>
+
+
+    <script src="../../assets-wiki/js/swiper.min.js?t=2018070201"></script>
+
+    <script src="../../assets-wiki/js/utils.js?t=2018070201"></script>
+    <script src="../../assets-wiki/js/myApp.js?t=2018070201"></script>
+    <!--
+     ***组件    上导航
+     *         下导航
+    -->
+    <script src="../../assets-wiki/js/tpls.js?t=2018070201"></script>
+
+    <!--懒加载-->
+    <script src="../../assets-wiki/js/jquery.lazyload.min.js?t=2018070201"></script>
+
+
+
+
+    <!--交互-->
+    <script src="model.js?t=2018070201"></script>
+
+
+
+</head>
+<body>
+<div class="box" id="app">
+
+    <div>
+        <wk-header :data="datas"></wk-header>
+        <div>
+            <!--交互-->
+            <div class="content">
+                <!--banner-->
+                <div class="banner" @click="masterLost()">
+                   <nd-swiper :swiper="shop_banner"></nd-swiper>
+                    <div class="shop_cover"></div>
+                </div>
+
+                <!-- 馆的List -->
+                <div class="list_shop">
+                  <ul @click="masterLost()">
+                    <li>
+                      <a href="master.html">
+                        <i><img src="../../assets-wiki/images/shop/Fill 1.png" alt=""></i>
+                        <p>传人馆</p>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="museum.html">
+                        <i><img src="../../assets-wiki/images/shop/Fill 2.png" alt=""></i>
+                        <p>博物馆</p>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="local.html">
+                        <i><img src="../../assets-wiki/images/shop/Fill 3.png" alt=""></i>
+                        <p>地方馆</p>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="3dpavilion.html">
+                        <i><img src="../../assets-wiki/images/shop/Fill 3d.png" alt=""></i>
+                        <p>3D馆</p>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+
+            </div>
+        </div>
+        <!--下导航-->
+        <wk-footer :selected="selectedIndex"></wk-footer>
+        <!--正在加载-->
+        <shop-load :msg="msg" :class="{active: load_msg.shopMsg}"></shop-load>
+
+        <!--无网络加载状态-->
+        <no-network v-if="load_msg.networkMsg"></no-network>
+
+        </div>
+    </div>
+</div>
+<script src="../../assets-wiki/js/shop-details.js?t=2018070201"></script>
+<script type="text/javascript" charset="utf-8">
+
+    //创建vue对象
+    var app = new Vue({
+        el: "#app",
+        data: {
+            msg: true,
+            num : 1,
+            datas:{ title: "活化馆"},//上导航
+            selectedIndex: 4, //导航标题
+            shop_banner:[],   // banner  数据
+            // 有无网络状态
+            load_msg :{
+                networkMsg: false,  // 无网络状态
+                shopMsg: false     // load 显示状态
+            },
+        },
+        components: {
+            shopLoad: shopLoad,  //正在加载
+            wkHeader: wkHeader,  //导航
+            wkFooter: wkFooter,  //底部
+            ndSwiper: ndSwiper,   //轮播图
+            noNetwork: noNetwork   //无网络加载状态
+        },
+        mounted: function () {
+            var _this = this;
+            this._getHomeSliderData(this.num, null, function () {
+                _this.$nextTick(function () {
+                    var mySwiper = new Swiper('.swiper-container', {
+                        pagination: '.swiper-pagination',
+                        paginationType: 'bullets',
+                        //循环轮播
+                        loop: true,
+                        //持续时间
+                        speed: 500,
+                        //循环播放
+                        autoplay: 4000,
+                        //触摸后轮播不停止(为false时,默认停止位true)
+                        autoplayDisableOnInteraction: false,
+                        onSlideChangeEnd: function (swiper) {
+                            onloding($("img.lazy"));
+                        }
+                    })
+                    onloding($("img.lazy"));
+                })
+            });
+            // 五秒后
+            setTimeout(function () {
+                if (_this.msg) {
+                    _this.load_msg.shopMsg = true;
+                    _this.load_msg.networkMsg = true;
+                } else {
+                    _this.load_msg.shopMsg = false;
+                    _this.load_msg.networkMsg = false
+                }
+            },overTime)
+        },
+        methods: {
+            //进入传承人馆清除客户端缓存的basNum值
+            masterLost(){
+              localStorage.removeItem("masterNum");
+              localStorage.removeItem("museumNum");
+              localStorage.removeItem("localNum");
+              localStorage.removeItem("diaSpage");
+              removeLost();
+            },
+            //数据交互
+            _getHomeSliderData: function (page, atlasId, callback ) {
+                var _this = this;
+                _this.msg = true;         //加载前显示
+                var _url =  api.getList;  //接口URL
+                var data = {
+                    objectId: 7,   //传承人馆ID
+                    currPage: page,   //页数
+                    pageSize: 4    //数量/页
+                };
+//                console.log(_url, data)
+                getBannerData(_url, data, function (obj) {
+                    //banner
+                    _this.shop_banner = obj.banner;
+                    callback && callback(obj)            //swiper回调  post请求之后执行
+                    _this.msg = false;         //正在加载状态
+//                    console.log("))))))))))))))",obj.banner);
+                }, atlasId);
+
+            }
+
+        }
+    });
+
+</script>
+<script type="text/javascript" src="../../cordova.js"></script>
+</body>
+</html>
+

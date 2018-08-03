@@ -1,0 +1,122 @@
+@charset "utf-8";
+$base: 75;
+
+.app-tips {
+  background: rgba(0,0,0,.66);
+  height: 92rem/$base;
+  position: fixed;
+  top:0;
+  left: 0;
+  right: 0;
+  z-index: 11;
+  .open {
+    width: 104rem/$base;
+    line-height: 44rem/$base;
+    text-align: center;
+    background: #4183EA;
+    border-radius: 4px;
+    font-size: 20rem/$base;
+    position: absolute;
+    top: 50%;
+    right: 22rem/$base;
+    margin-top: -22rem/$base;
+    color: #fff;
+  }
+  .logo-share-tip {
+    background: url(../images/logo-share-tips.png) no-repeat;
+    -webkit-background-size:266rem/$base auto;
+    background-size:266rem/$base auto;
+    width: 266rem/$base;
+    height: 66rem/$base;
+    position: absolute;
+    top:50%;
+    left: 30rem/$base;
+    margin-top: -33rem/$base;
+  }
+}
+
+
+
+
+.maskBox {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  .promptBox {
+    width: 694rem/$base;
+    height: 395rem/$base;
+    background: #FFFFFF;
+    border-radius: 20rem/$base;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -197rem/$base;
+    margin-left: -347rem/$base;
+    .content {
+      height: 274rem/$base;
+      border-bottom: 1px solid #AAAAAA;
+      position: relative;
+      p {
+
+        font-size: 32rem/$base;
+        width: 85%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .options {
+      height: 119rem/$base;
+      overflow: hidden;
+      div {
+        width: 50%;
+        height: 100%;
+        float: left;
+        text-align: center;
+        position: relative;
+        p {
+          width: 100%;
+          height: 100%;
+          line-height: 119rem/$base;
+          font-size: 32rem/$base;
+          a{
+            display: block;
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+
+      div:first-child {
+        p:first-child {
+          border-right: 1px solid #AAAAAA;
+        }
+
+      }
+
+      div:last-child {
+        color: #4183EA
+      }
+    }
+
+    .options1 {
+      height: 119rem/$base;
+      div {
+        text-align: center;
+        line-height: 119rem/$base;
+        color: #4183EA;
+        font-size: 32rem/$base;
+      }
+    }
+  }
+}
+
+
+

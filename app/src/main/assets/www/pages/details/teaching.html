@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <title>活动首页</title>
+    <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
+    <link rel="stylesheet" href="../../assets-wiki/css/information.css?t=201807311146">
+</head>
+<body>
+<div id="information" class="information">
+    <wk-header :data="self.head"></wk-header>
+
+    <article class="container details" v-show="!is.blank">
+
+        <div class="main-title">
+            <h1 v-text="self.detail.title"></h1>
+            <div class="txt">
+                <span class="news-time" v-text="self.detail.time"></span>
+            </div>
+        </div>
+        <div class="main-content" v-if="self.detail.content">
+            <div v-for="item in self.detail.content">
+                <div class="txt" v-text="item.text"></div>
+                <div class="img" v-if="item.picture"><img :src="item.picture" alt=""></div>
+            </div>
+        </div>
+
+
+    </article>
+
+
+    <article v-show="is.blank">
+        <div class="blank404">
+            <div class="content">
+                <img class="pic" src="../../assets-wiki/images/icon-no-data@2x.png" alt="">
+                <div class="name">暂无信息</div>
+                <div class="txt">当前没有更多信息，请稍后查询…</div>
+            </div>
+        </div>
+    </article>
+
+</div>
+
+
+</body>
+<script src="../../assets-wiki/js/system.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/information.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script>
+    var app = new Vue({
+        el: '#information',
+        data: {
+            self: {
+                head: {
+                    title: '',
+                    isBack: true,
+                    isShare: true
+                },
+                detail: {}
+            },
+            is: {
+                blank: Boolean
+            }
+        },
+        components: {
+            wkHeader, //导航
+        },
+        methods: {
+            _getTeachingDetail: function () {
+                getTeachingDetail((res) => {
+                    this.self.detail = res
+                    this.is.blank = false
+                })
+            },
+        },
+        mounted: function () {
+            this._getTeachingDetail()
+        },
+    })
+</script>
+<script type="text/javascript" src="../../cordova.js"></script>
+</html>

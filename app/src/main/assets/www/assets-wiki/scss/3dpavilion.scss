@@ -1,0 +1,36 @@
+@charset "utf-8";
+//公共样式
+@import "base/shop_reset";
+
+
+.master_return{
+  background: #fff;
+  border-bottom: 1px solid #F4F4F4;
+}
+.build_content{
+  width: 100%;
+  position: fixed;
+  top: 78rem/$size;
+  bottom: 0;
+  background: #fff;
+  text-align: center;
+  box-sizing: border-box;
+  padding-top: 320rem/$size;
+  img{
+    display: block;
+    margin: 0 auto;
+    width: 155rem/$size;
+  }
+  p{
+    font-size: 32rem/$size;
+    color: #1B1B1B;
+    margin-top: 44rem/$size;
+    line-height: 45rem/$size;
+  }
+  span{
+    font-size: 28rem/$size;
+    color: #AAAAAA;
+    margin-top: 5rem/$size;
+    line-height: 40rem/$size;
+  }
+}

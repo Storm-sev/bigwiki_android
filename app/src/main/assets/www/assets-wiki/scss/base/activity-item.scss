@@ -1,0 +1,36 @@
+.activity-item {
+  padding: 0 28rem/$font-size-base;
+  .item {
+    padding: 20rem/$font-size-base 0;
+    border-bottom: 1rem/$font-size-base solid #f1f1f2;
+    .pic {
+      font-size: 0;
+      width: 694rem/$font-size-base;
+      height: 320rem/$font-size-base;
+      img {
+        width: 694rem/$font-size-base;
+        height: 320rem/$font-size-base;
+        -webkit-border-radius: 2rem/$font-size-base;
+        border-radius: 2rem/$font-size-base;
+      }
+    }
+    .txt {
+      font-size: 28rem/$font-size-base;
+      line-height: 33rem/$font-size-base;
+      color: #1b1b1b;
+      margin-top: 22rem/$font-size-base;
+      margin-bottom: 13rem/$font-size-base;
+    }
+    .info0 {
+      font-size: 20rem/$font-size-base;
+      line-height: 28rem/$font-size-base;
+      color: #aaa;
+      span:first-child {
+        margin-right: 28rem/$font-size-base;
+      }
+    }
+    &:last-child {
+      border: 0;
+    }
+  }
+}

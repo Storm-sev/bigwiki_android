@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="wap-font-scale" content="no">
+    <title>首页</title>
+    <script src="../../assets-wiki/js/flexible.min.js?t=2918062901"></script>
+    <link rel="stylesheet" href="../../assets-wiki/css/mescroll.min.css?t=2918062901">
+    <link rel="stylesheet" href="../../assets-wiki/css/index.css?t=2918062901">
+</head>
+
+<body style="height: 100%;">
+
+<div id="home" class="home">
+    <kep-alive>
+        <wk-Header :data="self.head"></wk-Header>
+        <!--//End 导航-->
+
+        <article class="container is-footer mescroll" id="mescroll">
+            <section class="slider">
+                <wk-swiper :swiper="self.slider" id="swiper1"></wk-swiper>
+            </section>
+            <!--//End 轮播图-->
+
+            <section class="category">
+                <wk-search></wk-search>
+                <wk-category></wk-category>
+            </section>
+            <!--//End 分类-->
+
+            <section class="column">
+                <news-item :data="self.news"></news-item>
+            </section>
+            <!--//End 新闻资讯-->
+
+            <section class="column">
+                <wk-activity :activity="self.activity"></wk-activity>
+            </section>
+            <!--//End 活动-->
+
+            <section class="merge">
+                <swiper-level :data="self.merge" id="swiper2"></swiper-level>
+            </section>
+            <!--//End 轮播聚合-->
+
+
+        </article>
+
+        <wk-footer :selected="self.selectedIndex"></wk-footer>
+        <!--//End 底部-->
+    </kep-alive>
+</div>
+
+
+<!--//End 底部-->
+<script src="../../assets-wiki/js/system.js?t=2918062901"></script>
+<script src="../../assets-wiki/js/jquery.lazyload.js?t=2918062901"></script>
+<script src="../../assets-wiki/js/swiper.min.js?t=2918062901"></script>
+<script src="../../assets-wiki/js/mescroll.min.js?t=2918062901"></script>
+<script src="../../assets-wiki/data/category.js?t=2918062901"></script>
+<script src="../../assets-wiki/js/tpls.js?t=2918062901"></script>
+<script src="../../assets-wiki/js/myApp.js?t=2918062901"></script>
+<script src="../../assets-wiki/js/utils.js?t=2918062901"></script>
+<script src="../../assets-wiki/js/jx/jx-tpls.js?t=2918062901"></script>
+<script src="../../assets-wiki/js/jx/information.js?t=2918062901"></script>
+<script>
+    var app = new Vue({
+        el: '#home',
+        data: {
+            self: {
+                head: {
+                    title: '非遗大百科'
+                },
+                slider: [], //轮播图
+                news: [], //资讯
+                activity: [], //活动
+                merge: [], //项目、传承人
+                selectedIndex: 0,
+            },
+            mescroll: null
+        },
+        components: {
+            wkHeader: wkHeader,  //导航
+            wkSwiper: wkSwiper,  //轮播图
+            wkSearch: wkSearch,  //搜索框
+            wkCategory: wkCategory,  //五个分类图片
+            newsItem: newsItem,  //资讯
+            wkActivity: wkActivity,  //活动
+            swiperLevel: swiperLevel,  //水平轮播
+            wkFooter: wkFooter,  //底部
+        },
+        mounted() {
+            var _this = this
+            this._getSlider()
+            this._initPage()
+            document.title = '首页' + '_非遗大百科'
+            this.mescroll = new MeScroll('mescroll', {
+                up: {
+                    callback: _this.upCallback,
+                    isBounce: false, //此处禁止ios回弹,解析(务必认真阅读,特别是最后一点)
+                    page: {
+                        size: 10
+                    },
+                    empty: { //配置列表无任何数据的提示
+                        warpId: "dataList",
+                        icon: "../../assets-wiki/images/icon-no-data@2x.png",
+                        tip: "<div class='upwarp-nodata'><p>暂无信息</p><p>当前没有更多信息，请稍后查询…</p></div>",
+                    },
+                    // inited: function (a, b) {
+                    //     sInited && sInited(a, b)
+                    // },
+                    onScroll: function (mescroll, y, isUp) {
+                        _this.self.scroll = y
+                        mySessionStorage.setter('indexData', _this.self)
+                    }
+                }
+            })
+        },
+        updated() {
+            this.$nextTick(() => {
+                this.mescroll.scrollTo(this.scroll, 0)
+                $("#mescroll").trigger('scroll');
+                $("img.lazy").lazyload({
+                    placeholder: "../../assets-wiki/images/default/default.png",
+                    // effect: "fadeIn",
+                    threshold: 200
+                });
+            })
+        },
+        methods: {
+            upCallback(page) {
+                this._getIndex((res) => {
+                    var total = res.total
+                    this.self.news = res.news
+                    this.self.activity = res.activity
+                    this.self.merge = res.merge
+                    this.mescroll.endBySize(3, total)
+                    this.$nextTick(function () {
+                        let swiper2 = new Swiper('#swiper2', {
+                            slidesPerView: 'auto',
+                            centeredSlides: false,
+                            paginationClickable: true,
+                        })
+                    })
+                    var _data = mySessionStorage.getter('indexData')
+                    if(_data){
+                        this.scroll = mySessionStorage.getter('indexData').scroll
+                    }
+                })
+            },
+            //获取轮播图数据
+            _getSlider() {
+                var params = {
+                    objectId: 1,
+                    currPage: 1,
+                    pageSize: 5
+                }
+                getSlider(params, (res) => {
+                    var _this = this
+                    this.self.slider = res
+                    this.$nextTick(function () {
+                        _this.swiper = new Swiper('#swiper1', {
+                            autoplay: 5000,//可选选项，自动滑动
+                            pagination: '.swiper-pagination',
+                            paginationClickable: true,
+                            loop: true
+                        })
+                    })
+                })
+            },
+            // 获取首页数据
+            _getIndex(callback) {
+                var _this = this
+                var params = {
+                    data: {
+                        objectId: 2,
+                        currPage: 1, //页数
+                        pageSize: 20, //条数/页
+                    },
+                    callback: function (data) {
+                        var _data = _this.processIndexData(data)
+                        callback && callback(_data)
+                    }
+                }
+                getIndex(params)
+            },
+            processIndexData(data) {
+                var news = []
+                var activity = []
+                var merge = []
+                for (let i = 0; i < data.length; i++) {
+                    var targetType = data[i].targetType
+                    //取出targetType = 5 的数据
+                    if (targetType == 5) {
+                        let _data = data[i]
+                        switch (data[i].type) {
+                            case 0://资讯
+                                if (_data.source.length > 10) {
+                                    _data.source = '#资讯/' + _data.source.slice(0, 10) + '...'
+                                } else {
+                                    _data.source = '#资讯/' + _data.source
+                                }
+
+                                _data.flag = true
+                                for (let j = 0; j < _data.imgUrls.length; j++) {
+                                    _data.imgUrls[j] += '?x-oss-process=style/information-list'
+                                }
+                                news.push(_data)
+                                break;
+                            case 1://活动
+
+                                if (_data.address) {
+                                    var _address = _data.address
+                                    if (_data.address.length > 16) {
+                                        _data.address = '#活动<em></em>/<em></em>地点：' + _data.address.substring(0, 16) + '...'
+                                    } else {
+                                        _data.address = '#活动<em></em>/<em></em>地点：' + _data.address
+                                    }
+
+                                } else {
+                                    _data.address = '#活动'
+                                }
+
+                                // _data.address = _data.address ? '#活动<em></em>/<em></em>地点：' + _data.address.substring(0,16) : '#活动'
+                                _data.imgUrls = _data.imgUrls[0] + '?x-oss-process=style/head-recommend-informationlist'
+                                activity.push(_data)
+                                break;
+                        }
+                    } else {
+                        //项目
+                        targetType == 0 && (data[i].href = rootName + '/pages/ency/details.html?type=' + targetType + '&id=' + data[i].id)
+                        //作品
+                        targetType == 2 && (data[i].href = rootName + '/pages/ency/details.html?type=' + targetType + '&id=' + data[i].id)
+                        //传承人
+                        targetType == 1 && (data[i].href = rootName + '/pages/ency/details.html?type=' + targetType + '&id=' + data[i].id)
+                        if (data[i].projectName == 0) {
+                            data[i].projectName = '#百科'
+                        } else {
+                            data[i].projectName = '#百科<em>/</em>' + data[i].projectName
+                        }
+                        merge.push(data[i])
+                    }
+                }
+                var _news = news.splice(0, 3)
+                var _activity = activity.splice(0, 3)
+                var _merge = merge.splice(0, 9)
+                var data = {
+                    news: _news,
+                    activity: _activity,
+                    merge: _merge,
+                    total: _news.length + _activity.length + _merge.length
+                }
+                return data
+            },
+            //初始化页面
+            _initPage() {
+                var data = mySessionStorage.getter('indexData')
+                if (data) {
+                    this.self = data
+                    this.scroll = data.scroll
+                    this.$nextTick(()=>{
+                        this.mescroll.scrollTo(this.scroll, 0);
+                    })
+                }
+            }
+        }
+    });
+</script>
+<script type="text/javascript" src="../../js/index.js"></script>
+</body>
+</html>
