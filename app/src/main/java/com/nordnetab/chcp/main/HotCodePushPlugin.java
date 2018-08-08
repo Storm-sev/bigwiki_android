@@ -337,7 +337,7 @@ public class HotCodePushPlugin extends CordovaPlugin {
 
                     if (webView.canGoBack()) {
                         webView.clearHistory();
-                        //
+                        //_
                     }
                 }
 
