@@ -2,7 +2,10 @@
 @import "base";
 @import "libs/swiper";
 @import "base/shop_reset";
+@import "base/loading";
 @import "app/share-tips.scss";
+
+
 
 // 清空浮动
 @mixin clearfix{
@@ -76,6 +79,8 @@ img {
 
 .ency-footer {
 	@include height(107rem);
+	position: relative;
+	z-index: 9991;
 }
 
 .ency-details {
@@ -181,6 +186,9 @@ img {
 			margin-top: 92rem/$font-size-base;
 		}
 	}
+	.page-loading {
+		bottom: 0;
+	}
 }
 
 .works_uli {
@@ -193,3 +201,9 @@ img {
 .area {
 	height: 100%
 }
+
+.header {
+	position: relative;
+	z-index: 10;
+}
+

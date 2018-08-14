@@ -8,10 +8,10 @@
  * @type {string}
  */
 
-var Resources = "1.0.1";    //资源版本号
+var Resources = "1.0.0";    //资源版本号
 
 var upiosAnd = function () {
-    // var _getUser = "ios?1.0.1";
+    // var _getUser = "ios?1.0.0";
     var _getUser = navigator.userAgent;
     var iosAnd = _getUser.split("?")[0];
     var Edition =  _getUser.split("?")[1];
@@ -62,7 +62,10 @@ switch (upiosAnd().type) {
         };
 
         var removeData = function (callback) { // 清除缓存
-            navigation.setting.clearCache()
+            navigation.setting.clearCache(
+                function(result){
+                    callback && callback(result)
+                },null,null)
         };
 
         var shareCordova = function (data) { // 分享功能
@@ -71,19 +74,26 @@ switch (upiosAnd().type) {
             if(data.htmlUrl.indexOf('http://m.diich.com/info/pages/') == -1){
                 data.htmlUrl = httpsUrl + data.htmlUrl + "&share=true";
             }
-            console.log(data)
-            // navigation.setting.share(data);
+            navigation.setting.share(data);
         };
 
         var getOpen = function () { // 查看开平页面引导图
             navigation.setting.openGuide()
         };
 
-
+        var c = 0;
         var pushTion = function (data) {   //发送ios版本
-            console.log("app=>接收的版本更新数据", data);
+            c++;
+            if(c == 1){
+                navigation.setting.updateResource(data);
+            }
+
         }
 
+        //调研报告下载链接
+        var researchReportDownUrl = function (url) {
+            console.log(url)
+        }
         break;
     case 2:
 
@@ -112,6 +122,8 @@ switch (upiosAnd().type) {
 
             });
 
+
+
         };
 
         var shareCordova = function (data) { // 分享功能
@@ -126,10 +138,23 @@ switch (upiosAnd().type) {
             navigator.setting.showGuidePager();
         };
 
+        var c = 0;
         var pushTion = function (data) {   //发送Android版本
-            console.log("app=>接收的版本更新数据", data);
+            if(c == 1){
+                console.log("app=>接收的版本更新数据", data);
+            }
+
         };
 
+        //调研报告下载链接
+        var researchReportDownUrl = function (url) {
+            console.log('调用源生==========---------------======================')
+            navigator.setting.downloadFile(url,function onSuccess(){
+
+            },function onError(){
+
+            });
+        }
 
         break;
     default:

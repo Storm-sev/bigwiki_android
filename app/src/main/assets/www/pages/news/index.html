@@ -2,51 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201808031745"></script>
     <title>活动首页</title>
     <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
-    <link rel="stylesheet" href="../../assets-wiki/css/information.css?t=201807311146">
+    <link rel="stylesheet" href="../../assets-wiki/css/information.css?t=201808031745">
 </head>
 <body>
-<div id="information" class="information news">
+<div id="information" class="information news js-page-load">
     <wk-header :data="self.head"></wk-header>
 
-    <template v-show="!self.is.loading">
-        <article class="container">
-            <menu-bar :data="self.menu" @send="receiveChannelId" id="nav"></menu-bar>
-            <!--//End-->
-            <tool-tip @send="receiveTip" :data="self.is.toolTip" ref="tip"></tool-tip>
-            <!--//End-->
+    <page-loading v-if="self.loading.show"></page-loading>
+    <no-network v-if="!self.page.show"></no-network>
 
-            <div class="list mescroll" :class="{style1: hasNoToolTip, style2:hasNoSlider}" id="mescroll">
+    <article class="container">
+        <menu-bar :data="self.menu" @send="receiveChannelId" id="nav"></menu-bar>
+        <!--//End-->
+        <tool-tip class="page-hide" :class="{'page-show':self.page.show}" @send="receiveTip" :data="self.is.toolTip" ref="tip"></tool-tip>
+        <!--//End-->
+        <div class="list mescroll page-hide" :class="{style1: hasNoToolTip, style2:hasNoSlider,'page-show':self.page.show}" id="mescroll">
                 <div class="slider" v-show="isSlider">
                     <wk-swiper :swiper="self.slider" id="swiper1"></wk-swiper>
                 </div>
                 <news-item :data="self.list"></news-item>
                 <div id="dataList" class="no-data" v-show="!self.list.length"></div>
             </div>
-            <!--//End-->
-        </article>
+        <!--//End-->
+    </article>
 
-        <wk-footer :selected="self.selectedIndex"></wk-footer>
-        <!--//End 底部-->
-    </template>
+    <wk-footer :selected="self.selectedIndex"></wk-footer>
+    <!--//End 底部-->
 
-    <Loading :msg="self.is.loading"></Loading>
 
-    <no-network v-show="self.timeout"></no-network>
 </div>
 
 
-<script src="../../assets-wiki/js/system.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/swiper.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/mescroll.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/jquery.lazyload.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/jx-tpls.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/information.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/system.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/swiper.min.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/lazyload.mescroll.min.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/utils.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/jx-tpls.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/information.js?t=201808031745"></script>
 <script>
     var app = new Vue({
         el: '#information',
@@ -84,7 +81,15 @@
                     noToolTip: false
                 },
                 selectedIndex: 1,
-                total:10
+                total:10,
+                loading: {
+                    show: true, //默认展示loading状态
+                    network: false
+                },
+                page:{
+                    data:null,
+                    show:false
+                }
             },
             mescroll: null
         },
@@ -95,8 +100,8 @@
             toolTip, //底部
             newsItem, //活动列表
             wkSwiper, //轮播图
-            Loading: shopLoad,
-            noNetwork,
+            pageLoading, //loading
+            noNetwork //没有网络显示效果
         },
         computed: {
             hasNoToolTip() {
@@ -107,12 +112,14 @@
             },
             isSlider() {
                 return getHttpParam('channelId') == 0 ? true : false
+            },
+            showLoad:function (val) {//loading
+                return this.self.loading.show = val
             }
         },
         mounted: function () {
             var _this = this
             document.title = '资讯' + '_非遗大百科'
-            // this.initMescroll()
 
             //子频道
             var nevSwiper = new Swiper('#nav', {
@@ -122,14 +129,6 @@
             })
             this._getSlider()
             this._initPage()
-
-            //超时显示无网络图标
-            setTimeout(function () {
-                if (_this.self.is.loading) {
-                    _this.self.is.timeout = true
-                    _this.self.is.loading = false
-                }
-            }, overTime)
 
             if (getHttpParam('channelId') > 0 || myLocalStorage.getter('__closeTip__')) {
                 this.self.is.toolTip = false
@@ -162,6 +161,9 @@
                     auto: false
                 }
             })
+
+
+            this.loadingAndNoNetwork()
         },
         updated() {
             this.$nextTick(() => {
@@ -180,6 +182,7 @@
                 if(page.num > this.self.total){
                     page.num = this.self.total
                 }
+
                 var params = {
                     type: 0, //资讯
                     current: parseInt(page.num),//条数/页
@@ -187,6 +190,9 @@
                     channelId: getHttpParam('channelId'),
                 }
                 getNewsIndex(params, (res, total) => {
+                    this.self.page.data = res
+
+
                     var data = []
                     this.self.total = total/page.size
                     for (var i = 0; i < res.length; i++) {
@@ -198,7 +204,6 @@
                                 res[i].imgUrls[j] = res[i].imgUrls[j] + '?x-oss-process=style/information-list'
                             }
                         }
-
                     }
                     data.push(res)
                     //如果是第一页需手动制空列表
@@ -211,7 +216,6 @@
                     this.mescroll.endBySize(data[0].length, total)
                     //没有数据添加class
                     this.self.add.noData = !data[0].length ? true : false
-                    this.self.is.loading = false
                 })
             },
             //获取轮播图
@@ -223,14 +227,16 @@
                 }
                 getSlider(params, (res) => {
                     this.self.slider = res
-                    this.$nextTick(function () {
-                        let mySwiper = new Swiper('#swiper1', {
-                            autoplay: 5000,
-                            pagination: '.swiper-pagination',
-                            loop: true,
-                            autoplayDisableOnInteraction: false
+                    setTimeout(()=>{
+                        this.$nextTick(function () {
+                            let mySwiper = new Swiper('#swiper1', {
+                                autoplay: 5000,
+                                pagination: '.swiper-pagination',
+                                loop: true,
+                                autoplayDisableOnInteraction: false
+                            })
                         })
-                    })
+                    },1000)
                 })
             },
             //频道传递过来的数据
@@ -258,6 +264,26 @@
                         this.mescroll.scrollTo(this.scroll, 0);
                     })
                 }
+            },
+            //loading
+            loadingAndNoNetwork(){
+                var _data = mySessionStorage.getter('newsData')
+                if(_data){
+                    this.self.loading.show = false
+                    this.self.page.show = true
+                }else {
+                    for (let i = 1; i < 6; i++) {
+                        setTimeout(()=>{
+                            if(this.self.page.data){
+                                this.self.loading.show = false
+                                this.self.page.show = true
+                            }
+                        },i*500)
+                    }
+                }
+                setTimeout(()=>{
+                    this.self.loading.show = false
+                },overTime)
             }
         }
     })

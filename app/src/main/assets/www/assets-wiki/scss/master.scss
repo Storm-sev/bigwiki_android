@@ -4,7 +4,10 @@
 //资讯
 @import "base/news-item";
 
-
+.header {
+  position: relative;
+  z-index: 9991!important;
+}
 //人物头像
 .char_img{
   width: 100%;
@@ -112,10 +115,6 @@
     background: none;
   }
 }
-
-
-
-
 
 
 

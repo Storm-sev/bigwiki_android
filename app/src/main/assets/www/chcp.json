@@ -1,9 +1,0 @@
-{
-  "name": "Bigwiki_and",
-  "ios_identifier": "",
-  "android_identifier": "",
-  "min_native_interface": 1,
-  "update": "start",
-  "content_url": "http://wiki.diich.com/wiki_resource/android/www",
-  "release": "2018.08.02-17.13.29"
-}

@@ -3,165 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="wap-font-scale" content="no">
-    <!--<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">-->
     <title>百科_非遗大百科</title>
-    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201808031745"></script>
     <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/mescroll.min.css?t=201807311146">
-    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/ency-list.css?t=201807311146">
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/ency-list.css?t=201808031745">
+    <style>
+        .page-show {
+            z-index: 1;
+        }
+    </style>
 </head>
 <body>
-    <div class="ency-list" id="ency-list" v-cloak>
-        <wk-header :data="pageObj.headData"></wk-header>
-        <div class="content">
-            <ul class="menu">
-                <!-- 一级分类-->
-                <li class="term" @click="onMenu(pageObj.firstMenu.leve)">
-                    <p>
-                        <span :class="{active: pageObj.firstMenu.status}">{{pageObj.firstMenu.selectName}}</span>
-                        <i :class="{'no-triangle': !pageObj.firstMenu.status, triangle: pageObj.firstMenu.status}"></i>
-                    </p>
-                    <transition name="router-slid">
-                        <ul v-show="pageObj.firstMenu.status" class="name-list" >
-                            <li v-for="(v, index) in pageObj.firstMenu.datas"
-                             @click.stop="findChildren(v, pageObj.firstMenu.leve)"
-                             :class="{active: pageObj.firstMenu.selectId == v.id}">
-                                <p>{{v.name}}</p>
-                            </li>
-                        </ul>
-                    </transition> 
-                </li>
+<div class="ency-list js-page-load" id="ency-list" v-cloak>
+    <wk-header :data="pageObj.headData"></wk-header>
 
-                <!-- 二级分类-->
-                <li class="term" @click="onMenu(pageObj.towMenu.leve)">
-                    <p>
-                        <span :class="{active: pageObj.towMenu.status}">{{pageObj.towMenu.selectName}}</span>
-                        <i :class="{'no-triangle': !pageObj.towMenu.status, triangle: pageObj.towMenu.status}"></i>
-                    </p>
-                    <transition name="router-slid">
-                        <div v-show="pageObj.towMenu.status" class="classifyList">
-                            <ul>
-                                <li v-for="(v, index) in pageObj.towMenu.datas" 
+    <page-loading v-if="self.loading.show"></page-loading>
+    <no-network v-if="!self.page.show"></no-network>
+
+    <div class="content" style="position: relative;z-index: 2;">
+        <ul class="menu">
+            <!-- 一级分类-->
+            <li class="term" @click="onMenu(pageObj.firstMenu.leve)">
+                <p>
+                    <span :class="{active: pageObj.firstMenu.status}">{{pageObj.firstMenu.selectName}}</span>
+                    <i :class="{'no-triangle': !pageObj.firstMenu.status, triangle: pageObj.firstMenu.status}"></i>
+                </p>
+                <transition name="router-slid">
+                    <ul v-show="pageObj.firstMenu.status" class="name-list">
+                        <li v-for="(v, index) in pageObj.firstMenu.datas"
+                            @click.stop="findChildren(v, pageObj.firstMenu.leve)"
+                            :class="{active: pageObj.firstMenu.selectId == v.id}">
+                            <p>{{v.name}}</p>
+                        </li>
+                    </ul>
+                </transition>
+            </li>
+
+            <!-- 二级分类-->
+            <li class="term" @click="onMenu(pageObj.towMenu.leve)">
+                <p>
+                    <span :class="{active: pageObj.towMenu.status}">{{pageObj.towMenu.selectName}}</span>
+                    <i :class="{'no-triangle': !pageObj.towMenu.status, triangle: pageObj.towMenu.status}"></i>
+                </p>
+                <transition name="router-slid">
+                    <div v-show="pageObj.towMenu.status" class="classifyList">
+                        <ul>
+                            <li v-for="(v, index) in pageObj.towMenu.datas"
                                 @click.stop="findChildren(v, pageObj.towMenu.leve)"
                                 :class="{active: pageObj.towMenu.selectId == v.id}">
-                                    <p>{{v.name}}</p>
-                                </li>
-                            </ul>
-                            <!-- 三级分类-->
-                            <ul class="ul-list mescroll-touch" ref="towChildren">
-                                <li v-for="(v, index) in pageObj.towMenu.children" 
-                                @click.stop="findChildren(v, pageObj.towMenu.childrenLeve)"
-                                :class="{active: pageObj.towMenu.childSelectId == v.id}">
-                                    <p>{{v.name}}</p>
-                                </li>
-                            </ul>
-                        </div>
-                    </transition>
-                </li>
-                <!-- 类型-->
-                <li class="term" @click="onMenu(pageObj.threeMenu.leve)">
-                    <p>
-                        <span :class="{active: pageObj.threeMenu.status}">{{pageObj.threeMenu.selectName}}</span>
-                        <i :class="{'no-triangle': !pageObj.threeMenu.status, triangle: pageObj.threeMenu.status}"></i>
-                    </p>
-                    <transition name="router-slid">
-                        <ul v-show="pageObj.threeMenu.status" class="name-list">
-                            <li v-for="(v, index) in pageObj.threeMenu.datas" 
-                            @click.stop="findChildren(v, pageObj.threeMenu.leve)"
-                            :class="{active: pageObj.threeMenu.selectId == v.code}">
                                 <p>{{v.name}}</p>
                             </li>
                         </ul>
-                    </transition>
-                </li>
-                <!-- 地区-->
-                <li class="term" @click="onMenu(pageObj.areaMenu.leve)">
-                    <p>
-                        <span :class="{active: pageObj.areaMenu.status}">{{pageObj.areaMenu.selectName}}</span>
-                        <i :class="{'no-triangle': !pageObj.areaMenu.status, triangle: pageObj.areaMenu.status}"></i>
-                    </p>
-                    <transition name="router-slid">
-                         <div v-show="pageObj.areaMenu.status" class="classifyList">
-                            <ul>
-                                <li v-for="(v, index) in pageObj.areaMenu.datas" 
+                        <!-- 三级分类-->
+                        <ul class="ul-list mescroll-touch" ref="towChildren">
+                            <li v-for="(v, index) in pageObj.towMenu.children"
+                                @click.stop="findChildren(v, pageObj.towMenu.childrenLeve)"
+                                :class="{active: pageObj.towMenu.childSelectId == v.id}">
+                                <p>{{v.name}}</p>
+                            </li>
+                        </ul>
+                    </div>
+                </transition>
+            </li>
+            <!-- 类型-->
+            <li class="term" @click="onMenu(pageObj.threeMenu.leve)">
+                <p>
+                    <span :class="{active: pageObj.threeMenu.status}">{{pageObj.threeMenu.selectName}}</span>
+                    <i :class="{'no-triangle': !pageObj.threeMenu.status, triangle: pageObj.threeMenu.status}"></i>
+                </p>
+                <transition name="router-slid">
+                    <ul v-show="pageObj.threeMenu.status" class="name-list">
+                        <li v-for="(v, index) in pageObj.threeMenu.datas"
+                            @click.stop="findChildren(v, pageObj.threeMenu.leve)"
+                            :class="{active: pageObj.threeMenu.selectId == v.code}">
+                            <p>{{v.name}}</p>
+                        </li>
+                    </ul>
+                </transition>
+            </li>
+            <!-- 地区-->
+            <li class="term" @click="onMenu(pageObj.areaMenu.leve)">
+                <p>
+                    <span :class="{active: pageObj.areaMenu.status}">{{pageObj.areaMenu.selectName}}</span>
+                    <i :class="{'no-triangle': !pageObj.areaMenu.status, triangle: pageObj.areaMenu.status}"></i>
+                </p>
+                <transition name="router-slid">
+                    <div v-show="pageObj.areaMenu.status" class="classifyList">
+                        <ul>
+                            <li v-for="(v, index) in pageObj.areaMenu.datas"
                                 @click.stop="findChildren(v, pageObj.areaMenu.leve)"
-                                :class="{active: pageObj.areaMenu.selectId == v.code}"> 
-                                    <p>{{v.name}}</p>
-                                </li>
-                            </ul>
-                            <!-- 地区二级-->
-                           <!--  <ul v-show="pageObj.areaMenu.selectId == 1" ref="areaChildren">
-                                <li v-for="(v, index) in pageObj.areaMenu.children1"
+                                :class="{active: pageObj.areaMenu.selectId == v.code}">
+                                <p>{{v.name}}</p>
+                            </li>
+                        </ul>
+                        <!-- 地区二级-->
+                        <!--  <ul v-show="pageObj.areaMenu.selectId == 1" ref="areaChildren">
+                             <li v-for="(v, index) in pageObj.areaMenu.children1"
+                             @click.stop="findChildren(v, pageObj.areaMenu.childrenLeve)"
+                             :class="{active: pageObj.areaMenu.childSelectId == v.id}">
+                                 <p>{{v.name}}</p>
+                             </li>
+                         </ul> -->
+                        <ul class="ul-list mescroll-touch" v-show="pageObj.areaMenu.selectId == 1" ref="areaChildren1">
+                            <li v-for="(v, index) in pageObj.areaMenu.children1"
                                 @click.stop="findChildren(v, pageObj.areaMenu.childrenLeve)"
                                 :class="{active: pageObj.areaMenu.childSelectId == v.id}">
-                                    <p>{{v.name}}</p>
-                                </li>
-                            </ul> -->
-                            <ul class="ul-list mescroll-touch" v-show="pageObj.areaMenu.selectId == 1" ref="areaChildren1">
-                                <li v-for="(v, index) in pageObj.areaMenu.children1"
+                                <p>{{v.name}}</p>
+                            </li>
+                        </ul>
+                        <ul class="ul-list mescroll-touch" v-show="pageObj.areaMenu.selectId == 2" ref="areaChildren2">
+                            <li v-for="(v, index) in pageObj.areaMenu.children2"
                                 @click.stop="findChildren(v, pageObj.areaMenu.childrenLeve)"
                                 :class="{active: pageObj.areaMenu.childSelectId == v.id}">
-                                    <p>{{v.name}}</p>
-                                </li>
-                            </ul>
-                            <ul class="ul-list mescroll-touch" v-show="pageObj.areaMenu.selectId == 2" ref="areaChildren2">
-                                <li v-for="(v, index) in pageObj.areaMenu.children2"
-                                @click.stop="findChildren(v, pageObj.areaMenu.childrenLeve)"
-                                :class="{active: pageObj.areaMenu.childSelectId == v.id}">
-                                    <p>{{v.name}}</p>
-                                </li>
-                            </ul>
-                            
-                        </div>
-                    </transition>
-                </li>
-            </ul>
-            <div v-show="pageObj.mask" class="mask" @click="onMenu()"></div>   
-        </div>
-        <!-- <div :class="{mescroll: true, 'not-data-back': pageObj.pdlist.length <= 0, 'no-y': pageObj.noty}" id="mescroll">
-            <wk-ency :datas="pageObj.pdlist" id="dataList" :class="{'no-data': pageObj.pdlist.length <= 0}"></wk-ency>
-        </div> --> 
-       <div :class="{mescroll: true, 'not-data-back': pageObj.pdlist.length <= 0, 'no-y': pageObj.noty}" id="mescroll">
-            <div id="dataList">
-                <template  v-for="(ency, index) in pageObj.pdlist">
-                    <div v-if="ency.title" class="one" @click="toDetails(ency.id, ency.type)">
-                       <div :class="{describe: true, widthAuto: ency.img? false : true}">
-                           <h1>{{ency.title}}</h1>
-                           <p v-if="ency.marking" class="type">#{{ency.marking}}</p>
-                           <p v-if="ency.info" class="brief">{{ency.info}}</p>
-                       </div>
-                       <div :class="{cover: true, hide: ency.img? false : true}">
-                           <img class="lazy" :data-original="ency.img ? ency.img :'../../assets-wiki/images/default/head694_374.png'">
-                       </div>
-                   </div>
-                </template>
-            </div>
-       </div>
-    
-        <!--//End 内容-->
-       <!--  <div class="ency-footer">
-             <wk-footer :selected="selectedIndex"></wk-footer>
-        </div> -->
-        <!--//End 底部-->
+                                <p>{{v.name}}</p>
+                            </li>
+                        </ul>
+
+                    </div>
+                </transition>
+            </li>
+        </ul>
+        <div v-show="pageObj.mask" class="mask" @click="onMenu()"></div>
     </div>
+    <!-- <div :class="{mescroll: true, 'not-data-back': pageObj.pdlist.length <= 0, 'no-y': pageObj.noty}" id="mescroll">
+        <wk-ency :datas="pageObj.pdlist" id="dataList" :class="{'no-data': pageObj.pdlist.length <= 0}"></wk-ency>
+    </div> -->
+    <div class="page-hide" :class="{mescroll: true, 'not-data-back': pageObj.pdlist.length <= 0, 'no-y': pageObj.noty,'page-show':self.page.show}"
+         id="mescroll">
+        <div id="dataList">
+            <template v-for="(ency, index) in pageObj.pdlist">
+                <div v-if="ency.title" class="one" @click="toDetails(ency.id, ency.type)">
+                    <div :class="{describe: true, widthAuto: ency.img? false : true}">
+                        <h1>{{ency.title}}</h1>
+                        <p v-if="ency.marking" class="type">#{{ency.marking}}</p>
+                        <p v-if="ency.info" class="brief">{{ency.info}}</p>
+                    </div>
+                    <div :class="{cover: true, hide: ency.img? false : true}">
+                        <img class="lazy"
+                             :data-original="ency.img ? ency.img :'../../assets-wiki/images/default/head694_374.png'">
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!--//End 内容-->
+    <!--  <div class="ency-footer">
+          <wk-footer :selected="selectedIndex"></wk-footer>
+     </div> -->
+    <!--//End 底部-->
+</div>
 </body>
-<script src="../../assets-wiki/js/vue.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/data/category.js?t=201807311146"></script>
-<script src="../../assets-wiki/data/dictionary.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/jquery.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/jquery.lazyload.min.js?t=201807311146?v=1.9.1"></script>
-<script src="../../assets-wiki/js/mescroll.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
-<script src="ency-list.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/system.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/lazyload.mescroll.min.js?t=201808031745"></script>
+<script src="../../assets-wiki/data/category.js?t=201808031745"></script>
+<script src="../../assets-wiki/data/dictionary.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/utils.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201808031745"></script>
+<script src="ency-list.js?t=201808031745"></script>
 <script type="text/javascript" charset="utf-8">
     var app = new Vue({
         el: "#ency-list",
         data: {
-           mescroll: null,
-           pageObj: {
-                selectedIndex:2,
+            mescroll: null,
+            pageObj: {
+                selectedIndex: 2,
                 total: 0, // 总数据量
                 headData: {
                     title: '百科',
@@ -178,11 +185,11 @@
                 },
                 // 二级、三级分类
                 towMenu: {
-                    datas:[],
+                    datas: [],
                     status: false,
                     selectId: "",
                     selectName: "全部分类",
-                    leve: 1, 
+                    leve: 1,
                     children: [], // 子集数据
                     childrenLeve: 1.1,
                     childSelectId: "",
@@ -191,15 +198,15 @@
                 },
                 // 类型
                 threeMenu: {
-                    datas:[],
+                    datas: [],
                     status: false,
                     selectId: "",
                     selectName: "全部类型",
-                    leve: 2, 
+                    leve: 2,
                 },
                 // 地区
                 areaMenu: {
-                    datas:[
+                    datas: [
                         {
                             name: "全部",
                             code: ""
@@ -216,7 +223,7 @@
                     status: false,
                     selectId: "",
                     selectName: "全部地区",
-                    leve: 3, 
+                    leve: 3,
                     children1: [], // 国内
                     childeScrollNum1: 0, // 国内记录滚动条位置
                     children2: [], // 国外
@@ -233,19 +240,31 @@
                 noty: false, // 是否禁止滑动
                 ynum: 0,
                 pageNum: 0
-           }
+            },
+            self:{
+                loading: {
+                    show: true, //默认展示loading状态
+                },
+                page:{
+                    data:null,
+                    show:false
+                }
+
+            }
         },
         components: {
             wkHeader: wkHeader,  //导航
             wkFooter: wkFooter,  //底部
             wkEncy: wkEncy, // 百科列表
+            pageLoading, //loading
+            noNetwork //没有网络显示效果
             // wkSearch1: wkSearch1
         },
-        mounted: function() {
+        mounted: function () {
             var self = this;
             self.pageInit(); // 第一次加载
             var fag = true;
-            if(self.pageObj.pdlist.length > 0) {
+            if (self.pageObj.pdlist.length > 0) {
                 fag = false;
             }
             self.mescroll = new MeScroll("mescroll", {
@@ -255,17 +274,17 @@
                     //以下参数可删除,不配置
                     isBounce: false, //此处禁止ios回弹,解析(务必认真阅读,特别是最后一点): http://www.mescroll.com/qa.html#q10
                     //page:{size:8}, //可配置每页8条数据,默认10
-                    toTop:{ //配置回到顶部按钮
-                        src : "../../assets-wiki/images/shop/return_dii.png", //默认滚动到1000px显示,可配置offset修改
+                    toTop: { //配置回到顶部按钮
+                        src: "../../assets-wiki/images/shop/return_dii.png", //默认滚动到1000px显示,可配置offset修改
                         //html: null, //html标签内容,默认null; 如果同时设置了src,则优先取src
                         //offset : 1000
                     },
-                    empty:{ //配置列表无任何数据的提示
-                        warpId:"dataList",
+                    empty: { //配置列表无任何数据的提示
+                        warpId: "dataList",
                         icon: "../../assets-wiki/images/icon-no-data@2x.png",
                         tip: "<div class=\"upwarp-nodata\"><p>暂无信息</p><p>当前没有更多信息，请稍后查询…</p></div>",
                     },
-                    onScroll : function(mescroll, y, isUp){ 
+                    onScroll: function (mescroll, y, isUp) {
                         // 每次滚动都重新记录
                         // console.log(y)
                         self.pageObj.ynum = y;
@@ -274,13 +293,19 @@
                             ajaxParam: self.$data.pageObj.param
                         }
                         mySessionStorage.setter("encyListData", encyListData);
-                        self.$nextTick(function() {
-                            // $("#mescroll").trigger('scroll');
-                            $("img.lazy").lazyload({
+
+                        var el = $("#mescroll");
+                        self.$nextTick(function () {
+                            el.find("img.lazy").lazyload({
                                 placeholder: "../../assets-wiki/images/default/default.png",
-                                // effect: "fadeIn",
-                                threshold :200
+                                threshold: el
                             });
+                            setTimeout(()=>{
+                                el.find("img.lazy").lazyload({
+                                    placeholder: "../../assets-wiki/images/default/default.png",
+                                    threshold: el
+                                });
+                            },1000)
                         })
                     }
                 },
@@ -288,103 +313,117 @@
                     auto: false,
                 }
             });
+
+            this.loadingAndNoNetwork()
         },
-        updated: function() {
+        updated: function () {
             // 懒加载
             var self = this;
-            self.$nextTick(function() {
-                // $("#mescroll").trigger('scroll');
-                $("img.lazy").lazyload({
+            var el = $("#mescroll");
+            self.$nextTick(function () {
+                el.find("img.lazy").lazyload({
                     placeholder: "../../assets-wiki/images/default/default.png",
-                    // effect: "fadeIn",
-                    threshold :200
+                    threshold: el
                 });
+                setTimeout(()=>{
+                    el.find("img.lazy").lazyload({
+                        placeholder: "../../assets-wiki/images/default/default.png",
+                        threshold: el
+                    });
+                },1000)
             })
         },
         methods: {
             // 第一加载页面
-            pageInit: function() {
+            pageInit: function () {
                 var _this = this;
                 var encyListData = mySessionStorage.getter("encyListData");
-                if(encyListData) {
+                if (encyListData) {
                     // encyListData.pageObj.pdlist = []; // 清空 防止闪烁
                     _this.pageObj = encyListData.pageObj;
-                     // 定位到上次浏览的位置
-                    if(_this.pageObj.ynum != 0) {
-                        _this.$nextTick(function() {
+                    // 定位到上次浏览的位置
+                    if (_this.pageObj.ynum != 0) {
+                        _this.$nextTick(function () {
                             _this.mescroll.scrollTo(_this.pageObj.ynum, 0);
                         })
                     }
                 } else {
                     var gbCategory = getHttpParam("gbCategory"); // 获取传递过来的参数 并处理
                     // 得到一级菜单
-                    _this.pageObj.firstMenu.datas = [{'name': '全部', 'gb_category':'', 'id':''}].concat(getCategoryList(0));
+                    _this.pageObj.firstMenu.datas = [{
+                        'name': '全部',
+                        'gb_category': '',
+                        'id': ''
+                    }].concat(getCategoryList(0));
                     _this.bulidPrams({category: gbCategory});
                     // console.log(" -- >", getCategoryList(0));
-                    for(var i = 0; i < _this.pageObj.firstMenu.datas.length; i++) {
-                        if(_this.pageObj.firstMenu.datas[i].gb_category == gbCategory) {
+                    for (var i = 0; i < _this.pageObj.firstMenu.datas.length; i++) {
+                        if (_this.pageObj.firstMenu.datas[i].gb_category == gbCategory) {
                             _this.pageObj.firstMenu.selectId = _this.pageObj.firstMenu.datas[i].id; // 取出对应菜单的ID
                             _this.pageObj.firstMenu.selectName = _this.pageObj.firstMenu.datas[i].name; // 取出对应菜单的名称
                         }
-                    }   
+                    }
                 }
             },
 
             // 构建参数
-            bulidPrams: function(obj) {
+            bulidPrams: function (obj) {
                 // this.pageObj.params = {}; // 清空参数
-                if(obj.category) {
+                if (obj.category) {
                     this.pageObj.params['category'] = obj.category;
                 }
 
-                if(obj.type) {
+                if (obj.type) {
                     this.pageObj.params['type'] = obj.type;
                 }
 
-                if(obj.area) {
+                if (obj.area) {
                     this.pageObj.params['area'] = obj.area;
                 }
 
                 // this.pageObj.params['keyword'] = "fire"
             },
 
-            upCallback: function(page) {
+            upCallback: function (page) {
                 var self = this;
-                if(self.pageObj.pageNum > page.num) {
+                if (self.pageObj.pageNum > page.num) {
                     page.num = (self.pageObj.pageNum + 1)
                     self.pageObj.pageNum = page.num
                 } else {
                     self.pageObj.pageNum = page.num;
                 }
-            
-                getDatas(page, self.pageObj.params, function(curPageData) {
+
+                getDatas(page, self.pageObj.params, function (curPageData) {
                     //如果是第一页需手动制空列表 (代替clearId和clearEmptyId的配置)
                     // if(self.pageObj.pageNum != 0) {
                     //     page.num = self.pageObj.pageNum
                     // }
-                    if(page.num == 1) self.pageObj.pdlist = [];
+                    self.self.page.data = curPageData
+
+                    console.log(curPageData)
+                    if (page.num == 1) self.pageObj.pdlist = [];
                     //更新列表数据
                     self.pageObj.pdlist = self.pageObj.pdlist.concat(curPageData);
-                     //记录缓存
+                    //记录缓存
                     var searchListData = {
                         pageObj: self.pageObj,
                     }
                     mySessionStorage.setter("encyListData", searchListData);
-                    if(curPageData.length >=0) {
-                        if(self.pageObj.pdlist.length <= 10 || self.pageObj.pdlist.length == 0) {
+                    if (curPageData.length >= 0) {
+                        if (self.pageObj.pdlist.length <= 10 || self.pageObj.pdlist.length == 0) {
                             self.mescroll.hideTopBtn(); // 隐藏返回顶部
                         }
                     }
                     // self.mescroll.endSuccess(curPageData.length);
                     self.mescroll.endBySize(curPageData.length, self.pageObj.total);
-                }, function(err) {
+                }, function (err) {
                     //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
                     self.mescroll.endErr();
                 })
-                
+
             },
 
-            onMenu: function(index) {
+            onMenu: function (index) {
                 var _this = this;
                 switch (index) {
                     case _this.pageObj.firstMenu.leve:
@@ -392,12 +431,16 @@
                         break;
                     case _this.pageObj.towMenu.leve:
                         // 获取分类数据
-                        _this.pageObj.towMenu.datas = [{'name': '全部', 'gb_category':'', 'id': ''}].concat(getChildrenList(_this.pageObj.firstMenu.selectId));
+                        _this.pageObj.towMenu.datas = [{
+                            'name': '全部',
+                            'gb_category': '',
+                            'id': ''
+                        }].concat(getChildrenList(_this.pageObj.firstMenu.selectId));
                         _this.onShow(_this.pageObj.towMenu.leve);
-                        _this.$nextTick(function(){
-                           _this.$refs.towChildren.scrollTop = _this.pageObj.towMenu.childeScrollNum; // 定位滚动条位置
+                        _this.$nextTick(function () {
+                            _this.$refs.towChildren.scrollTop = _this.pageObj.towMenu.childeScrollNum; // 定位滚动条位置
                         })
-                        
+
                         break;
                     case _this.pageObj.threeMenu.leve:
                         _this.pageObj.threeMenu.datas = getTypes(); // 获取类型数据
@@ -414,13 +457,13 @@
                 }
             },
 
-            onShow: function(type) {
+            onShow: function (type) {
                 this.pageObj.noty = !this.pageObj.noty;
                 this.pageObj.firstMenu.status = (type == this.pageObj.firstMenu.leve) ? !this.pageObj.firstMenu.status : false;
-                this.pageObj.towMenu.status = (type == this.pageObj.towMenu.leve) ? ! this.pageObj.towMenu.status: false;
-                this.pageObj.threeMenu.status = (type == this.pageObj.threeMenu.leve) ? !this.pageObj.threeMenu.status: false;
-                this.pageObj.areaMenu.status = (type == this.pageObj.areaMenu.leve) ? !this.pageObj.areaMenu.status: false;
-                if(this.pageObj.firstMenu.status || this.pageObj.towMenu.status || this.pageObj.threeMenu.status || this.pageObj.areaMenu.status) {
+                this.pageObj.towMenu.status = (type == this.pageObj.towMenu.leve) ? !this.pageObj.towMenu.status : false;
+                this.pageObj.threeMenu.status = (type == this.pageObj.threeMenu.leve) ? !this.pageObj.threeMenu.status : false;
+                this.pageObj.areaMenu.status = (type == this.pageObj.areaMenu.leve) ? !this.pageObj.areaMenu.status : false;
+                if (this.pageObj.firstMenu.status || this.pageObj.towMenu.status || this.pageObj.threeMenu.status || this.pageObj.areaMenu.status) {
                     this.pageObj.mask = true;
                 } else {
                     this.pageObj.mask = false;
@@ -428,7 +471,7 @@
             },
 
             // 关闭所有选项
-            closeAll: function() {
+            closeAll: function () {
                 this.pageObj.noty = false; // 是否禁用滚动条
                 this.pageObj.mask = false; // 蒙层
                 this.pageObj.firstMenu.status = false; // 一级分类
@@ -437,16 +480,16 @@
                 this.pageObj.areaMenu.status = false; // 地区
             },
 
-            findChildren: function(v, type) {
+            findChildren: function (v, type) {
                 var _this = this;
                 _this.pageObj.pdlist = [];
                 _this.pageObj.pageNum = 0;
                 var status = true;
                 switch (type) {
                     case _this.pageObj.firstMenu.leve:
-                        if(v.gb_category == "") {
+                        if (v.gb_category == "") {
                             _this.pageObj.params.category && (delete _this.pageObj.params.category); // 删除参数
-                             _this.pageObj.firstMenu.selectId = ""; // 记录用户选中的ID
+                            _this.pageObj.firstMenu.selectId = ""; // 记录用户选中的ID
                             _this.pageObj.firstMenu.selectName = "全部"; // 记录用户选中的名称
                         } else {
                             // 一级分类
@@ -460,19 +503,19 @@
                         break;
                     case _this.pageObj.towMenu.leve:
                         _this.pageObj.towMenu.selectId = v.id;
-                        if(v.gb_category == "") {
+                        if (v.gb_category == "") {
                             _this.pageObj.towMenu.selectName = "全部分类";
                             _this.pageObj.towMenu.children = [];
                             // 取出被选中的一级分类
-                            for(var i = 0; i < _this.pageObj.firstMenu.datas.length; i++) {
-                                if(_this.pageObj.firstMenu.datas[i].id == _this.pageObj.firstMenu.selectId) {
-                                     _this.bulidPrams({category: _this.pageObj.firstMenu.datas[i].gb_category}); // 构建参数
+                            for (var i = 0; i < _this.pageObj.firstMenu.datas.length; i++) {
+                                if (_this.pageObj.firstMenu.datas[i].id == _this.pageObj.firstMenu.selectId) {
+                                    _this.bulidPrams({category: _this.pageObj.firstMenu.datas[i].gb_category}); // 构建参数
                                 }
-                            }   
+                            }
                         } else {
                             // 二级分类
                             var childrens = getChildrenList(v.id); // 查询二级下的三级分类
-                            if(childrens.length > 0) { // 判断是否有三级分类
+                            if (childrens.length > 0) { // 判断是否有三级分类
                                 _this.pageObj.towMenu.children = childrens;
                                 _this.bulidPrams({category: v.gb_category}); // 构建参数
                                 _this.pageObj.towMenu.selectName = v.name;
@@ -490,24 +533,24 @@
                         _this.bulidPrams({category: v.gb_category}); // 构建参数
                         _this.pageObj.towMenu.childSelectId = v.id;
                         _this.pageObj.towMenu.selectName = v.name;
-                        _this.$nextTick(function(){
+                        _this.$nextTick(function () {
                             _this.pageObj.towMenu.childeScrollNum = _this.$refs.towChildren.scrollTop; // 获取、记录滚动条位置
                         })
                         break;
                     case _this.pageObj.threeMenu.leve:
                         // 类型
-                        if(v.code != "") {
+                        if (v.code != "") {
                             _this.bulidPrams({"type": v.code}); // 构建参数
                             _this.pageObj.threeMenu.selectId = v.code;
                             _this.pageObj.threeMenu.selectName = v.name;
                         } else {
-                             _this.pageObj.params.type && (delete _this.pageObj.params.type); // 删除参数
-                             _this.pageObj.threeMenu.selectName = "全部类型";
-                             _this.pageObj.threeMenu.selectId = "";
+                            _this.pageObj.params.type && (delete _this.pageObj.params.type); // 删除参数
+                            _this.pageObj.threeMenu.selectName = "全部类型";
+                            _this.pageObj.threeMenu.selectId = "";
                         }
                         break;
                     case _this.pageObj.areaMenu.leve:
-                        if(v.code == 0) {
+                        if (v.code == 0) {
                             // 全部
                             _this.pageObj.areaMenu.selectName = "全部地区";
                             _this.pageObj.areaMenu.selectId = "";
@@ -515,18 +558,18 @@
                             _this.pageObj.areaMenu.children2 = [];
                             _this.pageObj.areaMenu.childSelectId = "";
                             _this.pageObj.params.area && (delete _this.pageObj.params.area); // 删除参数
-                        } else if(v.code == 1){
+                        } else if (v.code == 1) {
                             // 国外
                             var areaList = getDictionaryArrayByTypeAndParentID(101);
-                            for(var i = 0; i < areaList.length;  i++){
-                                if(areaList[i].code == "CHN") {
+                            for (var i = 0; i < areaList.length; i++) {
+                                if (areaList[i].code == "CHN") {
                                     areaList.splice(i, 1);
                                     break;
                                 }
                             }
                             // console.log("areaList --- ", areaList)
                             _this.pageObj.areaMenu.children1 = areaList;
-                            _this.$nextTick(function() {
+                            _this.$nextTick(function () {
                                 _this.$refs.areaChildren1.scrollTop = _this.pageObj.areaMenu.childeScrollNum1; // 定位滚动条位置
                             })
                             _this.pageObj.areaMenu.selectId = v.code;
@@ -535,15 +578,15 @@
                             // 国内
                             var areaList = getDictionaryArrayByTypeAndParentID(101);
                             var arra = {};
-                            for(var i = 0; i < areaList.length;  i++){
-                                if(areaList[i].code == "CHN") {
-                                   arra = areaList[i];
+                            for (var i = 0; i < areaList.length; i++) {
+                                if (areaList[i].code == "CHN") {
+                                    arra = areaList[i];
                                     break;
                                 }
                             }
                             // console.log("areaList --- ", areaList)
                             _this.pageObj.areaMenu.children2 = getDictionaryArrayByTypeAndParentID(101, arra.id);
-                            _this.$nextTick(function() {
+                            _this.$nextTick(function () {
                                 _this.$refs.areaChildren2.scrollTop = _this.pageObj.areaMenu.childeScrollNum2; // 定位滚动条位置
                             })
                             _this.pageObj.areaMenu.selectId = v.code;
@@ -556,10 +599,10 @@
                         _this.bulidPrams({area: v.code}); // 构建参数
                         _this.pageObj.areaMenu.childSelectId = v.id;
                         _this.pageObj.areaMenu.selectName = v.name;
-                        if(_this.pageObj.areaMenu.selectId == 1) {
+                        if (_this.pageObj.areaMenu.selectId == 1) {
                             _this.pageObj.areaMenu.childeScrollNum1 = _this.$refs.areaChildren1.scrollTop; // 获取、记录滚动条位置
                             _this.pageObj.areaMenu.childeScrollNum2 = 0;
-                        } else if(_this.pageObj.areaMenu.selectId == 2) {
+                        } else if (_this.pageObj.areaMenu.selectId == 2) {
                             _this.pageObj.areaMenu.childeScrollNum1 = 0;
                             _this.pageObj.areaMenu.childeScrollNum2 = _this.$refs.areaChildren2.scrollTop; // 获取、记录滚动条位置
                         }
@@ -569,23 +612,43 @@
                 }
                 status && _this.closeAll(); // 关闭
                 _this.mescroll.resetUpScroll(); // 重置page.num  上拉  访问数据
-                _this.mescroll.scrollTo( 0, 0 ); // 回到页面顶部
-                
+                _this.mescroll.scrollTo(0, 0); // 回到页面顶部
+
             },
             // 重置菜单数据
             resetMenu(leve) {
                 var _this = this;
-                if(leve == _this.pageObj.towMenu.leve) {
+                if (leve == _this.pageObj.towMenu.leve) {
                     _this.pageObj.towMenu.selectName = "全部分类";
                     _this.pageObj.towMenu.selectId = "";
                     _this.pageObj.towMenu.datas = [];
                     _this.pageObj.towMenu.children = [];
                     _this.pageObj.towMenu.childSelectId = [];
                 }
-                
+
             },
             toDetails: function (id, type) {
                 window.location.href = rootName + "/pages/ency/details.html?type=" + type + "&id=" + id; // 跳转详情
+            },
+            //loading
+            loadingAndNoNetwork(){
+                var _data = mySessionStorage.getter('encyListData')
+                if(_data){
+                    this.self.loading.show = false
+                    this.self.page.show = true
+                }else {
+                    for (let i = 1; i < 6; i++) {
+                        setTimeout(()=>{
+                            if(this.self.page.data){
+                                this.self.loading.show = false
+                                this.self.page.show = true
+                            }
+                        },i*500)
+                    }
+                }
+                setTimeout(()=>{
+                    this.self.loading.show = false
+                },overTime)
             }
         }
     })

@@ -167,7 +167,7 @@ const wkSwiper = {
                     var c = array.baseModel.ichMaster ? array.baseModel.ichMaster.contentFragmentList : "";
                     var p = {
                         title: "28",
-                        info: "", 
+                        info: "31", 
                         img: "25",
                         oss: oss.picUrl + oss.works,
                         marking: ""

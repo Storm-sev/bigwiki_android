@@ -68,7 +68,6 @@ function  bulidData(data) {
             }
         }
         listData.push(obj);
-        console.log(listData)
     }
 
     // 根据不同的类型 获取拆分接口数据针对不同类型时所需要的不同的参数

@@ -1,6 +1,8 @@
 @charset "utf-8";
 @import "base";
+@import "libs/mescroll";
 @import "libs/swiper";
+@import "base/loading";
 @import "base/ency-data-list";
 
 // 清空浮动
@@ -299,5 +301,8 @@ html, body {
 		.hide {
 			display: none;
 		}
+	}
+	.page-loading {
+		bottom: 0;
 	}
 }

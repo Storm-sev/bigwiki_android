@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>3D馆</title>
-    <!--<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>-->
     <meta http-equiv="Content-Type" content="text/html; charset=GBK">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -13,21 +12,9 @@
     <meta http-equiv="Pragma" content="no-cache">
     <!--兼容iphone-->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201808031745"></script>
     <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/3d.css?t=201807311146">
-    <script src="../../assets-wiki/js/vue.min.js?t=201807311146"></script>
-    <script src="../../assets-wiki/js/jquery.min.js?t=201807311146"></script>
-
-    <!-- 轮播图 -->
-    <script src="../../assets-wiki/js/swiper.min.js?t=201807311146"></script>
-
-
-    <!--百科数据交互-->
-    <script src="model.js?t=201807311146"></script>
-
-
-
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/3d.css?t=201808031745">
 </head>
 <body>
 <div class="box" id="app">
@@ -98,11 +85,14 @@
         </div>
       </div>
 
-<script src="../../assets-wiki/js/shop-details.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
-<!--全景展示-->
-<script src="../../assets-wiki/js/three.min.js?t=201807311146" type="text/javascript" charset="utf-8"></script>
-<script src="../../assets-wiki/js/panorama-ndyname-viewer.js?t=201807311146" type="text/javascript" charset="utf-8"></script>
+
+<script src="../../assets-wiki/js/system.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/swiper.min.js?t=201808031745"></script>
+<script src="model.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/shop-details.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/three.min.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/panorama-ndyname-viewer.js?t=201808031745"></script>
 <script>
   var app = new Vue({
       el: "#app",
@@ -191,7 +181,7 @@
 
             var clientHeight = document.documentElement.clientHeight + "px";
             $('html,body').animate({scrollTop:clientHeight},500);
-            $(".banner h3").css?t=201807311146("margin-top","0");
+            $(".banner h3").css?t=201808031745("margin-top","0");
         },
        //图集展示
        therSet(res){

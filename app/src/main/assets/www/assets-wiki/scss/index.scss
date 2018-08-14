@@ -3,10 +3,11 @@
 $base:75;
 
 @import "base";
+@import "libs/mescroll";
 @import "libs/swiper";
-//@import "base/category";
 @import "base/news-item";
 @import "base/activity";
+@import "base/loading";
 
 #mescroll {
   position: fixed;
@@ -54,6 +55,8 @@ $base:75;
 }
 
 .home {
+  position: relative;
+  z-index: 1;
   .column {
     background: #fff;
     margin-top: 12rem/$font-size-base;
@@ -133,14 +136,10 @@ $base:75;
       &:first-child {
         margin-left: 28rem/$font-size-base;
       }
-
-
-
-
     }
   }
-}
 
+}
 .category {
   background: #fff;
   padding: 28rem/$font-size-base;
@@ -158,10 +157,11 @@ $base:75;
     }
     &:after {
       content: '';
-      @include icon(url(../images/search-icon@2x.png), 30rem, 30rem);
+      @include icon(url(../images/search-icon@2x.png), 27rem, 27rem);
       @include abs(vertical);
       @include marginTopMid(27rem);
       margin-left: 32rem/$font-size-base;
+
     }
   }
 }
@@ -189,7 +189,6 @@ $base:75;
     }
   }
 }
-
 .swiper-container-horizontal>.swiper-pagination-bullets .swiper-pagination-bullet {
   margin: 0 4rem/$font-size-base;
 }

@@ -4,54 +4,51 @@
     <meta charset="UTF-8">
     <meta name="wap-font-scale" content="no">
     <title>首页</title>
-    <script src="../../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <script src="../../../assets-wiki/js/flexible.min.js?t=201808031745"></script>
     <link rel="icon" type="image/x-icon" href="../../../assets-wiki/images/favicon.ico"/>
-    <link rel="stylesheet" href="../../../assets-wiki/css/my.css?t=201807311146">
+    <link rel="stylesheet" href="../../../assets-wiki/css/my.css?t=201808031745">
 <body>
 
-<div id="my" class="my">
+<div id="my" class="my js-page-load">
     <wk-Header :data="self.head"></wk-Header>
     <!--//End 导航-->
 
-    <template v-show="!is.loading">
-        <article class="container">
-            <div class="messages">
-                <ul>
-                    <li class="item" v-for="item in msgList" :class="'active-' + item.status">
-                        <a :href="item.href">
-                            <img class="icon" src="../../../assets-wiki/images/my/icon-messages@2x.png" alt="">
-                            <div class="text">
-                                <p class="name"><span v-text="item.title"></span><em class="time" v-text="item.time"></em>
-                                </p>
-                                <p class="info" v-text="item.content"></p>
-                            </div>
-                        </a>
-                    </li>
-                </ul>
+    <article class="container page-hide">
+        <div class="messages">
+            <ul>
+                <li class="item" v-for="item in msgList" :class="'active-' + item.status">
+                    <a :href="item.href">
+                        <img class="icon" src="../../../assets-wiki/images/my/icon-messages@2x.png" alt="">
+                        <div class="text">
+                            <p class="name"><span v-text="item.title"></span><em class="time" v-text="item.time"></em>
+                            </p>
+                            <p class="info" v-text="item.content"></p>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </article>
+    <article v-show="is.blank" v-cloak>
+        <div class="blank404">
+            <div class="content">
+                <img class="pic" src="../../../assets-wiki/images/icon-no-data@2x.png" alt="">
+                <div class="name">暂无信息</div>
+                <div class="txt">当前没有更多信息，请稍后查询…</div>
             </div>
-        </article>
-        <article v-show="is.blank">
-            <div class="blank404">
-                <div class="content">
-                    <img class="pic" src="../../../assets-wiki/images/icon-no-data@2x.png" alt="">
-                    <div class="name">暂无信息</div>
-                    <div class="txt">当前没有更多信息，请稍后查询…</div>
-                </div>
-            </div>
-        </article>
-    </template>
+        </div>
+    </article>
 
-    <Loading :msg="is.loading"></Loading>
 
 </div>
 
 
 <!--//End 底部-->
-<script src="../../../assets-wiki/js/system.js?t=201807311146"></script>
-<script src="../../../assets-wiki/js/swiper.min.js?t=201807311146"></script>
-<script src="../../../assets-wiki/js/tpls.js?t=201807311146"></script>
-<script src="../../../assets-wiki/js/utils.js?t=201807311146"></script>
-<script src="../../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script src="../../../assets-wiki/js/system.js?t=201808031745"></script>
+<script src="../../../assets-wiki/js/swiper.min.js?t=201808031745"></script>
+<script src="../../../assets-wiki/js/tpls.js?t=201808031745"></script>
+<script src="../../../assets-wiki/js/utils.js?t=201808031745"></script>
+<script src="../../../assets-wiki/js/myApp.js?t=201808031745"></script>
 <script>
     var app = new Vue({
         el: '#my',
@@ -64,34 +61,33 @@
             },
             is: {
                 blank: false,
-                loading: true
             },
             unread: false,
             msgList: []
         },
         components: {
-            wkHeader,
-            Loading: shopLoad
+            wkHeader
         },
         mounted: function () {
             this._getMessagesList()
         },
         methods: {
             _getMessagesList: function () {
-                //1.t: 0.6316842579788131
-
                 var _params = {};
                 var user = myLocalStorage.getter('__user__')
                 var _this = this;
                 var params = {
-                    type:'GET',
-                    url: domain + '/message/getMessageListByUserId?phone='+ user.phone +'&t='+Math.random(),
+                    type: 'GET',
+                    url: domain + '/message/getMessageListByUserId?&t=' + Math.random(),
                     data: _params,
                     sCallback: function (res) {
-                        console.log('11')
+                        //未登录
+                        // if(res.code==3){//todo 涉及的逻辑问题太多暂不做过多处理
+                        //     window.location.href = rootName + '/pages/login/login.html?returnUrl=' + window.location.href
+                        //     return false
+                        // }
 
-                        _this.is.loading = false
-                        if(!res.data || res.data.length==0){
+                        if (!res.data || res.data.length == 0) {
                             _this.is.blank = true
                             return
                         }
@@ -103,17 +99,13 @@
                             format.status = data[i].status
                             format.title = data[i].title
                             format.content = data[i].content
-                            // android
                             format.href = rootName + '/my/messages/details.html?id=' + data[i].id
-                            format.time = getDateDiff(getDateTimeStamp(data[i].pushDate))
+                            format.time = data[i].pushDate && getDateDiff(getDateTimeStamp(data[i].pushDate))
+                            console.log(format.time)
                             result.push(format)
                         }
                         _this.msgList = result
 
-
-                        for (let i = 0; i < result.length; i++) {
-                            console.log(i+'->',result[i].status)
-                        }
                     }
                 };
                 httpRequest(params);

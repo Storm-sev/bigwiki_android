@@ -1,7 +1,7 @@
-//const domain = "http://123.57.174.187:8080/"; // 线上域名地址
-//const rootName = "/wiki-h5"; // 部署tomcat时候的目录名称
-// const domain = "http://123.57.173.1:8080"; // 测试名地址
+// const domain = "http://123.57.174.187:8080/"; // 线上域名地址
+//const rootName = "/info"; // 部署tomcat时候的目录名称
 
+//const domain = "http://123.57.173.1:8080"; // 测试名地址
 const domain = "http://www.diich.com"; // 正式名称地址
 
 const androidRoute = "file:///android_asset/www"; // android绝对路径
@@ -11,9 +11,11 @@ const iosRoute = ""; // ios绝对路径
 // const domain = "http://172.16.1.269:8080"; // 线上域名地址
 // const domain = "http://172.16.1.269:8080"; // 线上域名地址
 
-//const httpsUrl = 'http://123.57.173.1/info/pages/';  //分享后的域名地址
-const httpsUrl = 'http://m.diich.com/info/pages/';  //分享后的正式域名地址
 
+//const httpsUrl = 'http://123.57.173.1/info/pages/';  //分享后的域名地址
+const httpsUrl = 'http://m.diich.com/info/pages/';  //分享后的域名地址
+
+var overTime = 6000;    // 时间配置
 
 /**
  * oss地址
@@ -65,9 +67,12 @@ const api = {
     masterDetails: domain + "/ichMaster/get", // 传承人详情
     // worksDetails: "http://192.168.1.105:80" + "/works/get", // 作品详情
     worksDetails: domain + "/works/get", // 作品详情
-    targetId: domain + "/items/getByObjectIdAndTargetId", //活化馆-获取页数数据接口
-    parentId: domain + "/items/getListByObjectIdAndParentId", //活化馆-获取单数据接口
+    targetId: domain + "/items/getByObjectIdAndTargetId", //活化馆-获取单页
+    parentId: domain + "/items/getListByObjectIdAndParentId", //活化馆-获取子频道
     updataPhone: domain + "/user/updataphone", // 修改手机号码
+    isPhome: domain + "/user/checkUserByPhone", // 手机号码是否已经注册
+    forgetPassword : domain + "/user/forgetPassword", // 验证账号并发送验证码接口
+    updataPassword : domain + "/user/updataPassword", // 更改密码接口并登陆
 };
 
 const hrefUrl = {
@@ -79,10 +84,6 @@ const hrefUrl = {
     encydetails : "ency/details.html?id=",      //项目、传承人详情连接
 };
 
-
-
-
-
 /**
  * 活化馆oss默认图
  */
@@ -93,9 +94,6 @@ var ossDefault = {
     list_320: "../../assets-wiki/images/default/head694_320.png",
     list_374: "../../assets-wiki/images/default/head694_374.png"
 };
-
-
-
 
 /**
  * params {}
@@ -136,9 +134,6 @@ var httpRequest = function (params) {
         },
         // crossDomain: true,
         success: function (res) {
-
-            // console.log('res',res);
-
             if(res.code == -2){
                 callApp(function () {
 
@@ -157,7 +152,7 @@ var httpRequest = function (params) {
         },
         error: function (error) {
             ('error->', error)
-            params.eCallback && params.sCallback(error);
+            params.eCallback && params.eCallback(error);
         }
     })
 }
@@ -395,6 +390,21 @@ var loginRedirectIndex = function () {
     }
 }
 
+//判断是否登录
+var isLogined = function (callback){
+    var _this = this
+    var params = {
+        type: 'POST',
+        data: {},
+        url: domain + '/message/getMessageListByUserId',
+        sCallback: function (res) {
+            callback(res.code)
+        }
+    };
+    httpRequest(params)
+}
+
+
 /**
  * 根据targetType获取类型名称
  * @param code targetType
@@ -496,15 +506,9 @@ function clearHtml ( html ) {
     return html;
 }
 
-
-
-
 /**
  * 字典接口方法
  */
-
-
-
 /**
  * 通过type和code获取字典文本
  * @param type 类型
@@ -1317,4 +1321,5 @@ function send_request() {
         rotate();
     };
 })();
+
 

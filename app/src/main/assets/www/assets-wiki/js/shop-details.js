@@ -181,10 +181,8 @@ const ReDatails = {
         datas: {}
     },
     template: `<div class="master_return" :class="{active: iv_white}">
-                  <div>
-                    <a href="index.html" @click="btnReturn"><img :src="img_url[0]"></a>
-                    <a href="javascript:;" @click="btnShare"><img :src="img_url[1]"></a>
-                  </div>
+                  <div class="abs-l"><a href="index.html" @click="btnReturn" class="icon back"></a></div>
+                  <div class="abs-r"><a href="javascript:;" @click="btnShare" class="icon share"></a></div>
                   <div class="btn_share active" v-if="share" @click="btnShare">
                       <div class="modal-share">
                         <img src="../../assets-wiki/images/modal/icon-modal-share@2x.png" alt="">
@@ -193,10 +191,6 @@ const ReDatails = {
                 </div>`,
     data: function(){
         return {
-            img_url: [
-                "../../assets-wiki/images/shop/return.png",
-                "../../assets-wiki/images/shop/fenxiang.png"
-            ],
             iv_white: false,  //是否显示白色底部
             //提示分享状态
             share: false,
@@ -356,25 +350,27 @@ const PicsList = {
         }
     },
     mounted: function () {
+        var _this = this
 
-
-        if(this.update == 1){
-            this.$nextTick(function () {
-                var mySwiper = new Swiper('.swiper-container_end', {
-                    freeMode: true,
-                    slidesPerView: 5
-                    //slidesPerGroup : 3
+        setTimeout(function () {
+            if(_this.update == 1){
+                _this.$nextTick(function () {
+                    var mySwiper = new Swiper('.swiper-container_end', {
+                        freeMode: true,
+                        slidesPerView: 5
+                        //slidesPerGroup : 3
+                    })
                 })
-            })
-        }else{
-            this.$nextTick(function () {
-                var mySwiper = new Swiper('.swiper-container_end', {
-                    freeMode: true,
-                    slidesPerView: 5
-                    //slidesPerGroup : 3
+            }else{
+                _this.$nextTick(function () {
+                    var mySwiper = new Swiper('.swiper-container_end', {
+                        freeMode: true,
+                        slidesPerView: 5
+                        //slidesPerGroup : 3
+                    })
                 })
-            })
-        }
+            }
+        },1000)
 
 
     }

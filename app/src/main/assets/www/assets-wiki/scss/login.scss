@@ -207,108 +207,206 @@ html, body {
 
 .login {
    color: #1B1B1B;
-  .login-form {
-    position: fixed;
-    top: 76rem/$font-size-base;
-    left: 0;
-    right: 0;
-    @include perHidth(100%);
-    .login-input {
-      @include clearfix;
-      @include width(694rem);
-      @include perHidth(100%);
-      position: absolute;
-      top: 144rem/$font-size-base;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      margin: 0 auto;
-      input {
-        @include perWidth(100%);
-        @include height(72rem);
-        @include fontSize(28rem);
-        border-bottom: 2rem/$font-size-base solid #E8E9EB;
-      }
-
-      .notPwd {
-        @include fontSize(24rem);
-        color: #AAAAAA;
-        margin-top: 22rem/$font-size-base;
-        float: right;
-      }
-
-      & > div:nth-last-child(4) {
-        margin-top: 54rem/$font-size-base;
-        position: relative;
-        top: 0;
-        left: 0;
-      }
-
-      .operation {
-        @include width(340rem);
-        @include height(155rem);
-        margin: 0 auto;
-        margin-top: 157rem/$font-size-base;
-        div {
-          @include perHidth(50%);
-          // button {
-          // 	@include perWidth(100%);
-          // 	@include perHidth(100%);
-          // 	@include fontSize(32rem);
-          // 	background-color: #4183EA;
-          // 	color: #FFFFFF
-          // }
-
-          p {
-            @include fontSize(24rem);
-            color: #4183EA;
-            text-align: center;
-            margin-top: 22rem/$font-size-base;
-          }
-        }
-      }
-
-      .three {
-        //@include perWidth(100%);
-        width: 100%;
-        @include height(52rem);
-        position: fixed;
-        left: 0;
-        bottom: 35rem/$font-size-base;
-        text-align: center;
-        //.qq {
-        //	i {
-        //		@include icon("../../assets/images/login/qq.png", 111rem, 111rem, 173rem/$font-size-base, null,0)
-        //	}
-        //}
-        //.weChat {
-        //	i {
-        //		@include icon("../../assets/images/login/weChat.png", 111rem, 111rem, null,  173rem/$font-size-base,0)
-        //	}
-        //}
-        .dec {
-          position: absolute;
-          left: 0;
-          bottom: 0;
-          @include perWidth(100%);
-          span {
+   .login-form {
+       padding-top: 76rem/$font-size-base;
+       .login-input {
+          padding-top: 144rem/$font-size-base;
+          @include width(694rem);
+          @include perHidth(100%);
+          margin: 0 auto;
+          input {
             @include perWidth(100%);
-            @include fontSize(24rem);
-            text-align: center;
-            color: #AAAAAA;
-            // margin-left: 30rem/$font-size-base;
+            @include height(72rem);
+            @include fontSize(28rem);
+            border-bottom: 2rem/$font-size-base solid #E8E9EB;
+          }
+
+          .notPwd {
+              @include fontSize(24rem);
+              color: #AAAAAA;
+              margin-top: 22rem/$font-size-base;
+              float: right;
+          }
+
+          & > div:nth-last-child(4) {
+            margin-top: 54rem/$font-size-base;
             position: relative;
-            a {
-              color: #4183EA;
-              cursor: pointer;
+            top: 0;
+            left: 0;
+          }
+
+          .operation {
+            @include width(340rem);
+            @include height(155rem);
+            margin: 0 auto;
+            margin-top: 157rem/$font-size-base;
+            div {
+              @include perHidth(50%);
+              // button {
+              //   @include perWidth(100%);
+              //   @include perHidth(100%);
+              //   @include fontSize(32rem);
+              //   background-color: #4183EA;
+              //   color: #FFFFFF
+              // }
+
+              p {
+                @include fontSize(24rem);
+                color: #4183EA;
+                text-align: center;
+                margin-top: 22rem/$font-size-base;
+              }
             }
           }
-        }
+          .three {
+              //@include perWidth(100%);
+              width: 100%;
+              @include height(52rem);
+              position: fixed;
+              left: 0;
+              bottom: 35rem/$font-size-base;
+              text-align: center;
+              //.qq {
+              // i {
+              //   @include icon("../../assets/images/login/qq.png", 111rem, 111rem, 173rem/$font-size-base, null,0)
+              // }
+              //}
+              //.weChat {
+              // i {
+              //   @include icon("../../assets/images/login/weChat.png", 111rem, 111rem, null,  173rem/$font-size-base,0)
+              // }
+              //}
+              .dec {
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                @include perWidth(100%);
+                span {
+                  @include perWidth(100%);
+                  @include fontSize(24rem);
+                  text-align: center;
+                  color: #AAAAAA;
+                  // margin-left: 30rem/$font-size-base;
+                  position: relative;
+                  a {
+                    color: #4183EA;
+                    cursor: pointer;
+                  }
+                }
+              }
+          }
+       }
+   }
 
-        //}
-      }
-    }
-  }
+
+
+
+
+
+
+
+  // .login-form {
+  //   position: fixed;
+  //   top: 76rem/$font-size-base;
+  //   left: 0;
+  //   right: 0;
+  //   @include perHidth(100%);
+  //   .login-input {
+  //     @include clearfix;
+  //     @include width(694rem);
+  //     @include perHidth(100%);
+  //     position: absolute;
+  //     top: 144rem/$font-size-base;
+  //     left: 0;
+  //     bottom: 0;
+  //     right: 0;
+  //     margin: 0 auto;
+  //     input {
+  //       @include perWidth(100%);
+  //       @include height(72rem);
+  //       @include fontSize(28rem);
+  //       border-bottom: 2rem/$font-size-base solid #E8E9EB;
+  //     }
+
+  //     .notPwd {
+  //       @include fontSize(24rem);
+  //       color: #AAAAAA;
+  //       margin-top: 22rem/$font-size-base;
+  //       float: right;
+  //     }
+
+  //     & > div:nth-last-child(4) {
+  //       margin-top: 54rem/$font-size-base;
+  //       position: relative;
+  //       top: 0;
+  //       left: 0;
+  //     }
+
+  //     .operation {
+  //       @include width(340rem);
+  //       @include height(155rem);
+  //       margin: 0 auto;
+  //       margin-top: 157rem/$font-size-base;
+  //       div {
+  //         @include perHidth(50%);
+  //         // button {
+  //         //   @include perWidth(100%);
+  //         //   @include perHidth(100%);
+  //         //   @include fontSize(32rem);
+  //         //   background-color: #4183EA;
+  //         //   color: #FFFFFF
+  //         // }
+
+  //         p {
+  //           @include fontSize(24rem);
+  //           color: #4183EA;
+  //           text-align: center;
+  //           margin-top: 22rem/$font-size-base;
+  //         }
+  //       }
+  //     }
+
+  //     .three {
+  //       //@include perWidth(100%);
+  //       width: 100%;
+  //       @include height(52rem);
+  //       position: fixed;
+  //       left: 0;
+  //       bottom: 35rem/$font-size-base;
+  //       text-align: center;
+  //       //.qq {
+  //       // i {
+  //       //   @include icon("../../assets/images/login/qq.png", 111rem, 111rem, 173rem/$font-size-base, null,0)
+  //       // }
+  //       //}
+  //       //.weChat {
+  //       // i {
+  //       //   @include icon("../../assets/images/login/weChat.png", 111rem, 111rem, null,  173rem/$font-size-base,0)
+  //       // }
+  //       //}
+  //       .dec {
+  //         position: absolute;
+  //         left: 0;
+  //         bottom: 0;
+  //         @include perWidth(100%);
+  //         span {
+  //           @include perWidth(100%);
+  //           @include fontSize(24rem);
+  //           text-align: center;
+  //           color: #AAAAAA;
+  //           // margin-left: 30rem/$font-size-base;
+  //           position: relative;
+  //           a {
+  //             color: #4183EA;
+  //             cursor: pointer;
+  //           }
+  //         }
+  //       }
+
+  //       //}
+  //     }
+  //   }
+  // }
 }
 
 

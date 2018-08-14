@@ -2,58 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201808031745"></script>
     <title></title>
     <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
-    <link rel="stylesheet" href="../../assets-wiki/css/information.css?t=201807311146">
+    <link rel="stylesheet" href="../../assets-wiki/css/information.css?t=201808031745">
 </head>
 <body style="top: 0px; position: fixed;">
-<div id="information" class="information">
-    <template v-show="!is.loading">
-        <wk-header :data="self.head" :share-data="share" @share="reShare" v-if="is.header"></wk-header>
+<div id="information" class="information js-page-load">
+    <wk-header :data="self.head" :share-data="share" @share="reShare" v-if="is.header"></wk-header>
 
-        <share-tip v-if="!is.header"></share-tip>
-        <!--//End-->
+    <share-tip v-if="!is.header"></share-tip>
+    <!--//End-->
 
-        <article class="container details" :class="{isShare:!is.header}" v-show="!is.blank">
-            <div class="main-title">
-                <h1 v-text="self.detail.title"></h1>
-                <div class="txt">
-                    <span class="news-source" v-text="self.detail.source"></span>
-                    <span class="news-time" v-text="self.detail.time"></span>
-                </div>
+    <page-loading v-if="self.loading.show"></page-loading>
+    <no-network v-if="!self.page.show"></no-network>
+
+
+    <article class="container details page-hide" :class="{isShare:!is.header,'page-show':self.page.show}" v-show="!is.blank">
+        <div class="main-title">
+            <h1 v-text="self.detail.title"></h1>
+            <div class="txt">
+                <span class="news-source" v-text="self.detail.source"></span>
+                <span class="news-time" v-text="self.detail.time"></span>
             </div>
-            <div class="main-content" v-if="self.detail.content">
-                <div v-for="item in self.detail.content">
-                    <div class="txt" v-html="item.text"></div>
-                    <div class="img" v-if="item.picture"><img :src="item.picture" alt=""></div>
-                </div>
+        </div>
+        <div class="main-content" v-if="self.detail.content">
+            <div v-for="item in self.detail.content">
+                <div class="txt" v-html="item.text"></div>
+                <div class="img" v-if="item.picture"><img :src="item.picture" alt=""></div>
             </div>
+        </div>
 
-            <div class="foot">
-                <div class="down" v-if="self.researchReport.show">
-                    <template v-if="!self.clientType">
-                        <span>《2018年中国互联网用户非遗认知与需求调研报告》</span><a :href="self.researchReport.downUrl">立刻下载</a>
-                    </template>
-                    <template v-if="self.clientType">
-                        <span>《2018年中国互联网用户非遗认知与需求调研报告》</span><a @click="onResearchReport">立刻下载</a>
-                    </template>
-                </div>
-                <div class="txt">本页面由非遗大百科采用应用内搜索技术自动抓取，在未重新编辑原始内容的情况下对版式做了优化以提升阅读体验，如有任何问题，请联系我们。</div>
-                <div class="links">
-                    <a v-if="self.detail.sourceAddress" @click="onIframe(self.detail.sourceAddress)">查看原文</a>
-                    <span v-if="self.detail.sourceAddress" class="line"></span>
-                    <a @click="onShowModalReport">内容投诉</a>
-                </div>
+        <div class="foot">
+            <div class="down" v-if="self.researchReport.show">
+                <template v-if="!self.clientType">
+                    <span>《2018年中国互联网用户非遗认知与需求调研报告》</span><a :href="self.researchReport.downUrl">立刻下载</a>
+                </template>
+                <template v-if="self.clientType">
+                    <span>《2018年中国互联网用户非遗认知与需求调研报告》</span><a @click="onResearchReport">立刻下载</a>
+                </template>
             </div>
-        </article>
+            <div class="txt">本页面由非遗大百科采用应用内搜索技术自动抓取，在未重新编辑原始内容的情况下对版式做了优化以提升阅读体验，如有任何问题，请联系我们。</div>
+            <div class="links">
+                <a v-if="self.detail.sourceAddress" @click="onIframe(self.detail.sourceAddress)">查看原文</a>
+                <span v-if="self.detail.sourceAddress" class="line"></span>
+                <a @click="onShowModalReport">内容投诉</a>
+            </div>
+        </div>
+    </article>
 
-        <modal-report-error v-show="is.modal" @status="is.modal=false"></modal-report-error>
-    </template>
-
-    <Loading :msg="is.loading"></Loading>
-
-    <no-network v-show="is.timeout"></no-network>
+    <modal-report-error v-show="is.modal" @status="is.modal=false"></modal-report-error>
 
     <div class="iframe" v-show="is.iframe">
         <div class="head">
@@ -66,15 +64,14 @@
         </div>
     </div>
 
-
 </div>
 
-<script src="../../assets-wiki/js/system.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/jx-tpls.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/information.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/system.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/utils.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/jx-tpls.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/information.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201808031745"></script>
 <script>
     var app = new Vue({
         el: '#information',
@@ -87,16 +84,23 @@
                 },
                 detail: {},
                 researchReport:{//调研报告
-                    // artId:'30066',
                     artId:'30066',
                     downUrl:'',
+                    show:false
+                },
+                clientType:false,
+                loading: {
+                    show: true, //默认展示loading状态
+                    network: false
+                },
+                page:{
+                    data:null,
                     show:false
                 }
             },
             is: {
                 blank: Boolean,
                 modal: false,
-                loading: true,
                 header: true,
                 iframe: false,
                 timeout:false
@@ -107,21 +111,15 @@
         components: {
             wkHeader,
             modalReportError,
-            Loading: shopLoad,
             shareTip: appShareTip,
-            noNetwork
+            pageLoading, //loading
+            noNetwork //没有网络显示效果
         },
         mounted: function () {
             var _this = this
             this.getNewsDetail()
             this.isShare()
-            //超时显示无网络图标
-            setTimeout(function () {
-                if (_this.is.loading) {
-                    _this.is.timeout = true
-                    _this.is.loading = false
-                }
-            }, overTime)
+
             this.researchReportDownUrl()
             if(upiosAnd().type==1 ){
                 this.self.clientType = true
@@ -129,11 +127,15 @@
             if(upiosAnd().type==2){
                 this.self.clientType = true
             }
+
+            this.loadingAndNoNetwork()
+
         },
         methods: {
             getNewsDetail: function () {
                 getInformationDetail(0,
                     (res) => {
+                        this.self.page.data = res
                         if (res.code == 0) {
                             this.self.detail = res.data
                             document.title = res.data.title + '_非遗大百科'
@@ -142,7 +144,6 @@
                         } else {
                             this.is.blank = true
                         }
-                        this.is.loading = false
                     }
                 )
             },
@@ -180,15 +181,13 @@
                         }
                         if(code==0){//登录
                             var downUrl = 'http://wiki.diich.com/2018%E5%B9%B4%E4%B8%AD%E5%9B%BD%E4%BA%92%E8%81%94%E7%BD%91%E7%94%A8%E6%88%B7%E9%9D%9E%E9%81%97%E8%AE%A4%E7%9F%A5%E4%B8%8E%E9%9C%80%E6%B1%82%E8%B0%83%E7%A0%94%E6%8A%A5%E5%91%8A.pdf'
-
+                            _this.self.researchReport.downUrl = downUrl
                         }
                     })
                 }
             },
             //客户端
             onResearchReport:function () {
-                        //console.log('调用源生=========         =======================')
-
                 var _this = this
                 if(getHttpParam('id') == _this.self.researchReport.artId){
                     _this.self.researchReport.show = true
@@ -205,14 +204,27 @@
                                     researchReportDownUrl(downUrl)
                                     break;
                                 case 2:
-                                    //console.log('调用源生======+++++++==========================')
-
+                                    _this.self.researchReport.downUrl = 'javascript:;'
                                     researchReportDownUrl(downUrl)
                                     break;
                             }
                         }
                     })
                 }
+            },
+            //loading
+            loadingAndNoNetwork(){
+                for (let i = 1; i < 6; i++) {
+                    setTimeout(()=>{
+                        if(this.self.page.data){
+                            this.self.loading.show = false
+                            this.self.page.show = true
+                        }
+                    },i*1000)
+                }
+                setTimeout(()=>{
+                    this.self.loading.show = false
+                },overTime)
             }
         }
     })

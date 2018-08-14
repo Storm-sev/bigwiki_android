@@ -1,7 +1,7 @@
 @charset "utf-8";
 @import "base";
 @import "libs/swiper";
-@import "base/blank404";
+@import "base/loading";
 
 *{
   margin: 0;
@@ -179,4 +179,9 @@ $size: 75;
   background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
   box-sizing: border-box;
   padding-top: 80rem/$size;
+}
+
+.header {
+  position: relative;
+  z-index: 10;
 }

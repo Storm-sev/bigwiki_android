@@ -4,23 +4,25 @@
     <meta charset="UTF-8">
     <meta name="wap-font-scale" content="no">
     <title>百科首页</title>
-    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201808031745"></script>
     <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/ency-details.css?t=201807311146">
-    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/mescroll.min.css?t=201807311146">
-    <script src="../../assets-wiki/js/swiper.min.js?t=201807311146"></script>
-     <script src="../../assets-wiki/js/vue.min.js?t=201807311146"></script>
-    <script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
-    <script src="../../assets-wiki/js/shop-details.js?t=201807311146"></script>
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/ency-details.css?t=201808031745">
 </head>
 <body>
 <!-- 图集展示区域 -->
 <!-- <atl-area :area="area" :urlset="urlset" @child-say="imgSet"></atl-area> -->
 
-<div class="ency-details" id="details" v-cloak>
-    <wk-header :data="headData" :share-data="share" v-if="is.header" ></wk-header>
+<div class="ency-details js-page-load" id="details">
+    <wk-header :data="headData" :share-data="share" v-if="is.header"></wk-header>
+
+
+
     <share-tip v-if="!is.header"></share-tip>
-    <div id="mescroll" class="content">
+
+    <page-loading v-if="self.loading.show"></page-loading>
+    <no-network v-if="!self.page.show"></no-network>
+
+    <div id="mescroll" class="content page-hide" :class="{'page-show':self.page.show}">
         <div :class="{topShow: true, 'ency-top': !is.header}" >
             <!-- 视频 -->
             <!-- <div class="video" v-show="pageObj.video" style="display: none;">
@@ -32,8 +34,9 @@
                 </div> -->
             <!-- </div> -->
             <div class="image" v-show="pageObj.img" style="display: none;">
-               <img class="lazy" :data-original="pageObj.img ? pageObj.img :'../../assets-wiki/images/default/head694*374.png'">
-            </div>    
+               <!--<img class="lazy" :data-original="pageObj.img ? pageObj.img :'../../assets-wiki/images/default/head694*374.png'">-->
+                <img :src="pageObj.img ? pageObj.img :'../../assets-wiki/images/default/head694_374.png'" alt="">
+            </div>
 
             <div class="introduce">
                 <h1>{{pageObj.title}}</h1>
@@ -109,15 +112,16 @@
     <!--//End 底部-->
 </div>
 
-
-<script src="../../assets-wiki/js/jquery.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/mescroll.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/jquery.lazyload.min.js?t=201807311146?v=1.9.1"></script>
-<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
-<script src="../../assets-wiki/data/dictionary.js?t=201807311146"></script>
-<script src="../../assets-wiki/data/category.js?t=201807311146"></script>
-<script src="ency-model.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/system.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/lazyload.mescroll.min.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/swiper.min.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/shop-details.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/utils.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201808031745"></script>
+<script src="../../assets-wiki/data/dictionary.js?t=201808031745"></script>
+<script src="../../assets-wiki/data/category.js?t=201808031745"></script>
+<script src="ency-model.js?t=201808031745"></script>
 <script>
     var defUrl = "http://resource.efeiyi.com/image/uploads/head.png";
     var defShare = "https://general-h5.oss-cn-beijing.aliyuncs.com/images/icon-default.png"; // 分享默认图片
@@ -157,7 +161,16 @@
             area: "",
             urlset: [],
             listmenu: [],
-            msg: true
+            msg: true,
+            self:{
+                loading: {
+                    show: true, //默认展示loading状态
+                },
+                page:{
+                    data:null,
+                    show:false
+                }
+            }
         },
         components: {
             wkHeader: wkHeader,  //导航
@@ -172,26 +185,37 @@
             atlArea: atlArea, // 图集展示
             btNmenu: btNmenu,
             returnBas: returnBas, // 返回顶部
-            shopLoad: shopLoad, //正在加载
             shareTip:appShareTip, // app分享
+            pageLoading, //loading
+            noNetwork //没有网络显示效果
         },
         mounted:function () {
             if(getHttpParam("share")) {
                 this.is.header = false;
-                // console.log(this.is.header)
             }
             this.pageInit();
+
+            this.loadingAndNoNetwork()
         },
         updated: function() {
             // 懒加载
             var self = this;
             self.$nextTick(function() {
-                // $("#mescroll").trigger('scroll');
-                $("#mescroll img.lazy").lazyload({
+                $("#mescroll").find('img.lazy').lazyload({
                     placeholder: "../../assets-wiki/images/default/default.png",
                     // effect: "fadeIn",
-                    threshold :200
+                    threshold :200,
+                    container:$("#mescroll")
                 });
+
+                setTimeout(()=>{
+                    $("#mescroll").find('img.lazy').lazyload({
+                        placeholder: "../../assets-wiki/images/default/default.png",
+                        // effect: "fadeIn",
+                        threshold :200,
+                        container:$("#mescroll")
+                    });
+                },500)
             })
         },
         methods:{
@@ -205,16 +229,15 @@
                 getData(type, id, function(pageObj) {
                     // console.log("pageObj -- >", pageObj.basData[0].urlset)
 
+                    _this.self.page.data = pageObj
+
                     _this.headData.title = pageObj.title;
                     $(document).attr("title", pageObj.title+"_非遗大百科"); // 页面title
                     // 默认图片
                     if(!pageObj.img) {
                         pageObj.img = "../../assets-wiki/images/default/head750_374.png";
                     }
-
-
                     // console.log(pageObj.basic.infotext)
-
                     _this.pageObj = pageObj;
                     // 分享
                     _this.share.title =  pageObj.title; //分享标题
@@ -233,7 +256,6 @@
             //接受图集展示的状态
             imgSet(res){
                 this.area = res;
-                console.log('---d>',this.urlset)
             },
             pause: function() {
                 $('#video').trigger('pause');
@@ -254,14 +276,16 @@
                         }
                     }
                 } 
-                _this.$nextTick(function() {
-                    getSwiper();
-                    myLazyload()
-                })
+                setTimeout(()=>{
+                    _this.$nextTick(function() {
+                        getSwiper();
+                        myLazyload()
+                    })
+                },1000)
             },
             showId: function(id) {
                 var _this = this;
-                console.log(_this.urlset)
+                // console.log(_this.urlset)
                 if(_this.pageObj.basData && _this.pageObj.basData.length > 0) {
                     var arr = [];
                     for(var i = 0; i <_this.pageObj.basData.length; i++) {
@@ -272,7 +296,6 @@
                     }
                     _this.urlset = arr;
                 }
-        
                 _this.$nextTick(function() {
                     getSwiper();
                     myLazyload();
@@ -322,9 +345,31 @@
                     }
                 }
                 _this.listmenu = menu;
-                
-            }
+            },
+            //loading
+            loadingAndNoNetwork(){
+                var _data = mySessionStorage.getter('newsData')
+                if(_data){
+                    this.self.loading.show = false
+                    this.self.page.show = true
+                }else {
+                    for (let i = 1; i < 6; i++) {
+                        setTimeout(()=>{
+                            if(this.self.page.data){
+                                this.self.loading.show = false
+                                this.self.page.show = true
+                            }
+                        },i*500)
+                    }
 
+
+                }
+                setTimeout(()=>{
+                    this.self.loading.show = false
+                },overTime)
+
+
+            }
         }
     });
 
@@ -334,7 +379,6 @@
         if(!app.$data.share.content) {
             app.$data.share.content = data;
         }
-
     }
 
     // 获取数据
@@ -952,7 +996,7 @@
     }
 
     function myLazyload() {
-        $("#area img.lazy").lazyload({
+        $("#area").find('img.lazy').lazyload({
             placeholder: "../../assets-wiki/images/default/default.png",
         });
     }

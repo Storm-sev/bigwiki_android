@@ -23,7 +23,7 @@ function  bulidData(data) {
                 case params.img:
                     // img 图片
                     if(arr[i].content.indexOf('http') < 0) {
-                        obj.img = params.oss + arr[i].content + oss.handle.domain + oss.handle.encyList;
+                        obj.img = params.oss + arr[i].content + oss.handle.domain + oss.handle.pepoleList;
                     } else {
                         obj.img = arr[i].content;
                     }
@@ -80,11 +80,24 @@ function  bulidData(data) {
                 handleData(Object.assign(params, p));
                 break;
             case "2":
-                // 作品
-                handleData(Object.assign(params, {title: "28", info: "31", img: "25", // 背景图 项目
+                var c = params.array.contentFragmentList;
+                console.log("c --- >", c);
+                var p = {
+                    title: "28", 
+                    info: "31", 
+                    img: "25", // 背景图 项目
                     oss: oss.picUrl + oss.works,
                     marking: ""
-                }))
+                }
+                // 取出项目名称
+                for(var i = 0; i < c.length; i++) {
+                    if(c[i].attributeId == "13") {
+                        p.marking = c[i].content; // 传承人标示取项目名称
+                        break;
+                    }
+                }
+                // 作品
+                handleData(Object.assign(params, p))
             default:
                 break;
         }

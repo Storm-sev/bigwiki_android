@@ -3,23 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="wap-font-scale" content="no">
-    <!--<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">-->
     <title>百科首页_非遗大百科</title>
-    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201808031745"></script>
     <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/mescroll.min.css?t=201807311146">
-    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/ency.css?t=201807311146">
-    <script src="../../assets-wiki/js/swiper.min.js?t=201807311146"></script>
-    <script src="../../assets-wiki/js/vue.min.js?t=201807311146"></script>
-    <script src="../../assets-wiki/data/category.js?t=201807311146"></script>
-    <script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/ency.css?t=201808031745">
 </head>
 <body>
 
-<div class="ency" id="ency">
+<div class="ency js-page-load" id="ency">
     <wk-header :data="headData"></wk-header>
     <!--//End 导航-->
-    <div  id="mescroll" :class="{mescroll: true, 'not-data-back': pageObj.pdlist.length <= 0}">
+
+    <page-loading v-if="self.loading.show"></page-loading>
+    <no-network v-if="!self.page.show"></no-network>
+
+    <div class="page-hide1" id="mescroll" :class="{mescroll: true, 'not-data-back': pageObj.pdlist.length <= 0,'page-show':self.page.show}">
         <div>
             <div class="slider" style="height: auto;">
                 <wk-swiper :swiper="pageObj.focus"></wk-swiper>
@@ -49,12 +47,15 @@
     </div>
     <!--//End 底部-->
 </div>
-<script src="../../assets-wiki/js/jquery.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/jquery.lazyload.min.js?t=201807311146?v=1.9.1"></script>
-<script src="../../assets-wiki/js/mescroll.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
-<script src="ency-model.js?t=201807311146"></script>
+
+<script src="../../assets-wiki/js/system.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/lazyload.mescroll.min.js?t=201808031745?v=1.9.1"></script>
+<script src="../../assets-wiki/js/swiper.min.js?t=201808031745"></script>
+<script src="../../assets-wiki/data/category.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/utils.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201808031745"></script>
+<script src="ency-model.js?t=201808031745"></script>
 <script>
     var app = new Vue({
         el: '#ency',
@@ -77,6 +78,15 @@
                 selectedIndex:2,
                 pdlist: [],
                 total: 0,
+            },
+            self:{
+                loading: {
+                    show: true, //默认展示loading状态
+                },
+                page:{
+                    data:null,
+                    show:false
+                }
             }
         },
         components: {
@@ -84,7 +94,9 @@
             wkFooter: wkFooter,  //底部
             wkEncy: wkEncy, // 百科列表
             wkSwiper: wkSwiper, // 轮播图
-            wkCategory: wkCategory
+            wkCategory: wkCategory,
+            pageLoading, //loading
+            noNetwork //没有网络显示效果
         },
         mounted:function () {
             var self = this;
@@ -116,17 +128,29 @@
                         }
                         mySessionStorage.setter("homeListData", encyListData);
 
+                        var el = $("#mescroll")
                         self.$nextTick(function() {
-                            $("#mescroll").trigger('scroll');
-                            $("img.lazy").lazyload({
+                            el.trigger('scroll');
+                            $("#mescroll").find("img.lazy").lazyload({
                                 placeholder: "../../assets-wiki/images/default/default.png",
-                                // effect: "fadeIn",
-                                threshold :200
+                                threshold :200,
+                                container:el
                             });
+
+                            setTimeout(()=>{
+                                $("#mescroll").find("img.lazy").trigger('scroll');
+                                $("img.lazy").lazyload({
+                                    placeholder: "../../assets-wiki/images/default/default.png",
+                                    threshold :200,
+                                    container:el
+                                });
+                            },1000)
                         })
                     }
                 }
             });
+
+            this.loadingAndNoNetwork()
         },
         updated: function() {
             // 懒加载
@@ -138,6 +162,14 @@
                     // effect: "fadeIn",
                     threshold :200
                 });
+                setTimeout(()=>{
+                    $("#mescroll").trigger('scroll');
+                    $("img.lazy").lazyload({
+                        placeholder: "../../assets-wiki/images/default/default.png",
+                        // effect: "fadeIn",
+                        threshold :200
+                    });
+                },1000)
             })
         },
         methods:{
@@ -167,19 +199,22 @@
                     },
                     sCallback: function (res) {
                         if(res.code == 0) {
+                            _this.self.page.data = res
+
                             _this.pageObj.focus = buildSwiper(res.data);
-                            // console.log("new -- >", buildSwiper(res.data))
-                            _this.$nextTick(function () {
-                                var swiper = new Swiper('.slider .swiper-container', {
-                                    pagination: '.swiper-pagination',
-                                    slidesPerView: 1,
-                                    paginationClickable: true,
-                                    // spaceBetween: 30,
-                                    autoplay: 5000,//可选选项，自动滑动
-                                    loop: true
-                                });
-                                $(".swiper-slide").css("width", "100%"); // 修改宽度
-                            })
+                            setTimeout(()=>{
+                                _this.$nextTick(function () {
+                                    var swiper = new Swiper('.slider .swiper-container', {
+                                        pagination: '.swiper-pagination',
+                                        slidesPerView: 1,
+                                        paginationClickable: true,
+                                        // spaceBetween: 30,
+                                        autoplay: 5000,//可选选项，自动滑动
+                                        loop: true
+                                    });
+                                    $(".swiper-slide").css("width", "100%"); // 修改宽度
+                                })
+                            },1000)
                         }
                     },
                     eCallback: function (err) {
@@ -223,6 +258,27 @@
 
             toDetails: function(id) {
                 console.log("id --- >", id);
+            },
+
+            //loading
+            loadingAndNoNetwork(){
+                var _data = mySessionStorage.getter('homeListData')
+                if(_data){
+                    this.self.loading.show = false
+                    this.self.page.show = true
+                }else {
+                    for (let i = 1; i < 6; i++) {
+                        setTimeout(()=>{
+                            if(this.self.page.data){
+                                this.self.loading.show = false
+                                this.self.page.show = true
+                            }
+                        },i*500)
+                    }
+                }
+                setTimeout(()=>{
+                    this.self.loading.show = false
+                },overTime)
             }
             
         }

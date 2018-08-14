@@ -12,1161 +12,1166 @@
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="Pragma" content="no-cache">
     <!--兼容iphone-->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
     <script src="../../assets-wiki/js/flexible.min.js?t=2018070202"></script>
     <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/local.css?t=2018070202">
-    <script src="../../assets-wiki/js/vue.min.js?t=2018070202"></script>
-    <script src="../../assets-wiki/js/jquery.min.js?t=2018070202"></script>
-
-    <!--懒加载-->
-    <script src="../../assets-wiki/js/jquery.lazyload.min.js?t=2018070202"></script>
-
-    <!-- 轮播图 -->
-    <script src="../../assets-wiki/js/swiper.min.js?t=2018070202"></script>
-
-    <!--资讯组件-->
-    <script src="../../assets-wiki/js/tpls.js?t=2018070202"></script>
-
-
-
-    <!--基本信息数据-->
-    <!--<script src="/assets-wiki/data/dictionary.js?t=2018070202"></script>-->
-    <!--<script src="/assets-wiki/data/category.js?t=2018070202"></script>-->
-
-
-    <!--接口方法-->
-    <script src="../../assets-wiki/js/utils.js?t=2018070202"></script>
-    <script src="../../assets-wiki/js/myApp.js?t=2018070202"></script>
-
-    <!--传承人数据-->
-    <script src="../../pages/ency/ency-model.js?t=2018070202"></script>
-
-    <!--综述数据-->
-    <script src="model.js?t=2018070202"></script>
-
 </head>
 <body>
 <div class="box" id="app" v-cloak>
 
-        <!--无网络状态导航-->
-        <no-watch-head v-if="load_msg.networkMsg && head.h5head"></no-watch-head>
-
-        <div id="mescroll">
-            <!--app导航-->
-            <app-share-tip v-if="head.apphead"></app-share-tip>
-            <!-- 返回上一级 -->
-            <Re-Datails :datas="share_content" v-if="head.h5head" :class="{active1: load_msg.returnMsg}"></Re-Datails>
-            <!--左右按钮  -->
-            <Btn-Datails :leri="leri" @btn-left="btnLeft" @btn-right="btnRight" :num="objData.diaSpage" :class="{active: load_msg.btn_msg}"></Btn-Datails>
+    <!--无网络状态导航-->
+    <!--<no-watch-head v-if="load_msg.networkMsg && head.h5head"></no-watch-head>-->
 
 
+    <page-loading v-if="self.loading.show"></page-loading>
+    <no-network v-if="!self.page.show"></no-network>
 
-            <!--交互-->
-            <div class="content">
 
+    <div id="mescroll">
+        <!--app导航-->
+        <app-share-tip v-if="head.apphead"></app-share-tip>
+        <!-- 返回上一级 -->
+        <Re-Datails :datas="share_content" v-if="head.h5head" :class="{active1: load_msg.returnMsg,active:self.loading.show}"></Re-Datails>
 
-                  <!--banner-->
-                  <Ban-Datails :dowm="dowm" :datas="bannerData"></Ban-Datails>
-
-                  <!-- 非遗数据 -->
-                  <div class="efeiy_data" v-if="efeiData">
-                      <ul>
-                        <li v-if="efeiData.projectData">
-                          <h3>非遗项目</h3>
-                          <h2>{{efeiData.projectData}}</h2>
-                        </li>
-                        <li v-if="efeiData.natiData">
-                          <h4>国家级非遗传承人</h4>
-                          <h2>{{efeiData.natiData}}</h2>
-                        </li>
-                        <li v-if="efeiData.provData">
-                          <h4>省级非遗传承人</h4>
-                          <h2>{{efeiData.provData}}</h2>
-                        </li>
-                        <li v-if="efeiData.cityData">
-                          <h4>市区级非遗传承人</h4>
-                          <h2>{{efeiData.cityData}}</h2>
-                        </li>
-                      </ul>
-                  </div>
+        <!--左右按钮  -->
+        <Btn-Datails :leri="leri" @btn-left="btnLeft" @btn-right="btnRight" :num="objData.diaSpage" :class="{active: load_msg.btn_msg}"></Btn-Datails>
 
 
 
+        <!--交互-->
+        <div class="content">
 
 
+            <!--banner-->
+            <Ban-Datails :dowm="dowm" :datas="bannerData"></Ban-Datails>
 
-                <!-- 详情 -->
-                <div class="master_detail">
-                    <div class="detail_list">
-                      <!-- 热门推荐 -->
-                      <div class="local_hot" v-if="hotData">
-                        <h3 class="init_title">热门推荐</h3>
-                        <ul>
-                          <li v-for="item in hotData">
-                            <p>
-                                <a :href="item.id">
-                                  <span>{{item.title}}</span>
-                                  <i v-if="item.type == 0"><img src="../../assets-wiki/images/shop/Group 2.png" alt=""></i>
-                                  <i v-if="item.type == 1"><img src="../../assets-wiki/images/shop/Group 545.png" alt=""></i>
-                                </a>
-                            </p>
-                           </li>
-                        </ul>
-                      </div>
-
-                      <!-- 频道分类 -->
-                      <pics-list  @code-id="btnpin" :update="update" :datas="dataList"></pics-list>
-
-                    </div>
-
-                    <!--详情内容  -->
-
-                    <div class="local_content">
-                        <!--综述-->
-                        <div class="detail_content" v-if="ency">
-
-                          <!--基本信息-->
-                          <!--<info-datails></info-datails>-->
-
-                          <!--图片 视频 文本内容-->
-                          <bas-datails :datas="basData" @show-area="localSet" @show-id="_dataId"></bas-datails>
-
-                          <!--菜单按钮-->
-                          <bt-nmenu :datas="listmenu"></bt-nmenu>
-
-                        </div>
-
-                        <!--项目-->
-                        <div v-if="proje">
-                            <wk-ency :datas="project"></wk-ency>
-                            <div class="btnwork" v-if="projeMsg">
-                                <p v-if="projeStatus == false">已加载到底部</p>
-                                <p v-if="projeStatus == true" @click="btnProje">点击加载 <a href="javascript:;">下一页</a></p>
-                            </div>
-                        </div>
-
-                        <!--传承人-->
-                        <div v-if="inhe">
-                            <wk-ency :datas="hertor"></wk-ency>
-                            <div class="btnwork" v-if="inheMsg">
-                                <p v-if="inheStatus == false">已加载到底部</p>
-                                <p v-if="inheStatus == true" @click="btnInhe">点击加载 <a href="javascript:;">下一页</a></p>
-                            </div>
-                        </div>
-
-                        <!--作品-->
-                        <div v-if="works">
-                            <wo-rksdeta :wodata="worksContent" @btn-init="localSet" @work-id="workId"></wo-rksdeta>
-                            <div class="btnwork" v-if="worksMsg">
-                                <p v-if="worksStatus == false">已加载到底部</p>
-                                <p v-if="worksStatus == true" @click="btnWorks">点击加载 <a href="javascript:;">下一页</a></p>
-                            </div>
-                        </div>
-
-                        <!--3D-->
-                        <!--<div>-->
-                            <!--3D-->
-                        <!--</div>-->
-
-                        <!--咨讯-->
-                        <div class="detail_cons" v-if="cons">
-                            <news-item :data="newsData"></news-item>
-                            <div class="btnwork" v-if="consMsg">
-                                <p v-if="consStatus == false">已加载到底部</p>
-                                <p v-if="consStatus == true" @click="btnCons">点击加载 <a href="javascript:;">下一页</a></p>
-                            </div>
-                        </div>
-
-                    </div>
-                    <!-- 图集展示区域 -->
-                    <atl-area :area="area" :urlset="urlset" @child-say="localSet"></atl-area>
-
-                    <!--返回顶部-->
-                    <return-bas></return-bas>
-
-
-                    <!--列表正在加载-->
-                    <list-load :state="state"></list-load>
-
-                    <!--无网络加载状态-->
-                    <no-network v-if="load_msg.networkMsg"></no-network>
-
-
-                </div>
+            <!-- 非遗数据 -->
+            <div class="efeiy_data" v-if="efeiData">
+                <ul>
+                    <li v-if="efeiData.projectData">
+                        <h3>非遗项目</h3>
+                        <h2>{{efeiData.projectData}}</h2>
+                    </li>
+                    <li v-if="efeiData.natiData">
+                        <h4>国家级非遗传承人</h4>
+                        <h2>{{efeiData.natiData}}</h2>
+                    </li>
+                    <li v-if="efeiData.provData">
+                        <h4>省级非遗传承人</h4>
+                        <h2>{{efeiData.provData}}</h2>
+                    </li>
+                    <li v-if="efeiData.cityData">
+                        <h4>市区级非遗传承人</h4>
+                        <h2>{{efeiData.cityData}}</h2>
+                    </li>
+                </ul>
             </div>
 
+
+
+
+
+
+            <!-- 详情 -->
+            <div class="master_detail">
+                <div class="detail_list">
+                    <!-- 热门推荐 -->
+                    <div class="local_hot" v-if="hotData">
+                        <h3 class="init_title">热门推荐</h3>
+                        <ul>
+                            <li v-for="item in hotData">
+                                <p>
+                                    <a :href="item.id">
+                                        <span>{{item.title}}</span>
+                                        <i v-if="item.type == 0"><img src="../../assets-wiki/images/shop/Group 2.png" alt=""></i>
+                                        <i v-if="item.type == 1"><img src="../../assets-wiki/images/shop/Group 545.png" alt=""></i>
+                                    </a>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 频道分类 -->
+                    <pics-list  @code-id="btnpin" :update="update" :datas="dataList"></pics-list>
+
+                </div>
+
+                <!--详情内容  -->
+
+                <div class="local_content">
+                    <!--综述-->
+                    <div class="detail_content" v-if="ency">
+
+                        <!--基本信息-->
+                        <!--<info-datails></info-datails>-->
+
+                        <!--图片 视频 文本内容-->
+                        <bas-datails :datas="basData" @show-area="localSet" @show-id="_dataId"></bas-datails>
+
+                        <!--菜单按钮-->
+                        <bt-nmenu :datas="listmenu"></bt-nmenu>
+
+                    </div>
+
+                    <!--项目-->
+                    <div v-if="proje">
+                        <wk-ency :datas="project"></wk-ency>
+                        <div class="btnwork" v-if="projeMsg">
+                            <p v-if="projeStatus == false">已加载到底部</p>
+                            <p v-if="projeStatus == true" @click="btnProje">点击加载 <a href="javascript:;">下一页</a></p>
+                        </div>
+                    </div>
+
+                    <!--传承人-->
+                    <div v-if="inhe">
+                        <wk-ency :datas="hertor"></wk-ency>
+                        <div class="btnwork" v-if="inheMsg">
+                            <p v-if="inheStatus == false">已加载到底部</p>
+                            <p v-if="inheStatus == true" @click="btnInhe">点击加载 <a href="javascript:;">下一页</a></p>
+                        </div>
+                    </div>
+
+                    <!--作品-->
+                    <div v-if="works">
+                        <wo-rksdeta :wodata="worksContent" @btn-init="localSet" @work-id="workId"></wo-rksdeta>
+                        <div class="btnwork" v-if="worksMsg">
+                            <p v-if="worksStatus == false">已加载到底部</p>
+                            <p v-if="worksStatus == true" @click="btnWorks">点击加载 <a href="javascript:;">下一页</a></p>
+                        </div>
+                    </div>
+
+                    <!--3D-->
+                    <!--<div>-->
+                    <!--3D-->
+                    <!--</div>-->
+
+                    <!--咨讯-->
+                    <div class="detail_cons" v-if="cons">
+                        <news-item :data="newsData"></news-item>
+                        <div class="btnwork" v-if="consMsg">
+                            <p v-if="consStatus == false">已加载到底部</p>
+                            <p v-if="consStatus == true" @click="btnCons">点击加载 <a href="javascript:;">下一页</a></p>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- 图集展示区域 -->
+                <atl-area :area="area" :urlset="urlset" @child-say="localSet"></atl-area>
+
+                <!--返回顶部-->
+                <return-bas></return-bas>
+
+
+                <!--列表正在加载-->
+                <list-load :state="state"></list-load>
+
+            </div>
         </div>
 
-
-        <!--正在加载-->
-        <shop-load :msg="msg" :class="{active: load_msg.shopMsg}"></shop-load>
-
-        <!--无网络加载状态-->
-        <no-network v-if="load_msg.networkMsg"></no-network>
+    </div>
 
 
-      </div>
 
+
+</div>
+
+<script src="../../assets-wiki/js/system.js?t=2018070202"></script>
+<script src="../../assets-wiki/js/lazyload.mescroll.min.js?t=2018070202"></script>
+<script src="../../assets-wiki/js/swiper.min.js?t=2018070202"></script>
+<script src="../../assets-wiki/js/tpls.js?t=2018070202"></script>
+<script src="../../assets-wiki/js/utils.js?t=2018070202"></script>
+<script src="../../assets-wiki/js/myApp.js?t=2018070202"></script>
+<script src="../../pages/ency/ency-model.js?t=2018070202"></script>
+<script src="model.js?t=2018070202"></script>
 <script src="../../assets-wiki/js/shop-details.js?t=2018070202"></script>
 <script>
-  var app = new Vue({
-      el: "#app",
-      data: {
+    var app = new Vue({
+        el: "#app",
+        data: {
 
-          urlIp: api.getList,                //百科 接口
-          urlId: api.targetId,         //banner获取详情
-          allChannelIp: api.parentId,  //作品/资讯 接口
+            urlIp: api.getList,                //百科 接口
+            urlId: api.targetId,         //banner获取详情
+            allChannelIp: api.parentId,  //作品/资讯 接口
 
-          objData:{                 //参数
-              id: "",               //百科ID
-              page: "",               //作品、资讯页数
-              diaSpage:"",          //百科页数
-              num: "",              //数量/页
-              atlasId: null,           //当前点击图文的ID
-              msg:"",                  //是否存在id  获取单个详情 还是分页详情
-          },
+            objData:{                 //参数
+                id: "",               //百科ID
+                page: "",               //作品、资讯页数
+                diaSpage:"",          //百科页数
+                num: "",              //数量/页
+                atlasId: null,           //当前点击图文的ID
+                msg:"",                  //是否存在id  获取单个详情 还是分页详情
+            },
 
-          basModelId: "", //当前地方馆的ID
-          masStatus: "",    //子频道是否累加状态1 2 3
+            basModelId: "", //当前地方馆的ID
+            masStatus: "",    //子频道是否累加状态1 2 3
 
-          //项目
-          projeStatus: true,   //load显示状态   true--有数据   fasle--无数据
-          projeMsg: false,     //load是否显示
-          //传承人
-          inheStatus: true,   //load显示状态   true--有数据   fasle--无数据
-          inheMsg: false,     //load是否显示
-          //作品
-          worksStatus: true,   //load显示状态   true--有数据   fasle--无数据
-          worksMsg: false,     //load是否显示
-          //资讯
-          consStatus: true,   //load显示状态   true--有数据   fasle--无数据
-          consMsg: false,     //load是否显示
-
-
-
-          ency: true,       //综述状态
-          proje: false,     //项目状态
-          inhe: false,      //传承人状态
-          works: false,     //作品状态
-          cons: false,      //资讯状态
-
-          msg: true,        //默认正在加载状态
-          state: false,     //列表正在加载
-
-          dowm: true,       //下拉按钮状态
-          leri: true,       //左右按钮状态
-                            workNum: 1,       //作品默认页数
-          hotData:"",       //热门推荐
-          //频道数据
-          dataList:[
-              {"name":"综述", "code_id": 1, "ivmsg": true},
-              {"name":"项目", "code_id": 2, "ivmsg": false},
-              {"name":"传承人", "code_id": 3, "ivmsg": false},
-              {"name":"作品", "code_id": 4, "ivmsg": false},
-              {"name":"资讯", "code_id": 5, "ivmsg": false}
-          ],
-
-          update: 2,
-
-          bannerData:"",    //banner题图数据
-          efeiData: "",     //非遗数据展示
-          basData:"",       //视频 图片 内容
-          area: false,      //图集展示状态
-          urlset: "",       //图集数据
-          listmenu: "",      //菜单列表数据
-          total: "",         //所有的数据条数
-          //项目
-          project: [],
-          //传承人
-          hertor:[],
-          //作品数据
-          worksContent:[],
-          //资讯
-          newsData: [],
-
-
-          //记录禁止滚动前的高度   禁止滚动时使用
-          hiddenTop: 0,
-          //重新赋值的高度   解除禁止滚动使用
-          showTop: 0,
-
-          //ios Android分享内容
-          share_content: {
-              title: "",
-              imageUrl: "",
-              content: "",
-              htmlUrl: ""
-          },
-
-          //导航状态
-          head:{
-              addhead: false,    //分享后的导航
-              h5head: true    //原导航
-          },
-
-          // 有无网络状态
-          load_msg :{
-              networkMsg: false,  // 无网络状态
-              shopMsg: false,     // load z-index
-              btn_msg: false,    // 左右按钮z-index
-              returnMsg: false   //返回上一级 z-index
-          }
-
-      },
-      components:{
-        btNmenu: btNmenu,             //菜单按钮
-        ReDatails: ReDatails,         //返回上一级 按钮
-        BtnDatails: BtnDatails,       //左右按钮
-        BanDatails: BanDatails,       //banner题图
-        PicsList: PicsList,           //频道分类
-        BasDatails: BasDatails,       //图片  视频  文本内容
-        woRksdeta: woRksdeta,         //作品模板
-        atlArea:atlArea,              //图集展示
-        newsItem: newsItem,           //资讯
-        wkEncy:wkEncy,                //项目、传承人
-        shopLoad:shopLoad,            //正在加载
-        listLoad:listLoad,            //列表正在加载
-        returnBas: returnBas,         //返回顶部
-        appShareTip: appShareTip,      //app导航
-        noNetwork: noNetwork,   //无网络加载状态
-        noWatchHead: noWatchHead   //无网络状态导航
-      },
-      methods: {
-
-          //项目
-          btnProje: function () {
-              this.objData.page++;
-              this.objData.id = 21;
-              this.objData.num = 5;
-              this.masStatus = 1;    //累加
-              this._getproject(this.objData);
-          },
-          //传承人
-          btnInhe: function () {
-              this.objData.page++;
-              this.objData.id = 22;
-              this.objData.num = 5;
-              this.masStatus = 1;    //累加
-              this._gethertor(this.objData);
-          },
-          //资讯
-          btnCons: function () {
-              this.objData.page++;
-              this.objData.id = 24;
-              this.objData.num = 5;
-              this.masStatus = 1;    //累加
-              this._getNewsData(this.objData);
-          },
-          //作品
-          btnWorks: function () {
-              this.objData.page++;
-              this.objData.id = 23;
-              this.objData.num = 5;
-              this.masStatus = 1;    //累加
-              this._getWorks(this.objData);
-          },
-
-
-          //改变存储num值   刷新当前页面
-          _refresh: function () {
-              localStorage.setItem("diaSpage",this.objData.diaSpage);
-          },
-
-          //客户端存储num值   刷新当前页面
-          _initAll: function(){
-              this.objData.diaSpage = localStorage.getItem("diaSpage") ? parseInt(localStorage.getItem("diaSpage")) : 1;
-          },
-
-
-          //图集接收状态
-          localSet(res){
-              this.area = res;
-              if(this.area == true){
-                  this.showTop = this.hiddenTop;
-                  this.hidden(this.hiddenTop);
-              }else{
-
-                  this.show(this.showTop);
-              }
-          },
-
-          //根据id获取当前频道数据
-          btnpin(id){
-              switch (id){
-                  case 1:           //综述
-                      this.default_channel(0);
-
-                      this._initAll();
-                      this.objData.id = 10;
-                      this.objData.num = 1;
-                      this._getDias(this.objData);
-                      break;
-                  case 2:           //项目
-                      this.default_channel(1);
-
-                      this.ency = false;       //综述状态
-                      this.proje = true;     //项目状态
-                      this.inhe = false;      //传承人状态
-                      this.works = false;     //作品状态
-                      this.cons = false;      //资讯状态
-
-
-                      this.dataList.forEach(function (val, index) {
-                          if(val.code_id == 2){
-                              val.ivmsg = true;
-                          }else{
-                              val.ivmsg = false;
-                          }
-                      })
-
-                      this.objData.id = 21;
-                      this.objData.page = 1;
-                      this.objData.num = 5;
-                      this.masStatus = 2;   //不累加
-                      this._getproject(this.objData);
-                      break;
-                  case 3:           //传承人
-                      this.default_channel(2);
-
-                      this.ency = false;       //综述状态
-                      this.proje = false;     //项目状态
-                      this.inhe = true;      //传承人状态
-                      this.works = false;     //作品状态
-                      this.cons = false;      //资讯状态
-
-                      this.dataList.forEach(function (val, index) {
-                          if(val.code_id == 3){
-                              val.ivmsg = true;
-                          }else{
-                              val.ivmsg = false;
-                          }
-                      })
-                      this.objData.id = 22;
-                      this.objData.page = 1;
-                      this.objData.num = 5;
-                      this.masStatus = 2;   //不累加
-                      this._gethertor(this.objData);
-                      break;
-                  case 4:           //作品
-                      this.default_channel(3);
-
-                      this.ency = false;      //综述状态
-                      this.proje = false;     //项目状态
-                      this.inhe = false;      //传承人状态
-                      this.works = true;      //作品状态
-                      this.cons = false;      //资讯状态
-
-                      this.dataList.forEach(function (val, index) {
-                          if(val.code_id == 4){
-                              val.ivmsg = true;
-                          }else{
-                              val.ivmsg = false;
-                          }
-                      })
-                      this.objData.id = 23;
-                      this.objData.page = 1;
-                      this.objData.num = 5;
-                      this.masStatus = 2;   //不累加
-                      this._getWorks(this.objData);
-                      break;
-                  case 5:            //资讯
-                      this.default_channel(4);
-
-                      this.ency = false;      //综述状态
-                      this.proje = false;     //项目状态
-                      this.inhe = false;      //传承人状态
-                      this.works = false;     //作品状态
-                      this.cons = true;       //资讯状态
-
-                      this.dataList.forEach(function (val, index) {
-                          if(val.code_id == 5){
-                              val.ivmsg = true;
-                          }else{
-                              val.ivmsg = false;
-                          }
-                      })
-                      this.objData.id = 24;
-                      this.objData.page = 1;
-                      this.objData.num = 5;
-                      this.masStatus = 2;   //不累加
-                      this._getNewsData(this.objData);
-                      break;
-
-              }
-          },
+            //项目
+            projeStatus: true,   //load显示状态   true--有数据   fasle--无数据
+            projeMsg: false,     //load是否显示
+            //传承人
+            inheStatus: true,   //load显示状态   true--有数据   fasle--无数据
+            inheMsg: false,     //load是否显示
+            //作品
+            worksStatus: true,   //load显示状态   true--有数据   fasle--无数据
+            worksMsg: false,     //load是否显示
+            //资讯
+            consStatus: true,   //load显示状态   true--有数据   fasle--无数据
+            consMsg: false,     //load是否显示
 
 
 
+            ency: true,       //综述状态
+            proje: false,     //项目状态
+            inhe: false,      //传承人状态
+            works: false,     //作品状态
+            cons: false,      //资讯状态
+
+            msg: true,        //默认正在加载状态
+            state: false,     //列表正在加载
+
+            dowm: true,       //下拉按钮状态
+            leri: true,       //左右按钮状态
+            workNum: 1,       //作品默认页数
+            hotData:"",       //热门推荐
+            //频道数据
+            dataList:[
+                {"name":"综述", "code_id": 1, "ivmsg": true},
+                {"name":"项目", "code_id": 2, "ivmsg": false},
+                {"name":"传承人", "code_id": 3, "ivmsg": false},
+                {"name":"作品", "code_id": 4, "ivmsg": false},
+                {"name":"资讯", "code_id": 5, "ivmsg": false}
+            ],
+
+            update: 2,
+
+            bannerData:"",    //banner题图数据
+            efeiData: "",     //非遗数据展示
+            basData:"",       //视频 图片 内容
+            area: false,      //图集展示状态
+            urlset: "",       //图集数据
+            listmenu: "",      //菜单列表数据
+            total: "",         //所有的数据条数
+            //项目
+            project: [],
+            //传承人
+            hertor:[],
+            //作品数据
+            worksContent:[],
+            //资讯
+            newsData: [],
 
 
+            //记录禁止滚动前的高度   禁止滚动时使用
+            hiddenTop: 0,
+            //重新赋值的高度   解除禁止滚动使用
+            showTop: 0,
 
-          //左按钮事件页数--
-          btnLeft: function (numBer) {
-              this.objData.diaSpage = numBer;
-              this.objData.diaSpage < 1 ? this.objData.diaSpage = this.total : this.objData.diaSpage;
-              this.objData.id = 10;      //传承人馆id = 8
-              this.objData.num = 1;     //百科显示数据量为 1
-              this._getDias(this.objData);  //页面加载完数据执行swiper
+            //ios Android分享内容
+            share_content: {
+                title: "",
+                imageUrl: "",
+                content: "",
+                htmlUrl: ""
+            },
+
+            //导航状态
+            head:{
+                addhead: false,    //分享后的导航
+                h5head: true    //原导航
+            },
+
+            // 有无网络状态
+            load_msg :{
+                networkMsg: false,  // 无网络状态
+                shopMsg: false,     // load z-index
+                btn_msg: false,    // 左右按钮z-index
+                returnMsg: false   //返回上一级 z-index
+            },
+            self: {
+                loading: {
+                    show: true, //默认展示loading状态
+                },
+                page:{
+                    data:null,
+                    show:false
+                },
+            }
+
+        },
+        components:{
+            btNmenu: btNmenu,             //菜单按钮
+            ReDatails: ReDatails,         //返回上一级 按钮
+            BtnDatails: BtnDatails,       //左右按钮
+            BanDatails: BanDatails,       //banner题图
+            PicsList: PicsList,           //频道分类
+            BasDatails: BasDatails,       //图片  视频  文本内容
+            woRksdeta: woRksdeta,         //作品模板
+            atlArea:atlArea,              //图集展示
+            newsItem: newsItem,           //资讯
+            wkEncy:wkEncy,                //项目、传承人
+            listLoad:listLoad,            //列表正在加载
+            returnBas: returnBas,         //返回顶部
+            appShareTip: appShareTip,      //app导航
+            noWatchHead: noWatchHead,   //无网络状态导航
+            pageLoading, //loading
+            noNetwork //没有网络显示效果
+        },
+        methods: {
+
+            //项目
+            btnProje: function () {
+                this.objData.page++;
+                this.objData.id = 21;
+                this.objData.num = 5;
+                this.masStatus = 1;    //累加
+                this._getproject(this.objData);
+            },
+            //传承人
+            btnInhe: function () {
+                this.objData.page++;
+                this.objData.id = 22;
+                this.objData.num = 5;
+                this.masStatus = 1;    //累加
+                this._gethertor(this.objData);
+            },
+            //资讯
+            btnCons: function () {
+                this.objData.page++;
+                this.objData.id = 24;
+                this.objData.num = 5;
+                this.masStatus = 1;    //累加
+                this._getNewsData(this.objData);
+            },
+            //作品
+            btnWorks: function () {
+                this.objData.page++;
+                this.objData.id = 23;
+                this.objData.num = 5;
+                this.masStatus = 1;    //累加
+                this._getWorks(this.objData);
+            },
+
+
+            //改变存储num值   刷新当前页面
+            _refresh: function () {
+                localStorage.setItem("diaSpage",this.objData.diaSpage);
+            },
+
+            //客户端存储num值   刷新当前页面
+            _initAll: function(){
+                this.objData.diaSpage = localStorage.getItem("diaSpage") ? parseInt(localStorage.getItem("diaSpage")) : 1;
+            },
+            //图集接收状态
+            localSet(res){
+                this.area = res;
+                if(this.area == true){
+                    this.showTop = this.hiddenTop;
+                    this.hidden(this.hiddenTop);
+                    this.head.h5head = false
+                }else{
+                    this.show(this.showTop);
+                    this.head.h5head = true
+                }
+            },
+            //根据id获取当前频道数据
+            btnpin(id){
+                switch (id){
+                    case 1:           //综述
+                        this.default_channel(0);
+
+                        this._initAll();
+                        this.objData.id = 10;
+                        this.objData.num = 1;
+                        this._getDias(this.objData);
+                        break;
+                    case 2:           //项目
+                        this.default_channel(1);
+
+                        this.ency = false;       //综述状态
+                        this.proje = true;     //项目状态
+                        this.inhe = false;      //传承人状态
+                        this.works = false;     //作品状态
+                        this.cons = false;      //资讯状态
+
+
+                        this.dataList.forEach(function (val, index) {
+                            if(val.code_id == 2){
+                                val.ivmsg = true;
+                            }else{
+                                val.ivmsg = false;
+                            }
+                        })
+
+                        this.objData.id = 21;
+                        this.objData.page = 1;
+                        this.objData.num = 5;
+                        this.masStatus = 2;   //不累加
+                        this._getproject(this.objData);
+                        break;
+                    case 3:           //传承人
+                        this.default_channel(2);
+
+                        this.ency = false;       //综述状态
+                        this.proje = false;     //项目状态
+                        this.inhe = true;      //传承人状态
+                        this.works = false;     //作品状态
+                        this.cons = false;      //资讯状态
+
+                        this.dataList.forEach(function (val, index) {
+                            if(val.code_id == 3){
+                                val.ivmsg = true;
+                            }else{
+                                val.ivmsg = false;
+                            }
+                        })
+                        this.objData.id = 22;
+                        this.objData.page = 1;
+                        this.objData.num = 5;
+                        this.masStatus = 2;   //不累加
+                        this._gethertor(this.objData);
+                        break;
+                    case 4:           //作品
+                        this.default_channel(3);
+
+                        this.ency = false;      //综述状态
+                        this.proje = false;     //项目状态
+                        this.inhe = false;      //传承人状态
+                        this.works = true;      //作品状态
+                        this.cons = false;      //资讯状态
+
+                        this.dataList.forEach(function (val, index) {
+                            if(val.code_id == 4){
+                                val.ivmsg = true;
+                            }else{
+                                val.ivmsg = false;
+                            }
+                        })
+                        this.objData.id = 23;
+                        this.objData.page = 1;
+                        this.objData.num = 5;
+                        this.masStatus = 2;   //不累加
+                        this._getWorks(this.objData);
+                        break;
+                    case 5:            //资讯
+                        this.default_channel(4);
+
+                        this.ency = false;      //综述状态
+                        this.proje = false;     //项目状态
+                        this.inhe = false;      //传承人状态
+                        this.works = false;     //作品状态
+                        this.cons = true;       //资讯状态
+
+                        this.dataList.forEach(function (val, index) {
+                            if(val.code_id == 5){
+                                val.ivmsg = true;
+                            }else{
+                                val.ivmsg = false;
+                            }
+                        })
+                        this.objData.id = 24;
+                        this.objData.page = 1;
+                        this.objData.num = 5;
+                        this.masStatus = 2;   //不累加
+                        this._getNewsData(this.objData);
+                        break;
+
+                }
+            },
+
+            //左按钮事件页数--
+            btnLeft: function (numBer) {
+                this.objData.diaSpage = numBer;
+                this.objData.diaSpage < 1 ? this.objData.diaSpage = this.total : this.objData.diaSpage;
+                this.objData.id = 10;      //传承人馆id = 8
+                this.objData.num = 1;     //百科显示数据量为 1
+                this._getDias(this.objData);  //页面加载完数据执行swiper
 //              console.log(this.objData.diaSpage);
-              //客户端存储num值   刷新当前页面
-              this._refresh();
-          },
+                //客户端存储num值   刷新当前页面
+                this._refresh();
+            },
 
-          //右按钮事件页数++
-          btnRight: function (numBer) {
-              this.objData.diaSpage = numBer;
-              this.objData.diaSpage > this.total ? this.objData.diaSpage = 1 : this.objData.diaSpage;
-              this.objData.id = 10;       //传承人馆id = 8
-              this.objData.num = 1;      //百科显示数据量为 1
-              this._getDias(this.objData);  //页面加载完数据执行swiper
+            //右按钮事件页数++
+            btnRight: function (numBer) {
+                this.objData.diaSpage = numBer;
+                this.objData.diaSpage > this.total ? this.objData.diaSpage = 1 : this.objData.diaSpage;
+                this.objData.id = 10;       //传承人馆id = 8
+                this.objData.num = 1;      //百科显示数据量为 1
+                this._getDias(this.objData);  //页面加载完数据执行swiper
 //              console.log(this.objData.diaSpage);
-              //客户端存储num值   刷新当前页面
-              this._refresh();
-          },
+                //客户端存储num值   刷新当前页面
+                this._refresh();
+            },
 
 
 
-          /**
-           * @接收  当前点击的id
-           * @private
-           */
-          _dataId: function (id) {
-              var _this = this;
-              this._initAll();           //点击综述取客户端缓存页数值
-              this.objData.id = 10;      //地方馆id = 10
-              this.objData.num = 1;      //百科显示数据量为 1
-              this.objData.atlasId = id; //当前点击的ID
-              _this._getDias(this.objData, function () {
+            /**
+             * @接收  当前点击的id
+             * @private
+             */
+            _dataId: function (id) {
+                var _this = this;
+                this._initAll();           //点击综述取客户端缓存页数值
+                this.objData.id = 10;      //地方馆id = 10
+                this.objData.num = 1;      //百科显示数据量为 1
+                this.objData.atlasId = id; //当前点击的ID
+                _this._getDias(this.objData, function () {
 //                    console.log(_this.urlset)
-                  _this.$nextTick(function() {
-                      var mySwiper = new Swiper('.swiper-container', {
-                          prevButton:'.swiper-button-prev',
-                          nextButton:'.swiper-button-next',
-                          pagination: '.swiper-pagination',
-                          paginationType : 'fraction',
-                          onSlideChangeEnd: function(swiper){
-                              //alert(swiper.activeIndex);        //切换结束时，告诉我现在是第几个slide
-                              var domVideo = $(".area .swiper-slide")[swiper.activeIndex];
-                              var type = $(domVideo).attr("type");
-                              if(type == 1){
-                                  $(domVideo).find("video").trigger("play").parent().parent().siblings().find("video").trigger("pause");
-                                  $(domVideo).find("span").hide().parent().parent().siblings().find("span").show();
-                              }else{
-                                  $(domVideo).siblings().find("video").trigger("pause");
-                                  $(domVideo).siblings().find("span").show();
-                              }
-                              onloding($("#area img.lazy"));
-                          }
-                      })
+                    _this.$nextTick(function() {
+                        var mySwiper = new Swiper('.swiper-container', {
+                            prevButton:'.swiper-button-prev',
+                            nextButton:'.swiper-button-next',
+                            pagination: '.swiper-pagination',
+                            paginationType : 'fraction',
+                            onSlideChangeEnd: function(swiper){
+                                //alert(swiper.activeIndex);        //切换结束时，告诉我现在是第几个slide
+                                var domVideo = $(".area .swiper-slide")[swiper.activeIndex];
+                                var type = $(domVideo).attr("type");
+                                if(type == 1){
+                                    $(domVideo).find("video").trigger("play").parent().parent().siblings().find("video").trigger("pause");
+                                    $(domVideo).find("span").hide().parent().parent().siblings().find("span").show();
+                                }else{
+                                    $(domVideo).siblings().find("video").trigger("pause");
+                                    $(domVideo).siblings().find("span").show();
+                                }
+                                onloding($("#area img.lazy"));
+                            }
+                        })
+                        onloding($("#area img.lazy"));
+                    })
+                })
+
+            },
+
+
+
+            /**
+             * 接受作品当前ID,展示图集
+             * @param id
+             */
+            workId: function (id) {
+                var _this = this;
+                _this.msg = true;         //加载前显示
+                this.objData.atlasId = id;     //接受当前传承人的ID
+                _this.worksContent.forEach(function (val, index) {
+                    if(id == val.id){
+                        _this.urlset = val.rest;
+                    }
+                })
+                _this.$nextTick(function() {
+                    var mySwiper = new Swiper('.swiper-container', {
+                        prevButton:'.swiper-button-prev',
+                        nextButton:'.swiper-button-next',
+                        pagination: '.swiper-pagination',
+                        paginationType : 'fraction',
+                        onSlideChangeEnd: function(swiper){
+                            //alert(swiper.activeIndex);        //切换结束时，告诉我现在是第几个slide
+                            var domVideo = $(".area .swiper-slide")[swiper.activeIndex];
+                            var type = $(domVideo).attr("type");
+                            if(type == 1){
+                                $(domVideo).find("video").trigger("play").parent().parent().siblings().find("video").trigger("pause");
+                                $(domVideo).find("span").hide().parent().parent().siblings().find("span").show();
+                            }else{
+                                $(domVideo).siblings().find("video").trigger("pause");
+                                $(domVideo).siblings().find("span").show();
+                            }
+                            onloding($("#area img.lazy"));
+                        }
+
+                    })
                     onloding($("#area img.lazy"));
-                  })
-              })
 
-          },
-
-
-
-          /**
-           * 接受作品当前ID,展示图集
-           * @param id
-           */
-          workId: function (id) {
-              var _this = this;
-              _this.msg = true;         //加载前显示
-              this.objData.atlasId = id;     //接受当前传承人的ID
-              _this.worksContent.forEach(function (val, index) {
-                  if(id == val.id){
-                    _this.urlset = val.rest;
-                  }
-              })
-              _this.$nextTick(function() {
-                  var mySwiper = new Swiper('.swiper-container', {
-                      prevButton:'.swiper-button-prev',
-                      nextButton:'.swiper-button-next',
-                      pagination: '.swiper-pagination',
-                      paginationType : 'fraction',
-                      onSlideChangeEnd: function(swiper){
-                          //alert(swiper.activeIndex);        //切换结束时，告诉我现在是第几个slide
-                          var domVideo = $(".area .swiper-slide")[swiper.activeIndex];
-                          var type = $(domVideo).attr("type");
-                          if(type == 1){
-                              $(domVideo).find("video").trigger("play").parent().parent().siblings().find("video").trigger("pause");
-                              $(domVideo).find("span").hide().parent().parent().siblings().find("span").show();
-                          }else{
-                              $(domVideo).siblings().find("video").trigger("pause");
-                              $(domVideo).siblings().find("span").show();
-                          }
-                          onloding($("#area img.lazy"));
-                      }
-
-                  })
-                  onloding($("#area img.lazy"));
-
-              })
+                })
                 _this.msg = false;         //加载前隐藏
-          },
+            },
 
 
-          //综述交互数据
-          _getDias: function (objData, callback){
-              var _this = this;
+            //综述交互数据
+            _getDias: function (objData, callback){
+                this.self.page.data = objData
 
-              this.ency = true;       //综述状态
-              this.proje = false;     //项目状态
-              this.inhe = false;      //传承人状态
-              this.works = false;     //作品状态
-              this.cons = false;      //资讯状态
+                var _this = this;
 
-              this.dataList.forEach(function (val, index) {
-                  if(val.code_id == 1){
-                      val.ivmsg = true;
-                  }else{
-                      val.ivmsg = false;
-                  }
-              })
+                this.ency = true;       //综述状态
+                this.proje = false;     //项目状态
+                this.inhe = false;      //传承人状态
+                this.works = false;     //作品状态
+                this.cons = false;      //资讯状态
+
+                this.dataList.forEach(function (val, index) {
+                    if(val.code_id == 1){
+                        val.ivmsg = true;
+                    }else{
+                        val.ivmsg = false;
+                    }
+                })
 
 
-              _this.msg = true;       //加载前显示
+                _this.msg = true;       //加载前显示
 
-              var _url, data;
-              //判断连接是否包含id传值
-              var sliUrl = parseInt(window.location.href.split('?id=')[1]);
+                var _url, data;
+                //判断连接是否包含id传值
+                var sliUrl = parseInt(window.location.href.split('?id=')[1]);
 //              console.log("地址栏",sliUrl);
 
-              if(!sliUrl){
-                  _url = _this.urlIp;
-                  data = {
-                      objectId: objData.id,   //传承人馆ID
-                      currPage: objData.diaSpage,   //页数
-                      pageSize: objData.num    //数量/页
-                  };
-                  objData.msg = true;
-                  _this.leri = true;
-              }else{
-                  _url = _this.urlId;
-                  data = {
-                      objectId: 10,   //地方馆ID
-                      targetId: sliUrl  //id
-                  };
-                  objData.msg = false;
-                  _this.leri = false;
-              }
+                if(!sliUrl){
+                    _url = _this.urlIp;
+                    data = {
+                        objectId: objData.id,   //传承人馆ID
+                        currPage: objData.diaSpage,   //页数
+                        pageSize: objData.num    //数量/页
+                    };
+                    objData.msg = true;
+                    _this.leri = true;
+                }else{
+                    _url = _this.urlId;
+                    data = {
+                        objectId: 10,   //地方馆ID
+                        targetId: sliUrl  //id
+                    };
+                    objData.msg = false;
+                    _this.leri = false;
+                }
 
 
 //              console.log('参数：', _url,  data)
 
 
 
-              getLocalData(_url, data, function (obj) {
-                  //当前地方馆的id
-                  _this.basModelId = obj.basModelId;
+                getLocalData(_url, data, function (obj) {
+                    //当前地方馆的id
+                    _this.basModelId = obj.basModelId;
 
-                  //是否有数据total 共有多少条数据
-                  _this.total = obj.total;
-                  //题图数据导入
-                  _this.bannerData = obj.banner;
+                    //是否有数据total 共有多少条数据
+                    _this.total = obj.total;
+                    //题图数据导入
+                    _this.bannerData = obj.banner;
 
-                  //非遗项目
-                  _this.efeiData = obj.efeiData;
+                    //非遗项目
+                    _this.efeiData = obj.efeiData;
 
-                  //热门推荐数据导入
-                  _this.hotData = obj.area;
+                    //热门推荐数据导入
+                    _this.hotData = obj.area;
 
-                  //图文 显示数据导入
-                  _this.basData = obj.basData;
-                  //右侧菜单
-                  _this.listmenu = obj.listmenu;
-                  //图集展示
-                  _this.urlset = obj.urlset;
-
-
-                  //传入分享内容
-                  _this.share_content.title = _this.bannerData.title;  //标题
-                  _this.share_content.imageUrl = 'https://general-h5.oss-cn-beijing.aliyuncs.com/images/icon-default.png';
-                  _this.share_content.content = 'http://m.diich.com/info';
-                  _this.share_content.htmlUrl = 'activate/local.html?id='+ obj.shareId +'';  //当前页面链接
+                    //图文 显示数据导入
+                    _this.basData = obj.basData;
+                    //右侧菜单
+                    _this.listmenu = obj.listmenu;
+                    //图集展示
+                    _this.urlset = obj.urlset;
 
 
+                    //传入分享内容
+                    _this.share_content.title = _this.bannerData.title;  //标题
+                    _this.share_content.imageUrl = 'https://general-h5.oss-cn-beijing.aliyuncs.com/images/icon-default.png';
+                    _this.share_content.content = 'http://m.diich.com/info';
+                    _this.share_content.htmlUrl = 'activate/local.html?id='+ obj.shareId +'';  //当前页面链接
 
-                  callback && callback(obj)            //swiper回调  post请求之后执行
-                  _this.msg = false;          //加载后隐藏
+
+
+                    callback && callback(obj)            //swiper回调  post请求之后执行
+                    _this.msg = false;          //加载后隐藏
 
 //                  console.log('==========',_this.basData);
 
-                  if(_this.total == 1 || _this.total == undefined){
-                      _this.leri = false;
-                  }else{
-                      _this.leri = true;
-                  }
+                    if(_this.total == 1 || _this.total == undefined){
+                        _this.leri = false;
+                    }else{
+                        _this.leri = true;
+                    }
 
-              }, objData.atlasId, objData.msg);
+                }, objData.atlasId, objData.msg);
 
-          },
+            },
 
 
-          //项目数据获取
-          _getproject: function (objData, callback ) {
-              var _this = this;
+            //项目数据获取
+            _getproject: function (objData, callback ) {
+                var _this = this;
 
-              _this.state = true;         //加载前显示正在加载列表
-              _this.projeMsg = false;         //加载前隐藏load按钮
-              var _url = _this.allChannelIp;   //接口
-              var data = {                //参数
-                  objectId: objData.id,   //传承人馆ID
-                  current: objData.page,   //页数
-                  pageSize: objData.num,    //数量/页
-                  parentId: _this.basModelId //当前传承人馆的ID
-              };
+                _this.state = true;         //加载前显示正在加载列表
+                _this.projeMsg = false;         //加载前隐藏load按钮
+                var _url = _this.allChannelIp;   //接口
+                var data = {                //参数
+                    objectId: objData.id,   //传承人馆ID
+                    current: objData.page,   //页数
+                    pageSize: objData.num,    //数量/页
+                    parentId: _this.basModelId //当前传承人馆的ID
+                };
 //              console.log('data==========',_url, data);
-              getProjectData(_url, data, function (obj) {
-                  //资讯数据
-                  if(_this.masStatus == 1){
-                      _this.project = _this.project.concat(obj.project);
-                  }
-                  if(_this.masStatus == 2){
-                      _this.project = obj.project;
-                  }
+                getProjectData(_url, data, function (obj) {
+                    //资讯数据
+                    if(_this.masStatus == 1){
+                        _this.project = _this.project.concat(obj.project);
+                    }
+                    if(_this.masStatus == 2){
+                        _this.project = obj.project;
+                    }
 
-                  //是否有数据状态
-                  _this.projeStatus = obj.status;
+                    //是否有数据状态
+                    _this.projeStatus = obj.status;
 
-                  //将当期浏览的项目数据、数据状态、分页缓存本地
-                  var objData = {
-                      data: _this.project,
-                      status: _this.projeStatus,
-                      objPage: _this.objData.page
-                  };
-                  //缓存本地
-                  _setUpdata(objData);
+                    //将当期浏览的项目数据、数据状态、分页缓存本地
+                    var objData = {
+                        data: _this.project,
+                        status: _this.projeStatus,
+                        objPage: _this.objData.page
+                    };
+                    //缓存本地
+                    _setUpdata(objData);
 
 
-                  callback && callback(obj)            //swiper回调  post请求之后执行
-                  _this.state = false;         //加载后隐藏正在加载列表
-                  _this.projeMsg = true;       //加载后显示load
+                    callback && callback(obj)            //swiper回调  post请求之后执行
+                    _this.state = false;         //加载后隐藏正在加载列表
+                    _this.projeMsg = true;       //加载后显示load
 //                  console.log("))))))))))))))",_this.project);
-              });
-          },
+                });
+            },
 
 
-          //传承人
-          _gethertor: function (objData, callback ) {
-              var _this = this;
+            //传承人
+            _gethertor: function (objData, callback ) {
+                var _this = this;
 
-              _this.state = true;         //加载前显示正在加载列表
+                _this.state = true;         //加载前显示正在加载列表
                 _this.inheMsg = false;         //加载前隐藏load
-              var _url = _this.allChannelIp;   //接口
-              var data = {                //参数
-                  objectId: objData.id,   //传承人馆ID
-                  current: objData.page,   //页数
-                  pageSize: objData.num,    //数量/页
-                  parentId: _this.basModelId //当前传承人馆的ID
-              };
+                var _url = _this.allChannelIp;   //接口
+                var data = {                //参数
+                    objectId: objData.id,   //传承人馆ID
+                    current: objData.page,   //页数
+                    pageSize: objData.num,    //数量/页
+                    parentId: _this.basModelId //当前传承人馆的ID
+                };
 //              console.log('data==========',_url, data);
-              getHertorData(_url, data, function (obj) {
-                  //资讯数据
-                  if(_this.masStatus == 1){
-                      _this.hertor = _this.hertor.concat(obj.hertor);
-                  }
-                  if(_this.masStatus == 2){
-                      _this.hertor = obj.hertor;
-                  }
+                getHertorData(_url, data, function (obj) {
+                    //资讯数据
+                    if(_this.masStatus == 1){
+                        _this.hertor = _this.hertor.concat(obj.hertor);
+                    }
+                    if(_this.masStatus == 2){
+                        _this.hertor = obj.hertor;
+                    }
 
-                  //是否有数据状态
-                  _this.inheStatus = obj.status;
+                    //是否有数据状态
+                    _this.inheStatus = obj.status;
 
-                  //将当期浏览的传承人数据、数据状态、分页缓存本地
-                  var objData = {
-                      data: _this.hertor,
-                      status: _this.inheStatus,
-                      objPage: _this.objData.page
-                  };
-                  //缓存本地
-                  _setUpdata(objData);
+                    //将当期浏览的传承人数据、数据状态、分页缓存本地
+                    var objData = {
+                        data: _this.hertor,
+                        status: _this.inheStatus,
+                        objPage: _this.objData.page
+                    };
+                    //缓存本地
+                    _setUpdata(objData);
 
 
-                  callback && callback(obj)            //swiper回调  post请求之后执行
-                  _this.state = false;         //加载后隐藏正在加载列表
+                    callback && callback(obj)            //swiper回调  post请求之后执行
+                    _this.state = false;         //加载后隐藏正在加载列表
                     _this.inheMsg = true;           //加载后显示load
 //                  console.log("))))))))))))))",_this.hertor);
-              });
-          },
+                });
+            },
 
 
-          //资讯
-          _getNewsData: function (objData, callback ) {
-              var _this = this;
+            //资讯
+            _getNewsData: function (objData, callback ) {
+                var _this = this;
 
-              _this.state = true;         //加载前显示正在加载列表
+                _this.state = true;         //加载前显示正在加载列表
                 _this.consMsg = false;         //加载前隐藏load
-              var _url = _this.allChannelIp;   //接口
-              var data = {                //参数
-                  objectId: objData.id,   //传承人馆ID
-                  current: objData.page,   //页数
-                  pageSize: objData.num,    //数量/页
-                  parentId: _this.basModelId //当前传承人馆的ID
-              };
-              getConsulData(_url, data, function (obj) {
-                  //资讯数据
-                  if(_this.masStatus == 1){
-                      _this.newsData = _this.newsData.concat(obj.newsData);
-                  }
-                  if(_this.masStatus == 2){
-                      _this.newsData = obj.newsData;
-                  }
+                var _url = _this.allChannelIp;   //接口
+                var data = {                //参数
+                    objectId: objData.id,   //传承人馆ID
+                    current: objData.page,   //页数
+                    pageSize: objData.num,    //数量/页
+                    parentId: _this.basModelId //当前传承人馆的ID
+                };
+                getConsulData(_url, data, function (obj) {
+                    //资讯数据
+                    if(_this.masStatus == 1){
+                        _this.newsData = _this.newsData.concat(obj.newsData);
+                    }
+                    if(_this.masStatus == 2){
+                        _this.newsData = obj.newsData;
+                    }
 
-                  //是否有数据状态
-                  _this.consStatus = obj.status;
-
-
-
-                  //将当期浏览的资讯数据、数据状态、分页缓存本地
-                  var objData = {
-                      data: _this.newsData,
-                      status: _this.consStatus,
-                      objPage: _this.objData.page
-                  };
-                  //缓存本地
-                  _setUpdata(objData);
+                    //是否有数据状态
+                    _this.consStatus = obj.status;
 
 
 
-                  callback && callback(obj)            //swiper回调  post请求之后执行
-                  _this.state = false;         //加载后隐藏正在加载列表
-                  _this.consMsg = true;           //加载后显示load
-                //  console.log("))))))))))))))",_this.newsData);
-              });
-          },
+                    //将当期浏览的资讯数据、数据状态、分页缓存本地
+                    var objData = {
+                        data: _this.newsData,
+                        status: _this.consStatus,
+                        objPage: _this.objData.page
+                    };
+                    //缓存本地
+                    _setUpdata(objData);
 
-          //作品获取数据
-          _getWorks: function (objData, callback ) {
-              this.ivdias = false;      //百科按钮状态
-              this.ivwork = true;     //作品按钮状态
-              this.ivcons = false;     //资讯按钮转台
-              var _this = this;
-              _this.state = true;         //加载前显示
+
+
+                    callback && callback(obj)            //swiper回调  post请求之后执行
+                    _this.state = false;         //加载后隐藏正在加载列表
+                    _this.consMsg = true;           //加载后显示load
+                    //  console.log("))))))))))))))",_this.newsData);
+                });
+            },
+
+            //作品获取数据
+            _getWorks: function (objData, callback ) {
+                this.ivdias = false;      //百科按钮状态
+                this.ivwork = true;     //作品按钮状态
+                this.ivcons = false;     //资讯按钮转台
+                var _this = this;
+                _this.state = true;         //加载前显示
                 _this.worksMsg = false;        //作品内容隐藏load
-              var _url = _this.allChannelIp;
-              var data = {
-                  objectId: objData.id,   //传承人馆ID
-                  current: objData.page,   //页数
-                  pageSize: objData.num,    //数量/页
-                  parentId: _this.basModelId   //当前传承人馆的ID
-              };
+                var _url = _this.allChannelIp;
+                var data = {
+                    objectId: objData.id,   //传承人馆ID
+                    current: objData.page,   //页数
+                    pageSize: objData.num,    //数量/页
+                    parentId: _this.basModelId   //当前传承人馆的ID
+                };
 
-              getWorksData(_url, data, function (obj) {
-                  //作品数据导入
-                  if(_this.masStatus == 1){         //点击作品按钮
-                      _this.worksContent = _this.worksContent.concat(obj.worksContent);
-                  }
-                  if(_this.masStatus == 2){         //点击作品load
-                      _this.worksContent = obj.worksContent;
-                  }
-                  // if(_this.masStatus == 3){        //点击作品展示图集
-                  //     //图集展示数据
-                  //     _this.urlset = obj.urlset;
-                  //
-                  // }
+                getWorksData(_url, data, function (obj) {
+                    //作品数据导入
+                    if(_this.masStatus == 1){         //点击作品按钮
+                        _this.worksContent = _this.worksContent.concat(obj.worksContent);
+                    }
+                    if(_this.masStatus == 2){         //点击作品load
+                        _this.worksContent = obj.worksContent;
+                    }
+                    // if(_this.masStatus == 3){        //点击作品展示图集
+                    //     //图集展示数据
+                    //     _this.urlset = obj.urlset;
+                    //
+                    // }
 
-                  _this.worksStatus = obj.status;   //load显示状态   true--有数据   fasle--无数据
+                    _this.worksStatus = obj.status;   //load显示状态   true--有数据   fasle--无数据
 
-                  //将当期浏览的作品数据、数据状态、分页缓存本地
-                  var objData1 = {
-                      data: _this.worksContent,
-                      status: _this.worksStatus,
-                      objPage: _this.objData.page
-                  };
-                  //缓存本地
-                  _setUpdata(objData1);
+                    //将当期浏览的作品数据、数据状态、分页缓存本地
+                    var objData1 = {
+                        data: _this.worksContent,
+                        status: _this.worksStatus,
+                        objPage: _this.objData.page
+                    };
+                    //缓存本地
+                    _setUpdata(objData1);
 
-                  callback && callback(obj)            //swiper回调  post请求之后执行
+                    callback && callback(obj)            //swiper回调  post请求之后执行
 
-                  _this.state = false;         //正在列表加载状态  隐藏
-                  _this.msg = false;           //加载后隐藏
-                  _this.worksMsg = true;          //作品内容显示load
+                    _this.state = false;         //正在列表加载状态  隐藏
+                    _this.msg = false;           //加载后隐藏
+                    _this.worksMsg = true;          //作品内容显示load
 //                  console.log("))))))))))))))",obj.status);
-              }, objData.atlasId);
+                }, objData.atlasId);
 
-          },
-
-
-          //禁止滑动
-          hidden(thisTop) {
-              var scrollTop = window.pageYOffset
-                  || document.documentElement.scrollTop
-                  || document.body.scrollTop
-                  || 0;
-              document.body.style.top = "-" + thisTop + "px";
-              document.body.style.position = 'fixed';
-              //console.log(thisTop);
-          },
-          //解除禁止滚动
-          show(thisTop) {
-              document.body.style.overflow='';
-              document.body.style.position=null;
-              document.body.style.top=null;
-              window.scrollTo(0,thisTop);
-          },
+            },
 
 
-          //滚动事件
-          handleScroll(){
-              var top = $(window).scrollTop();
-              this.hiddenTop = top;
-              localStorage.setItem("handleScroll", top);
-          },
-          //取滚动的默认高度 和 默认展示的频道
-          defaultScroll: function () {
-              var StrScroll = localStorage.getItem("handleScroll");
-              var defaultScroll = Number(StrScroll);
-              $("html, body").scrollTop(defaultScroll);
-              window.addEventListener('scroll',this.handleScroll);
-          },
-
-          //存储当前点击的频道
-          default_channel: function (index) {
-              localStorage.setItem("default-channel",index);
-          },
-
-      },
-      updated: function() {
-          // 懒加载
-          var self = this;
-          self.$nextTick(function() {
-              onloding($("img.lazy"));
-          })
-      },
-      mounted(){
-          var _this = this;
-
-          //分享后的页面导航显示
-          callApp(null,function () {
-              if(_htmlShear() == true){
-                  //分享后的页面清除缓存
-                  removeLost();
-                  //显示分享后的导航 隐藏原导航
-                  _this.head.apphead = true;
-                  _this.head.h5head = false;
-              }else{
-                  //显示原导航  隐藏分享后的导航
-                  _this.head.apphead = false;
-                  _this.head.h5head = true;
-              }
-          });
-
-          window.addEventListener('scroll',this.handleScroll);
-
-          //获取存储的默认频道
-          var channel = localStorage.getItem("default-channel");
-
-          //获取默认页数   //刷新页面加载数据
-          this._initAll();
-          this.objData.id = 10;
-          this.objData.num = 1;
-
-          switch (channel){
-              case "0":                //默认百科频道
-                  _this._getDias(_this.objData, function () {
-                      _this.$nextTick(function () {
-                          _this.defaultScroll();
-                      })
-                  });
-                  break;
-              case "1":                //默认项目频道
-                  _this._getDias(_this.objData, function () {
-                      _this.$nextTick(function () {
-                          _this.ency = false;       //综述状态
-                          _this.proje = true;     //项目状态
-                          _this.inhe = false;      //传承人状态
-                          _this.works = false;     //作品状态
-                          _this.cons = false;      //资讯状态
-                          _this.dataList.forEach(function (val, index) {
-                              if(val.code_id == 2){
-                                  val.ivmsg = true;
-                              }else{
-                                  val.ivmsg = false;
-                              }
-                          })
+            //禁止滑动
+            hidden(thisTop) {
+                var scrollTop = window.pageYOffset
+                    || document.documentElement.scrollTop
+                    || document.body.scrollTop
+                    || 0;
+                document.body.style.top = "-" + thisTop + "px";
+                document.body.style.position = 'fixed';
+                //console.log(thisTop);
+            },
+            //解除禁止滚动
+            show(thisTop) {
+                document.body.style.overflow='';
+                document.body.style.position=null;
+                document.body.style.top=null;
+                window.scrollTo(0,thisTop);
+            },
 
 
-                          if(_getUpdata()){
-                              _this.project = _getUpdata().data;
-                              _this.projeStatus = _getUpdata().status;
-                              _this.objData.page = _getUpdata().objPage;
-                              _this.projeMsg = true;
-                              $(function () {
-                                  _this.defaultScroll();
-                              })
-                          }else{
-                              _this.objData.id = 21;
-                              _this.objData.page = 1;
-                              _this.objData.num = 5;
-                              _this.masStatus = 2;   //不累加
-                              _this._getproject(_this.objData, function () {
-                                  $(function () {
-                                      _this.defaultScroll();
-                                  })
-                              });
-                          }
+            //滚动事件
+            handleScroll(){
+                var top = $(window).scrollTop();
+                this.hiddenTop = top;
+                localStorage.setItem("handleScroll", top);
+            },
+            //取滚动的默认高度 和 默认展示的频道
+            defaultScroll: function () {
+                var StrScroll = localStorage.getItem("handleScroll");
+                var defaultScroll = Number(StrScroll);
+                $("html, body").scrollTop(defaultScroll);
+                window.addEventListener('scroll',this.handleScroll);
+            },
+
+            //存储当前点击的频道
+            default_channel: function (index) {
+                localStorage.setItem("default-channel",index);
+            },
+            //loading
+            loadingAndNoNetwork(){
+                var _data = mySessionStorage.getter('indexData')
+                if(_data){
+                    this.self.loading.show = false
+                    this.self.page.show = true
+                }else {
+                    for (let i = 1; i < 6; i++) {
+                        setTimeout(()=>{
+                            if(this.self.page.data){
+                                this.self.loading.show = false
+                                this.self.page.show = true
+                            }
+                        },i*500)
+                    }
+                }
+                setTimeout(()=>{
+                    this.self.loading.show = false
+                },overTime)
+            }
+
+        },
+        updated: function() {
+            // 懒加载
+            var self = this;
+            self.$nextTick(function() {
+                onloding($("img.lazy"));
+            })
+        },
+        mounted(){
+            var _this = this;
+
+            //分享后的页面导航显示
+            callApp(null,function () {
+                if(_htmlShear() == true){
+                    //分享后的页面清除缓存
+                    removeLost();
+                    //显示分享后的导航 隐藏原导航
+                    _this.head.apphead = true;
+                    _this.head.h5head = false;
+                }else{
+                    //显示原导航  隐藏分享后的导航
+                    _this.head.apphead = false;
+                    _this.head.h5head = true;
+                }
+            });
+
+            this.$nextTick(function () {
+                setTimeout(()=>{
+                    window.addEventListener('scroll',this.handleScroll);
+                },2000)
+            })
+
+            //获取存储的默认频道
+            var channel = localStorage.getItem("default-channel");
+
+            //获取默认页数   //刷新页面加载数据
+            this._initAll();
+            this.objData.id = 10;
+            this.objData.num = 1;
+
+            switch (channel){
+                case "0":                //默认百科频道
+                    _this._getDias(_this.objData, function () {
+                        _this.$nextTick(function () {
+                            _this.defaultScroll();
+                        })
+                    });
+                    break;
+                case "1":                //默认项目频道
+                    _this._getDias(_this.objData, function () {
+                        _this.$nextTick(function () {
+                            _this.ency = false;       //综述状态
+                            _this.proje = true;     //项目状态
+                            _this.inhe = false;      //传承人状态
+                            _this.works = false;     //作品状态
+                            _this.cons = false;      //资讯状态
+                            _this.dataList.forEach(function (val, index) {
+                                if(val.code_id == 2){
+                                    val.ivmsg = true;
+                                }else{
+                                    val.ivmsg = false;
+                                }
+                            })
 
 
-
-
-                      })
-                  });
-
-                  break;
-              case "2":                //默认传承人频道
-                  _this._getDias(_this.objData, function () {
-                      _this.$nextTick(function () {
-                          _this.ency = false;       //综述状态
-                          _this.proje = false;     //项目状态
-                          _this.inhe = true;      //传承人状态
-                          _this.works = false;     //作品状态
-                          _this.cons = false;      //资讯状态
-
-                          _this.dataList.forEach(function (val, index) {
-                              if(val.code_id == 3){
-                                  val.ivmsg = true;
-                              }else{
-                                  val.ivmsg = false;
-                              }
-                          })
-
-                          if(_getUpdata()){
-                              _this.hertor = _getUpdata().data;
-                              _this.inheStatus = _getUpdata().status;
-                              _this.objData.page = _getUpdata().objPage;
-                              _this.inheMsg = true;
-                              $(function () {
-                                  _this.defaultScroll();
-                              })
-                          }else {
-
-                              _this.objData.id = 22;
-                              _this.objData.page = 1;
-                              _this.objData.num = 5;
-                              _this.masStatus = 2;   //不累加
-                              _this._gethertor(_this.objData, function () {
-                                  $(function () {
-                                      _this.defaultScroll();
-                                  })
-                              });
-                          }
-                      })
-                  });
-
-                  break;
-              case "3":                //默认作品频道
-                  _this._getDias(_this.objData, function () {
-                      _this.$nextTick(function () {
-                          _this.ency = false;      //综述状态
-                          _this.proje = false;     //项目状态
-                          _this.inhe = false;      //传承人状态
-                          _this.works = true;      //作品状态
-                          _this.cons = false;      //资讯状态
-
-                          _this.dataList.forEach(function (val, index) {
-                              if(val.code_id == 4){
-                                  val.ivmsg = true;
-                              }else{
-                                  val.ivmsg = false;
-                              }
-                          })
-
-
-                          if(_getUpdata()){
-                              _this.worksContent = _getUpdata().data;
-                              _this.worksStatus = _getUpdata().status;
-                              _this.objData.page = _getUpdata().objPage;
-                              _this.worksMsg = true;
-                              $(function () {
-                                  _this.defaultScroll();
-                              })
-                          }else {
-
-                              _this.objData.id = 23;
-                              _this.objData.page = 1;
-                              _this.objData.num = 5;
-                              _this.masStatus = 2;   //不累加
-                              _this._getWorks(_this.objData, function () {
-                                  $(function () {
-                                      _this.defaultScroll();
-                                  })
-                              });
-                          }
-                      })
-                  });
-
-                  break;
-              case "4":                //默认资讯频道
-                  _this._getDias(_this.objData, function () {
-                      _this.$nextTick(function () {
-                          _this.ency = false;      //综述状态
-                          _this.proje = false;     //项目状态
-                          _this.inhe = false;      //传承人状态
-                          _this.works = false;     //作品状态
-                          _this.cons = true;       //资讯状态
-
-                          _this.dataList.forEach(function (val, index) {
-                              if(val.code_id == 5){
-                                  val.ivmsg = true;
-                              }else{
-                                  val.ivmsg = false;
-                              }
-                          });
-
-                          if(_getUpdata()){
-                              _this.newsData = _getUpdata().data;
-                              _this.consStatus = _getUpdata().status;
-                              _this.objData.page = _getUpdata().objPage;
-                              _this.consMsg = true;
-                              $(function () {
-                                  _this.defaultScroll();
-                              })
-                          }else{
-                              _this.objData.id = 24;
-                              _this.objData.page = 1;
-                              _this.objData.num = 5;
-                              _this.masStatus = 2;   //不累加
-                              _this._getNewsData(_this.objData, function () {
-                                  $(function () {
-                                      _this.defaultScroll();
-                                  })
-                              });
-                          }
+                            if(_getUpdata()){
+                                _this.project = _getUpdata().data;
+                                _this.projeStatus = _getUpdata().status;
+                                _this.objData.page = _getUpdata().objPage;
+                                _this.projeMsg = true;
+                                $(function () {
+                                    _this.defaultScroll();
+                                })
+                            }else{
+                                _this.objData.id = 21;
+                                _this.objData.page = 1;
+                                _this.objData.num = 5;
+                                _this.masStatus = 2;   //不累加
+                                _this._getproject(_this.objData, function () {
+                                    $(function () {
+                                        _this.defaultScroll();
+                                    })
+                                });
+                            }
 
 
 
-                      })
-                  });
 
-                  break;
-              default:
-                  _this._getDias(_this.objData, function () {
-                      _this.$nextTick(function () {
-                          _this.defaultScroll();
-                      })
-                  });
-          }
+                        })
+                    });
 
-          // 五秒后
-          setTimeout(function () {
-              if (_this.msg) {
-                  _this.load_msg.shopMsg = true;
-                  _this.load_msg.networkMsg = true;
-                  _this.load_msg.btn_msg = true;
-                  _this.load_msg.returnMsg = true;
-              } else {
-                  _this.load_msg.shopMsg = false;
-                  _this.load_msg.networkMsg = false;
-                  _this.load_msg.btn_msg = false;
-                  _this.load_msg.returnMsg = false;
-              }
-          },overTime)
+                    break;
+                case "2":                //默认传承人频道
+                    _this._getDias(_this.objData, function () {
+                        _this.$nextTick(function () {
+                            _this.ency = false;       //综述状态
+                            _this.proje = false;     //项目状态
+                            _this.inhe = true;      //传承人状态
+                            _this.works = false;     //作品状态
+                            _this.cons = false;      //资讯状态
 
-      }
-  })
+                            _this.dataList.forEach(function (val, index) {
+                                if(val.code_id == 3){
+                                    val.ivmsg = true;
+                                }else{
+                                    val.ivmsg = false;
+                                }
+                            })
+
+                            if(_getUpdata()){
+                                _this.hertor = _getUpdata().data;
+                                _this.inheStatus = _getUpdata().status;
+                                _this.objData.page = _getUpdata().objPage;
+                                _this.inheMsg = true;
+                                $(function () {
+                                    _this.defaultScroll();
+                                })
+                            }else {
+
+                                _this.objData.id = 22;
+                                _this.objData.page = 1;
+                                _this.objData.num = 5;
+                                _this.masStatus = 2;   //不累加
+                                _this._gethertor(_this.objData, function () {
+                                    $(function () {
+                                        _this.defaultScroll();
+                                    })
+                                });
+                            }
+                        })
+                    });
+
+                    break;
+                case "3":                //默认作品频道
+                    _this._getDias(_this.objData, function () {
+                        _this.$nextTick(function () {
+                            _this.ency = false;      //综述状态
+                            _this.proje = false;     //项目状态
+                            _this.inhe = false;      //传承人状态
+                            _this.works = true;      //作品状态
+                            _this.cons = false;      //资讯状态
+
+                            _this.dataList.forEach(function (val, index) {
+                                if(val.code_id == 4){
+                                    val.ivmsg = true;
+                                }else{
+                                    val.ivmsg = false;
+                                }
+                            })
+
+
+                            if(_getUpdata()){
+                                _this.worksContent = _getUpdata().data;
+                                _this.worksStatus = _getUpdata().status;
+                                _this.objData.page = _getUpdata().objPage;
+                                _this.worksMsg = true;
+                                $(function () {
+                                    _this.defaultScroll();
+                                })
+                            }else {
+
+                                _this.objData.id = 23;
+                                _this.objData.page = 1;
+                                _this.objData.num = 5;
+                                _this.masStatus = 2;   //不累加
+                                _this._getWorks(_this.objData, function () {
+                                    $(function () {
+                                        _this.defaultScroll();
+                                    })
+                                });
+                            }
+                        })
+                    });
+
+                    break;
+                case "4":                //默认资讯频道
+                    _this._getDias(_this.objData, function () {
+                        _this.$nextTick(function () {
+                            _this.ency = false;      //综述状态
+                            _this.proje = false;     //项目状态
+                            _this.inhe = false;      //传承人状态
+                            _this.works = false;     //作品状态
+                            _this.cons = true;       //资讯状态
+
+                            _this.dataList.forEach(function (val, index) {
+                                if(val.code_id == 5){
+                                    val.ivmsg = true;
+                                }else{
+                                    val.ivmsg = false;
+                                }
+                            });
+
+                            if(_getUpdata()){
+                                _this.newsData = _getUpdata().data;
+                                _this.consStatus = _getUpdata().status;
+                                _this.objData.page = _getUpdata().objPage;
+                                _this.consMsg = true;
+                                $(function () {
+                                    _this.defaultScroll();
+                                })
+                            }else{
+                                _this.objData.id = 24;
+                                _this.objData.page = 1;
+                                _this.objData.num = 5;
+                                _this.masStatus = 2;   //不累加
+                                _this._getNewsData(_this.objData, function () {
+                                    $(function () {
+                                        _this.defaultScroll();
+                                    })
+                                });
+                            }
+
+
+
+                        })
+                    });
+
+                    break;
+                default:
+                    _this._getDias(_this.objData, function () {
+                        _this.$nextTick(function () {
+                            _this.defaultScroll();
+                        })
+                    });
+            }
+
+            // 五秒后
+            setTimeout(function () {
+                if (_this.msg) {
+                    _this.load_msg.shopMsg = true;
+                    _this.load_msg.networkMsg = true;
+                    _this.load_msg.btn_msg = true;
+                    _this.load_msg.returnMsg = true;
+                } else {
+                    _this.load_msg.shopMsg = false;
+                    _this.load_msg.networkMsg = false;
+                    _this.load_msg.btn_msg = false;
+                    _this.load_msg.returnMsg = false;
+                }
+            },overTime)
+
+            this.loadingAndNoNetwork()
+        }
+    })
 
 
 

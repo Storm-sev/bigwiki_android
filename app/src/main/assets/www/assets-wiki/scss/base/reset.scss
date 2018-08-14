@@ -134,7 +134,22 @@ body {
   padding-bottom: 107rem/$font-size-base;
 }
 
+.page-hide {
+  display: none;
+}
+.page-show {
+  display: block;
+  position: relative;
+  z-index: 9;
+}
+
 /*vue*/
 [v-cloak] {
   display: none;
+}
+
+#cnzz_stat_icon_1273697800 {
+  position: fixed;
+  bottom: -100rem/$font-size-base;
+  z-index: -1;
 }

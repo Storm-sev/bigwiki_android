@@ -34,7 +34,7 @@
         <auto-download enabled="true" />
         <auto-install enabled="true" />
         <native-interface version="1" />
-        <config-file url="http://wiki.diich.com/wiki_resource/android/www/chcp.json" />
+        <config-file url="http://test2.diich.com/info/Android/www/chcp.json" />
     </chcp>
     <preference name="loadUrlTimeoutValue" value="60000" />
     <feature name="HotCodePush">

@@ -5,19 +5,22 @@
     <meta charset="UTF-8">
     <meta name="wap-font-scale" content="no">
     <title>首页</title>
-    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201808031745"></script>
     <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
-    <link rel="stylesheet" href="../../assets-wiki/css/mescroll.min.css?t=201807311146">
-    <link rel="stylesheet" href="../../assets-wiki/css/index.css?t=201807311146">
+    <link rel="stylesheet" href="../../assets-wiki/css/index.css?t=201808031745">
 </head>
 
-<body style="height: 100%;">
+<body>
 
-<div id="home" class="home">
-        <wk-Header :data="self.head"></wk-Header>
-        <!--//End 导航-->
+<div id="home" class="home js-page-load">
+    <wk-Header :data="self.head"></wk-Header>
+    <!--//End 导航-->
 
-        <article class="container is-footer mescroll" id="mescroll">
+    <page-loading v-if="self.loading.show"></page-loading>
+    <no-network v-if="!self.page.show"></no-network>
+
+    <article class="container is-footer mescroll" id="mescroll">
+        <div class="page-hide" :class="{'page-show':self.page.show}">
             <section class="slider">
                 <wk-swiper :swiper="self.slider" id="swiper1"></wk-swiper>
             </section>
@@ -43,26 +46,23 @@
                 <swiper-level :data="self.merge" id="swiper2"></swiper-level>
             </section>
             <!--//End 轮播聚合-->
-
-
-        </article>
-
-        <wk-footer :selected="self.selectedIndex"></wk-footer>
-        <!--//End 底部-->
+        </div>
+    </article>
+    <wk-footer :selected="self.selectedIndex"></wk-footer>
+    <!--//End 底部-->
 </div>
 
 
 <!--//End 底部-->
-<script src="../../assets-wiki/js/system.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/jquery.lazyload.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/swiper.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/mescroll.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/data/category.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/jx-tpls.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/information.js?t=201807311146"></script>
+<script src="../../assets-wiki/js/system.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/lazyload.mescroll.min.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/swiper.min.js?t=201808031745"></script>
+<script src="../../assets-wiki/data/category.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/tpls.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/utils.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/jx-tpls.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/information.js?t=201808031745"></script>
 <script>
     var app = new Vue({
         el: '#home',
@@ -76,18 +76,27 @@
                 activity: [], //活动
                 merge: [], //项目、传承人
                 selectedIndex: 0,
+                loading: {
+                    show: true, //默认展示loading状态
+                },
+                page:{
+                    data:null,
+                    show:false
+                }
             },
             mescroll: null
         },
         components: {
-            wkHeader: wkHeader,  //导航
-            wkSwiper: wkSwiper,  //轮播图
-            wkSearch: wkSearch,  //搜索框
-            wkCategory: wkCategory,  //五个分类图片
-            newsItem: newsItem,  //资讯
-            wkActivity: wkActivity,  //活动
-            swiperLevel: swiperLevel,  //水平轮播
-            wkFooter: wkFooter,  //底部
+            wkHeader,  //导航
+            wkSwiper,  //轮播图
+            wkSearch,  //搜索框
+            wkCategory,  //五个分类图片
+            newsItem,  //资讯
+            wkActivity,  //活动
+            swiperLevel,  //水平轮播
+            wkFooter,  //底部
+            pageLoading, //loading
+            noNetwork //没有网络显示效果
         },
         mounted() {
             var _this = this
@@ -106,9 +115,6 @@
                         icon: "../../assets-wiki/images/icon-no-data@2x.png",
                         tip: "<div class='upwarp-nodata'><p>暂无信息</p><p>当前没有更多信息，请稍后查询…</p></div>",
                     },
-                    // inited: function (a, b) {
-                    //     sInited && sInited(a, b)
-                    // },
                     onScroll: function (mescroll, y, isUp) {
                         _this.self.scroll = y
                         mySessionStorage.setter('indexData', _this.self)
@@ -123,6 +129,8 @@
                     }
                 }
             })
+
+            this.loadingAndNoNetwork()
         },
         updated() {
             this.$nextTick(() => {
@@ -134,10 +142,17 @@
                 });
             })
         },
+        computed: {
+            showLoad: function (val) {
+                return this.self.loading.show = val
+            }
+        },
         methods: {
             upCallback(page) {
                 this._getIndex((res) => {
                     var total = res.total
+                    this.self.page.data = res  //局部判断是否有数据加载成功
+
                     this.self.news = res.news
                     this.self.activity = res.activity
                     this.self.merge = res.merge
@@ -150,7 +165,7 @@
                         })
                     })
                     var _data = mySessionStorage.getter('indexData')
-                    if(_data){
+                    if (_data) {
                         this.scroll = mySessionStorage.getter('indexData').scroll
                     }
                 })
@@ -166,13 +181,15 @@
                     var _this = this
                     this.self.slider = res
                     this.$nextTick(function () {
-                        _this.swiper = new Swiper('#swiper1', {
-                            autoplay: 5000,//可选选项，自动滑动
-                            pagination: '.swiper-pagination',
-                            paginationClickable: true,
-                            autoplayDisableOnInteraction : false,
-                            loop: true
-                        })
+                        setTimeout(()=>{
+                            _this.swiper = new Swiper('#swiper1', {
+                                autoplay: 5000,//可选选项，自动滑动
+                                pagination: '.swiper-pagination',
+                                paginationClickable: true,
+                                autoplayDisableOnInteraction: false,
+                                loop: true
+                            })
+                        },1000)
                     })
                 })
             },
@@ -266,10 +283,30 @@
                 if (data) {
                     this.self = data
                     this.scroll = data.scroll
-                    this.$nextTick(()=>{
+                    this.$nextTick(() => {
                         this.mescroll.scrollTo(this.scroll, 0);
                     })
                 }
+            },
+            //loading
+            loadingAndNoNetwork(){
+                var _data = mySessionStorage.getter('indexData')
+                if(_data){
+                    this.self.loading.show = false
+                    this.self.page.show = true
+                }else {
+                    for (let i = 1; i < 6; i++) {
+                        setTimeout(()=>{
+                            if(this.self.page.data){
+                                this.self.loading.show = false
+                                this.self.page.show = true
+                            }
+                        },i*500)
+                    }
+                }
+                setTimeout(()=>{
+                    this.self.loading.show = false
+                },overTime)
             }
         }
     });

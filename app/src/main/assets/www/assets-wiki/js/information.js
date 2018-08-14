@@ -359,7 +359,7 @@ var getIndex = function (params) {
                 }
                 var base = {
                     id: arr[i].baseModel.id,
-                    time: arr[i].lastEditDate,
+                    time: arr[i].baseModel.lastEditDate,
                     targetType: parseInt(arr[i].targetType),
                     type: arr[i].baseModel.type ? parseInt(arr[i].baseModel.type) : '',
                     source: arr[i].baseModel.source ? arr[i].baseModel.source : '',

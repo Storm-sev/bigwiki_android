@@ -14,7 +14,6 @@ const iosRoute = ""; // ios绝对路径
 
 //const httpsUrl = 'http://123.57.173.1/info/pages/';  //分享后的域名地址
 const httpsUrl = 'http://m.diich.com/info/pages/';  //分享后的域名地址
-
 var overTime = 6000;    // 时间配置
 
 /**
@@ -40,14 +39,14 @@ const oss = {
         encyDetails: "img_details", // 详情
         pepoleList: "pepole-head-img", // 百科列表 改版后
         //活化馆
-        ossBanner : "ndy_banner",        //活化馆首页banner
-        ossShopBanner : "shop_banner",   //活化馆的题图
-        ossHeadPortrait : "head_portrait",   //传承人馆头像
-        ossImageTitle : "image_title",      //图文长文本图片、作品
-        ossNewsImg : "news_img",      //资讯列表
-        ossResetList : "reset_list",   //教学、体验馆列表
-        ossInforMationlist : "head-recommend-informationlist",  //活动 列表
-        ossRecommendList : "head-recommend-list",     //项目  传承人 列表
+        ossBanner: "ndy_banner",        //活化馆首页banner
+        ossShopBanner: "shop_banner",   //活化馆的题图
+        ossHeadPortrait: "head_portrait",   //传承人馆头像
+        ossImageTitle: "image_title",      //图文长文本图片、作品
+        ossNewsImg: "news_img",      //资讯列表
+        ossResetList: "reset_list",   //教学、体验馆列表
+        ossInforMationlist: "head-recommend-informationlist",  //活动 列表
+        ossRecommendList: "head-recommend-list",     //项目  传承人 列表
     },
     // default:{
     //     head: "uploads/head_portrait.png",   //默认传承人头像
@@ -71,19 +70,18 @@ const api = {
     parentId: domain + "/items/getListByObjectIdAndParentId", //活化馆-获取子频道
     updataPhone: domain + "/user/updataphone", // 修改手机号码
     isPhome: domain + "/user/checkUserByPhone", // 手机号码是否已经注册
-    forgetPassword : domain + "/user/forgetPassword", // 验证账号并发送验证码接口
-    updataPassword : domain + "/user/updataPassword", // 更改密码接口并登陆
+    forgetPassword: domain + "/user/forgetPassword", // 验证账号并发送验证码接口
+    updataPassword: domain + "/user/updataPassword", // 更改密码接口并登陆
 };
 
 const hrefUrl = {
     pages: rootName + "/pages/",    //公共的pages文件夹下
-    newdetails : "news/details.html?id=",       //资讯详情连接
-    actidetails : "activity/details.html?id=",  //活动详情连接
-    teacdetails : "details/teaching.html?id=",  //教学详情连接
-    experience : "details/experience.html?id=", //体验馆详情连接
-    encydetails : "ency/details.html?id=",      //项目、传承人详情连接
+    newdetails: "news/details.html?id=",       //资讯详情连接
+    actidetails: "activity/details.html?id=",  //活动详情连接
+    teacdetails: "details/teaching.html?id=",  //教学详情连接
+    experience: "details/experience.html?id=", //体验馆详情连接
+    encydetails: "ency/details.html?id=",      //项目、传承人详情连接
 };
-
 /**
  * 活化馆oss默认图
  */
@@ -104,12 +102,12 @@ var ossDefault = {
  * @param params
  */
 var httpRequest = function (params) {
+    var loading = true
     var edition;
     if (!params.type) {
         params.type = "POST";
         // params.data = null;
     }
-
     callApp(function (obj) {
         //ios/Andiold
         // console.log('---->',params);
@@ -123,7 +121,6 @@ var httpRequest = function (params) {
             params.data.resourceVersion = obj.H5vers;
         }
     });
-    // console.log('params',params);
     $.ajax({
         url: params.url,
         type: params.type,
@@ -134,9 +131,8 @@ var httpRequest = function (params) {
         },
         // crossDomain: true,
         success: function (res) {
-            if(res.code == -2){
+            if (res.code == -2) {
                 callApp(function () {
-
                     var objDate = {
                         code: res.code,
                         detailMsg: res.detailMsg
@@ -145,10 +141,9 @@ var httpRequest = function (params) {
                     pushTion(objDate);
                 })
                 return;
-            }else{
-                params.sCallback && params.sCallback(res);
-            };
-
+            } else {
+                params.sCallback && params.sCallback(res)
+            }
         },
         error: function (error) {
             ('error->', error)
@@ -156,7 +151,6 @@ var httpRequest = function (params) {
         }
     })
 }
-
 
 /**
  * 获取轮播图数据
@@ -167,14 +161,14 @@ var getSliderData = function (url, data, callback) {
     function handleData(urlId, nameId, item) {
         var obj = {};
         // 背景图
-        if(item.attributeId == urlId) {
-            obj.imgUrl =  item.resourceList[0].uri
+        if (item.attributeId == urlId) {
+            obj.imgUrl = item.resourceList[0].uri
         } else {
             obj.imgUrl = '/assets-wiki/pics/ency.png';
         }
         // 名称
-        if(item.attributeId == nameId) {
-            obj.name =  item.content
+        if (item.attributeId == nameId) {
+            obj.name = item.content
         }
         return obj;
     }
@@ -189,18 +183,18 @@ var getSliderData = function (url, data, callback) {
             //临时记录项目、传承人目录
             var typeUrl = null;
             //记录不同分类数据对应的轮播图 attributeId
-            var id = null; 
+            var id = null;
             for (let i = 0; i < _data.length; i++) {
                 var arr = _data[i].baseModel.contentFragmentList;
-                for(let j = 0; j < arr.length; j++) {
-                     _data[i].targetType == 0 && result.push(handleData("1", "4", arr[j])); //项目
-                     _data[i].targetType == 1 && result.push(handleData("10", "13", arr[j])); // 传承人
-                     _data[i].targetType == 2 && result.push(handleData("25", "28", arr[j])); // 作品
-                     _data[i].targetType == 3 && result.push(handleData("132", "136", arr[j])); // 机构
-                     _data[i].targetType == 5 && result.push(handleData("157", "159", arr[j])); // 咨询、活动
-                     _data[i].targetType == 6 && result.push(handleData("160", "161", arr[j])); // 教学馆
-                     _data[i].targetType == 7 && result.push(handleData("164", "165", arr[j])); // 体验馆
-                     _data[i].targetType == 8 && result.push(handleData("177", "178", arr[j])); // 咨询、活动
+                for (let j = 0; j < arr.length; j++) {
+                    _data[i].targetType == 0 && result.push(handleData("1", "4", arr[j])); //项目
+                    _data[i].targetType == 1 && result.push(handleData("10", "13", arr[j])); // 传承人
+                    _data[i].targetType == 2 && result.push(handleData("25", "28", arr[j])); // 作品
+                    _data[i].targetType == 3 && result.push(handleData("132", "136", arr[j])); // 机构
+                    _data[i].targetType == 5 && result.push(handleData("157", "159", arr[j])); // 咨询、活动
+                    _data[i].targetType == 6 && result.push(handleData("160", "161", arr[j])); // 教学馆
+                    _data[i].targetType == 7 && result.push(handleData("164", "165", arr[j])); // 体验馆
+                    _data[i].targetType == 8 && result.push(handleData("177", "178", arr[j])); // 咨询、活动
                 }
 
                 // typeUrl = (_data[i].targetType == 0) ? api.picUrl + "project/" : api.picUrl + "master/";
@@ -251,7 +245,7 @@ var getDateDiff = function getDateDiff(dateTimeStamp) {
     }
     else if (weekC >= 1) {
         // result = "" + parseInt(weekC) + "周前";
-        result = "" + parseInt(weekC*7) + "天前";
+        result = "" + parseInt(weekC * 7) + "天前";
     }
     else if (dayC > 1) {
         if (day == 1) {
@@ -299,10 +293,10 @@ var initScroll = function initScroll($this, scrollId, pageSize, resCallback) {
                 warpId: "dataList",
                 icon: "../../assets-wiki/images/mescroll-empty.png",
                 tip: "亲,暂无相关数据哦~",
-//                          btntext : "去逛逛 >" , 
+//                          btntext : "去逛逛 >" ,
 //                          btnClick : function() {
 //                              alert("点击了去逛逛按钮");
-//                          } 
+//                          }
             }
 
         }
@@ -317,6 +311,13 @@ var getHttpParam = function (name) {
     return null;
 }
 
+// 获取url中的文件名
+function getHtmlDocName() {
+    var str = window.location.href;
+    str = str.substring(str.lastIndexOf("/") + 1);
+    str = str.substring(0, str.lastIndexOf("."));
+    return str;
+}
 
 /**
  * 获取登录状态
@@ -386,12 +387,12 @@ var mySessionStorage = {
 //2)未登录：登录返回数据
 var loginRedirectIndex = function () {
     if (myLocalStorage.getter('__user__')) {
-        window.location.href =  rootName + '/pages/index/'
+        window.location.href = rootName + '/pages/index/'
     }
 }
 
 //判断是否登录
-var isLogined = function (callback){
+var isLogined = function (callback) {
     var _this = this
     var params = {
         type: 'POST',
@@ -443,10 +444,10 @@ var getTypeName = function (code) {
 }
 
 /**
-*   获取全部类型
-*/
-var getTypes = function() {
-   return  [
+ *   获取全部类型
+ */
+var getTypes = function () {
+    return [
         {
             name: '全部',
             code: ""
@@ -484,24 +485,24 @@ var getTypes = function() {
         //     code: "8"
         // },
     ]
-    
+
 }
 
 /**
-   * 把带html除了<br/>之外的清除
-   * 把\r\n转换成</br>
-   */
-function clearHtml ( html ) {
-    if ( typeof html != 'string' ) {
-      return '';
+ * 把带html除了<br/>之外的清除
+ * 把\r\n转换成</br>
+ */
+function clearHtml(html) {
+    if (typeof html != 'string') {
+        return '';
     }
     //替换所有的换行符
-    html = html.replace(/\r\n/g,"<br>")
-    html = html.replace(/\n/g,"<br>");
-     
+    html = html.replace(/\r\n/g, "<br>")
+    html = html.replace(/\n/g, "<br>");
+
     //替换所有的空格（中文空格、英文空格都会被替换）
-    html = html.replace(/\s/g,"&nbsp;");
-     
+    html = html.replace(/\s/g, "&nbsp;");
+
     //输出转换后的字符串
     return html;
 }
@@ -528,13 +529,13 @@ function getTextByTypeAndCode(type, code, lang) {
 
     var text = '';
 
-    if(type == 101 || type == 1011){
+    if (type == 101 || type == 1011) {
 
-        var reg = new RegExp("[\\u4E00-\\u9FFF]+","g"); // 判断内容是否是汉字
-　　     if(reg.test(code)){ 
+        var reg = new RegExp("[\\u4E00-\\u9FFF]+", "g"); // 判断内容是否是汉字
+        if (reg.test(code)) {
             return code;
         }
-        text =  getDicByCodeTypeAndLanguage(101,code,lang);
+        text = getDicByCodeTypeAndLanguage(101, code, lang);
         return text != '' ? text : code;
     }
 
@@ -546,7 +547,7 @@ function getTextByTypeAndCode(type, code, lang) {
             if (dic_obj.parent_id == null) {
                 break;
             } else {
-                var parent_text = getDictionaryById(dic_obj.parent_id,type);
+                var parent_text = getDictionaryById(dic_obj.parent_id, type);
                 text = parent_text + text;
             }
             break;
@@ -566,26 +567,27 @@ function getTextByTypeAndCode(type, code, lang) {
 
     return text != '' ? text : code;
 }
+
 /**
  * 根据id查询字典表数据  (获取地区父类名称)
  * @param id
  * @returns {string}
  */
-function getDictionaryById(id,type) {
+function getDictionaryById(id, type) {
 
     var text = '';
 
-    if(type == 101){
+    if (type == 101) {
         $.ajax({
             type: 'post',
-            url: bdomain +'/dictionary/getParentNameById',
-            data: {'parentId':id},
+            url: bdomain + '/dictionary/getParentNameById',
+            data: {'parentId': id},
             dataType: 'json',
-            async:false,
-            beforeSend:function() {
+            async: false,
+            beforeSend: function () {
             },
-            success: function(data) {
-                if(data.code==0){
+            success: function (data) {
+                if (data.code == 0) {
                     text = data.data
                 }
             },
@@ -594,7 +596,7 @@ function getDictionaryById(id,type) {
             complete: function () {
             }
         });
-    }else {
+    } else {
         for (var i = 0; i < dic_arr.length; i++) {
             var dic_obj = dic_arr[i];
             if (dic_obj.id != id) {
@@ -606,7 +608,7 @@ function getDictionaryById(id,type) {
             if (dic_obj.parent_id == null) {
                 break;
             } else {
-                var parent_text = getDictionaryById(dic_obj.parent_id,type);
+                var parent_text = getDictionaryById(dic_obj.parent_id, type);
                 text = parent_text + text;
             }
         }
@@ -616,6 +618,7 @@ function getDictionaryById(id,type) {
 
     // return text;
 }
+
 /**
  * 获取同一类型的字典数据 (地区)
  * @param type 数据类型
@@ -634,17 +637,17 @@ function getDictionaryArrayByType(type, lang) {
 
     var array = [];
 
-    if(type == 101){
+    if (type == 101) {
         $.ajax({
             type: 'post',
-            url: domain+'/dictionary/getAllDis',
-            data: {'type':type},
+            url: domain + '/dictionary/getAllDis',
+            data: {'type': type},
             dataType: 'json',
-            async:false,
-            beforeSend:function() {
+            async: false,
+            beforeSend: function () {
             },
-            success: function(data) {
-                if(data.code==0){
+            success: function (data) {
+                if (data.code == 0) {
                     array = data.data;
                 }
             },
@@ -668,10 +671,10 @@ function getDictionaryArrayByType(type, lang) {
 }
 
 /**
-    获取地区
-**/
+ 获取地区
+ **/
 function getDictionaryArrayByTypeAndParentID(type, parentId, lang) {
-     if (typeof dic_arr == 'undefined') {
+    if (typeof dic_arr == 'undefined') {
         alert('请引入dictionary.js文件');
         return;
     }
@@ -682,22 +685,22 @@ function getDictionaryArrayByTypeAndParentID(type, parentId, lang) {
 
     var array = [];
 
-    if(type== 101){
+    if (type == 101) {
         $.ajax({
             type: 'post',
             // url: 'http://172.16.1.43/dictionary/getAreaListByParentId',
             url: domain + '/dictionary/getAreaListByParentId',
-            data: {'type':type,'parentId':parentId,'lang':lang},
+            data: {'type': type, 'parentId': parentId, 'lang': lang},
             dataType: 'json',
-            async:false,
+            async: false,
             xhrFields: {
                 withCredentials: true
             },
-            beforeSend:function() {
+            beforeSend: function () {
             },
-            success: function(data) {
-                if(data.code==0){
-                    if($.type(data.data) == 'string') {
+            success: function (data) {
+                if (data.code == 0) {
+                    if ($.type(data.data) == 'string') {
                         array = JSON.parse(data.data);
                     } else {
                         array = data.data;
@@ -709,7 +712,7 @@ function getDictionaryArrayByTypeAndParentID(type, parentId, lang) {
             complete: function () {
             }
         });
-    }else{
+    } else {
         for (var i = 0; i < dic_arr.length; i++) {
             var dic_obj = dic_arr[i];
             if (dic_obj.type == type && dic_obj.lang == lang) {
@@ -759,7 +762,7 @@ function getChildrenList(parentId) {
             temp.push(category);
         }
     }
-    return temp;    
+    return temp;
 }
 
 function getCategoryById(id) {
@@ -860,6 +863,7 @@ function getTemplateUi(fileName, callback) {
         }
     });
 }
+
 //error code message
 function getMsgByCode(code, lang) {
 
@@ -869,22 +873,23 @@ function getMsgByCode(code, lang) {
         return error_message[code].enMsg;
     }
 }
+
 /**
  *
  */
-function  getDicData(parentId) {
+function getDicData(parentId) {
 
-    var data =[];
+    var data = [];
     $.ajax({
         type: 'post',
-        url:domain+ '/dictionary/getChildenByParentId',
-        data: {'parentId':parentId},
+        url: domain + '/dictionary/getChildenByParentId',
+        data: {'parentId': parentId},
         dataType: 'json',
-        async:false,
-        beforeSend:function() {
+        async: false,
+        beforeSend: function () {
         },
-        success: function(data) {
-            if(data.code==0){
+        success: function (data) {
+            if (data.code == 0) {
                 data = data.data
             }
         },
@@ -896,20 +901,20 @@ function  getDicData(parentId) {
     return data;
 }
 
-function  getDicByCodeTypeAndLanguage(type,code,language) {
+function getDicByCodeTypeAndLanguage(type, code, language) {
 
-    var text ="";
+    var text = "";
     $.ajax({
         type: 'post',
-        url: domain+'/dictionary/getTextByTypeAndCodeFromRedis',
-        data: {type:type,code:code,language:language},
+        url: domain + '/dictionary/getTextByTypeAndCodeFromRedis',
+        data: {type: type, code: code, language: language},
         dataType: 'json',
-        async:false,
-        beforeSend:function() {
+        async: false,
+        beforeSend: function () {
         },
-        success: function(data) {
+        success: function (data) {
             // console.log(data);
-            if(data.code==0){
+            if (data.code == 0) {
                 text = data.data
             }
         },
@@ -920,8 +925,6 @@ function  getDicByCodeTypeAndLanguage(type,code,language) {
     });
     return text;
 }
-
-
 
 
 function generateMathRand(num) {
@@ -1039,38 +1042,38 @@ var myDialog = {
 }
 
 // 认领词条上传
-var newUpload =  {
+var newUpload = {
     // 模板
     tmp: '<div style="padding-top: 20%;">' +
-    '<img src="../static/images/jia.png">' +
-    '<p>上传照片</p>' +
-    '</div>',
+        '<img src="../static/images/jia.png">' +
+        '<p>上传照片</p>' +
+        '</div>',
 
     // 创建上传
-    create: function(id, url, params, callback) {
+    create: function (id, url, params, callback) {
         var path = "";
         var objdata = {
             upfile_endpoint: "",//上传地址
-            upfile_nametype:'random_name',//local_name random_name  上传文件的文件名类型
+            upfile_nametype: 'random_name',//local_name random_name  上传文件的文件名类型
             upfile_defaltdir: url//上传路径 多层  格式  upload/floder1/floder2
         };
         // 获取oss 相关参数
         $.ajax({
-            type : "post",
-            url : domain + '/file/getPolicy',
-            timeout : 10000,
-            data : {},
-            success : function(str) {
+            type: "post",
+            url: domain + '/file/getPolicy',
+            timeout: 10000,
+            data: {},
+            success: function (str) {
                 //console.log("str -- >", str);
                 if (str) {
                     try {
                         var re = JSON.parse(str);
                         // 构建上传oss参数
                         objdata.osssignature = {
-                            'key' : url + re["filename"],//生成文件路径,
+                            'key': url + re["filename"],//生成文件路径,
                             'policy': re["policy"],
                             'OSSAccessKeyId': re["accessid"],
-                            'success_action_status' : '200', //让服务端返回200,不然，默认会返回204
+                            'success_action_status': '200', //让服务端返回200,不然，默认会返回204
                             'signature': re["signature"]
                         };
                         objdata.upfile_endpoint = re["host"];
@@ -1081,15 +1084,15 @@ var newUpload =  {
                     alert("结果为空");
                 }
             },
-            error : function(XMLHttpRequest, textStatus, errorThrown) {
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
                 alert("ajax error");
             },
-            complete : function(XMLHttpRequest,status){ //请求完成后最终执行参数
-                if(status == 'timeout'){
+            complete: function (XMLHttpRequest, status) { //请求完成后最终执行参数
+                if (status == 'timeout') {
                     alert('请求超时，请稍后再试！');
                 }
             },
-            async : false
+            async: false
         });
 
         //console.log("objdata.osssignature -- >", objdata)
@@ -1100,7 +1103,7 @@ var newUpload =  {
             auto: true,
 
             // swf文件路径
-            swf:  + '../require/webuploader/Uploader.swf',
+            swf: +'../require/webuploader/Uploader.swf',
 
             // 文件接收服务端。
             server: objdata.upfile_endpoint,
@@ -1119,7 +1122,7 @@ var newUpload =  {
         });
 
         // 当有文件添加进来的时候
-        uploader.on( 'fileQueued', function( file ) {
+        uploader.on('fileQueued', function (file) {
             file["width"] = params["width"] ? params["width"] : "244px";
             file["height"] = params["height"] ? params["height"] : "172px";
             var mheight = $("#" + id).height();
@@ -1151,19 +1154,19 @@ var newUpload =  {
         })
 
         // 处理访问前参数
-        uploader.on('uploadBeforeSend', function(obj, data, headers) {
+        uploader.on('uploadBeforeSend', function (obj, data, headers) {
 
             // 赋值参数
             data = $.extend(data, objdata.osssignature);
             data.key = data.key + "." + obj.file.ext;
             data.filepath = data.key;
-            path =  data.key; // 记录用户上传的图片地址
+            path = data.key; // 记录用户上传的图片地址
             headers['Access-Control-Allow-Origin'] = "*"
             //console.log("data -- >", data)
         });
 
         // 上传成功
-        uploader.on("uploadSuccess", function(file) {
+        uploader.on("uploadSuccess", function (file) {
             var res = {
                 path: path,
                 msg: "上传成功",
@@ -1173,7 +1176,7 @@ var newUpload =  {
         });
 
         // 上传失败
-        uploader.on("uploadError", function(file) {
+        uploader.on("uploadError", function (file) {
             var res = {
                 path: path,
                 msg: "上传失败",
@@ -1184,8 +1187,8 @@ var newUpload =  {
     },
 
     // 删除插件
-    delete: function(url, params, callback) {
-        $("[id^='delete-']").off().on("click", function() {
+    delete: function (url, params, callback) {
+        $("[id^='delete-']").off().on("click", function () {
             var thisID = $(this).attr("id");
             var id = $("#" + thisID).parent().parent().parent().attr("id")
             var cid = thisID.split("-").pop();
@@ -1199,7 +1202,7 @@ var newUpload =  {
 }
 
 function getExtName(filename) {
-    var d=/\.[^\.]+$/.exec(filename);
+    var d = /\.[^\.]+$/.exec(filename);
     return d;
 }
 
@@ -1215,21 +1218,21 @@ function send_request() {
             withCredentials: true
         },
         crossDomain: true,
-        success: function(data, status, xhr) {
-            signituredata= JSON.parse(data);
+        success: function (data, status, xhr) {
+            signituredata = JSON.parse(data);
         }
     });
 
     return signituredata;
 }
 
-(function($){
-    $.getUri = function(url) {
+(function ($) {
+    $.getUri = function (url) {
         var strRegex = "/http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?(\/\w+)*.\w{3}$/";
         var reg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?(\/\w+)*.\w{3}$/;
 
         var result = reg.exec(url); //result中存储分解下来的结果
-        alert(RegExp.$1 + ',' + RegExp.$2 + ',' + RegExp.$3 + ',' + RegExp.$4+ ',' + RegExp.$5);
+        alert(RegExp.$1 + ',' + RegExp.$2 + ',' + RegExp.$3 + ',' + RegExp.$4 + ',' + RegExp.$5);
         // console.log(result);
         // var output = {}; //返回的结果
         // var item =["scheme","host","port","path","queries","q","p","hash"]; //由于得到的键值对需要单独处理，所以先赋值前四项
@@ -1250,22 +1253,22 @@ function send_request() {
     }
 })(jQuery);
 
-(function($){
+(function ($) {
     $.getUrlParam
-        = function(name)
-    {
+        = function (name) {
         var reg
-            = new RegExp("(^|&)"+
-            name +"=([^&]*)(&|$)");
+            = new RegExp("(^|&)" +
+            name + "=([^&]*)(&|$)");
         var r
             = window.location.search.substr(1).match(reg);
-        if (r!=null) return decodeURI(r[2]); return null;
+        if (r != null) return decodeURI(r[2]);
+        return null;
     }
 })(jQuery);
 
-(function($){
+(function ($) {
     $.getRandomId
-        = function() {
+        = function () {
         return parseInt(Math.random() * Math.pow(10, 16));
     }
 })(jQuery);
@@ -1275,14 +1278,15 @@ function send_request() {
  * 禁止横屏显示
  */
 
-(function rotate(){
-    var orientation=window.orientation;
+(function rotate() {
+    var orientation = window.orientation;
     var pd = null;
-    function createPd(){
-        if(document.getElementById('preventTran') === null){
+
+    function createPd() {
+        if (document.getElementById('preventTran') === null) {
             var imgData = 'data:image/png;base64,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';
             pd = document.createElement('div');
-            pd.setAttribute('id','preventTran');
+            pd.setAttribute('id', 'preventTran');
             pd.style.position = 'fixed';
             pd.style.left = '0';
             pd.style.top = '0';
@@ -1311,15 +1315,14 @@ function send_request() {
             pd.appendChild(p);
         }
     }
-    if(orientation==90||orientation==-90){
-        if(pd == null && document.getElementById('preventTran') === null) createPd();
+
+    if (orientation == 90 || orientation == -90) {
+        if (pd == null && document.getElementById('preventTran') === null) createPd();
         document.getElementById('preventTran').style.display = 'block';
     }
-    window.onorientationchange=function(){
-        if(pd == null && document.getElementById('preventTran') == null) createPd();
-        document.getElementById('preventTran').style.display='none';
+    window.onorientationchange = function () {
+        if (pd == null && document.getElementById('preventTran') == null) createPd();
+        document.getElementById('preventTran').style.display = 'none';
         rotate();
     };
 })();
-
-

@@ -61,8 +61,8 @@ const wkHeader = {
     mounted: function () {
         this.getLoginStatusToRedirect()
     },
-    computed:{///pages/my/setting/index.html
-        settingRedirect:function () {
+    computed: {///pages/my/setting/index.html
+        settingRedirect: function () {
             var returnUrl = window.location.href
             return this.baseUrl + '/pages/my/setting/index.html?returnUrl=' + returnUrl
         }
@@ -129,7 +129,7 @@ const wkHeader = {
                 var returnUrl = window.location.href
                 //成功
                 if (code == 0) {
-                    if(myLocalStorage.getter('__user__')){
+                    if (myLocalStorage.getter('__user__')) {
                         _this.user = myLocalStorage.getter('__user__')
                     }
 
@@ -371,34 +371,58 @@ const wkEncy = {
 }
 
 
-/**
- * 正在加载
- * @type {{}}
- */
-var shopLoad = {
-    props: {
-        msg: ""
-    },
-    template: `<div class="shop_load" v-if="msg"><img :src="rootName + '/assets-wiki/images/shop/Load_sya.gif'" alt=""></div>`
-};
-
 /*
  * 没有网络显示
  */
 var noNetwork = {
-    template:`<div class="blank404 timeout">
-        <div class="content1">
-            <img class="pic" :src="imgSrc" alt="暂无网络">
-            <div class="name">暂无网络</div>
-            <div class="txt">当前网络不稳定，请稍后再试…</div>
-        </div>
-    </div>`,
-    data(){
+    template: `<div class="page-loading">
+                <div class="blank404 timeout">
+                        <div class="content1">
+                            <img class="pic" :src="imgSrc" alt="暂无网络">
+                            <div class="name">暂无网络</div>
+                            <div class="txt">当前网络不稳定，请稍后再试…</div>
+                        </div>
+                    </div>
+                </div>`,
+    data() {
         return {
-            imgSrc:'../../assets-wiki/images/icon-no-network@2x.png'
+            imgSrc: '../../assets-wiki/images/icon-no-network@2x.png'
         }
     }
 };
+
+
+/**
+ * 正在加载
+ * @type {{}}
+ */
+var pageLoading = {
+    data: function () {
+        return {
+            noNetworkShow: false,
+            hideLoad: false
+        }
+    },
+    template: `<div class="page-loading">
+                   <img class="loading" :src="rootName + '/assets-wiki/images/loading.gif'" alt="">
+               </div>`,
+    components: {
+        noNetwork
+    },
+    mounted: function () {
+        setTimeout(() => {
+            if (this.show) {
+                this.noNetworkShow = true
+                this.hideLoad = true
+                this.$emit('showLoad', false)
+                console.log(this.show)
+            }
+        }, overTime)
+    }
+};
+
+
+
 
 /*
 * APP分享

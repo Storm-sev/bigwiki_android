@@ -1,19 +1,78 @@
-.loading {
-  background: rgba(255,255,255,.9);
+@charset "utf-8";
+
+$base: 75;
+@mixin marginTopMid($num) {
+  margin-top: -$num/(2*$base);
+}
+
+.page-loading {
   position: fixed;
-  top: 0;
+  top: 77rem/$base;
   right: 0;
-  bottom: 0;
+  bottom: 84rem/$base;
   left: 0;
-  z-index: 4;
+  z-index: 99;
   overflow: hidden;
-  img {
-    width: 60rem/$font-size-base;
-    height: 60rem/$font-size-base;
+
+  .header-load {
+    display: none;
+  }
+
+  .loading {
+    width: 100%;
+  }
+  .blank404 {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    @include marginLeftMid(60rem);
-    @include marginTopMid(60rem);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: #fff;
+    display: flex;
+    z-index: 2;
+    .content1 {
+      width: 100%;
+      height: 278rem/$base;
+      text-align: center;
+      position: absolute;
+      top: 50%;
+      @include marginTopMid(318rem);
+      .pic {
+        width: 140rem/$base;
+        margin-left: 10rem/$base;
+      }
+      .name {
+        font-size: 32rem/$base;
+        line-height: 45rem/$base;
+        color: #1b1b1b;
+        margin-top: 28rem/$base;
+        margin-bottom: 5rem/$base;
+      }
+      .txt {
+        font-size: 28rem/$base;
+        line-height: 40rem/$base;
+        color: #aaa;
+      }
+      .reload {
+        width:240rem/$base;
+        line-height: 58rem/$base;
+        text-align: center;
+        font-size: 28rem/$base;
+        border: 1px solid #4183EA;
+        color:#4183EA;
+        display: inline-block;
+        margin-top: 44rem/$base;
+      }
+    }
+  }
+  .timeout {
+    display: none;
+  }
+  &.offset-top {
+    top: 77rem/$base;
+  }
+  &.offset-btm {
+    bottom: 84rem/$base;
   }
 }
+

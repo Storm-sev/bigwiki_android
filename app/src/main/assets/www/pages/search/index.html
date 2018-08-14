@@ -6,17 +6,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>百科_非遗大百科</title>
-    <script src="../../assets-wiki/js/flexible.min.js?t=201807311146"></script>
+    <script src="../../assets-wiki/js/flexible.min.js?t=201808031745"></script>
     <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/mescroll.min.css?t=201807311146">
-    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/search.css?t=201807311146">
-    <script src="../../assets-wiki/js/tpls.js?t=201807311146"></script>
+    <link rel="stylesheet" type="text/css" href="../../assets-wiki/css/search.css?t=201808031745">
 </head>
 <body>
 
 <div class="search" id="search" v-cloak>
-    <!--<wk-header :data="pageObj.headData"></wk-header>-->
-    <!--//End 导航-->
+    <!--<page-loading v-if="self.loading.show"></page-loading>-->
+    <!--<no-network v-if="!self.page.show"></no-network>-->
+
     <div>
         <div class="s-top">
             <div class="s-search">
@@ -59,22 +58,35 @@
         </div>
 
         <div id="mescroll" :class="{mescroll: true, 'not-data-back': pageObj.pdlist.length <= 0}">
-            <wk-ency :datas="pageObj.pdlist" :class="{'no-data': pageObj.pdlist.length <= 0}"></wk-ency>
+            <!--<wk-ency :datas="pageObj.pdlist" :class="{'no-data': pageObj.pdlist.length <= 0}"></wk-ency>-->
+
+            <div id="data-list">
+                <template v-for="(ency, index) in pageObj.pdlist">
+                    <div v-if="ency.title" class="one" @click="toDetails(ency.id, ency.type)">
+                        <div :class="{describe: true, widthAuto: ency.img? false : true}">
+                            <h1>{{ency.title}}</h1>
+                            <p v-if="ency.marking" class="type">#{{ency.marking}}</p>
+                            <p v-if="ency.info" class="brief">{{ency.info}}</p>
+                        </div>
+                        <div :class="{cover: true, hide: ency.img? false : true}">
+                            <img class="lazy"
+                                 :data-original="ency.img ? ency.img :'../../assets-wiki/images/default/head694_374.png'">
+                        </div>
+                    </div>
+                </template>
+            </div>
         </div>
     </div>
-    <!--//End 内容-->
-
-
 </div>
-<script src="../../assets-wiki/js/vue.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/jquery.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/jquery.lazyload.min.js?t=201807311146?v=1.9.1"></script>
-<!-- <script src="../../assets-wiki/js/system.js?t=201807311146"></script> -->
-<script src="../../assets-wiki/js/mescroll.min.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/utils.js?t=201807311146"></script>
-<script src="../../assets-wiki/js/myApp.js?t=201807311146"></script>
-<script src="../../assets-wiki/data/category.js?t=201807311146"></script>
-<script src="search-model.js?t=201807311146"></script>
+
+
+<script src="../../assets-wiki/js/tpls.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/system.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/lazyload.mescroll.min.js?t=201808031745?v=1.9.1"></script>
+<script src="../../assets-wiki/js/utils.js?t=201808031745"></script>
+<script src="../../assets-wiki/js/myApp.js?t=201808031745"></script>
+<script src="../../assets-wiki/data/category.js?t=201808031745"></script>
+<script src="search-model.js?t=201808031745"></script>
 <script>
     var app = new Vue({
         el: '#search',
@@ -98,23 +110,41 @@
                 ynum: 0,
                 selectedKeyword: true,
                 pageNum: 0
+            },
+            self:{
+                loading: {
+                    show: true, //默认展示loading状态
+                },
+                page:{
+                    data:null,
+                    show:false
+                }
             }
         },
         components: {
             wkHeader: wkHeader,  //导航
             wkFooter: wkFooter,  //底部
             wkEncy: wkEncy, // 百科列表
+            pageLoading, //loading
+            noNetwork //没有网络显示效果
         },
         updated: function () {
             // 懒加载
             var self = this;
+            var el = $("#mescroll")
             self.$nextTick(function () {
-                // $("#mescroll").trigger('scroll');
-                $("img.lazy").lazyload({
+                el.find("img.lazy").lazyload({
                     placeholder: "../../assets-wiki/images/default/default.png",
-                    // effect: "fadeIn",
-                    threshold: 200
+                    threshold: 200,
+                    container: el
                 });
+                setTimeout(() => {
+                    el.find("img.lazy").lazyload({
+                        placeholder: "../../assets-wiki/images/default/default.png",
+                        threshold: 200,
+                        container: el
+                    });
+                }, 1000)
             })
         },
         mounted: function () {
@@ -170,6 +200,8 @@
             self.pageObj.recommend = recommend;
             self.pageInit();
 
+            this.loadingAndNoNetwork()
+
         },
         methods: {
             pageInit: function () {
@@ -191,13 +223,16 @@
             },
             upCallback: function (page) {
                 var self = this;
-                if(self.pageObj.pageNum > page.num) {
+                if (self.pageObj.pageNum > page.num) {
                     page.num = (self.pageObj.pageNum + 1)
                 } else {
                     self.pageObj.pageNum = page.num;
                 }
                 self.getDatas(page, self.pageObj.params, function (curPageData) {
                     // console.log("curPageData -- >", curPageData, self.total);
+
+                    self.self.page.data = curPageData
+
                     //如果是第一页需手动制空列表 (代替clearId和clearEmptyId的配置)
                     if (page.num == 1) self.pageObj.pdlist = [];
                     //更新列表数据
@@ -206,7 +241,7 @@
                     var searchListData = {
                         pageObj: self.pageObj,
                     }
-                    if(curPageData.length <=0) {
+                    if (curPageData.length <= 0) {
                         self.mescroll.hideTopBtn(); // 隐藏返回顶部
                     }
                     mySessionStorage.setter("searchListData", searchListData);
@@ -227,9 +262,9 @@
             // 查询
             search: function (code) {
                 // alert("查询数据")
-                if(code == 1) { 
+                if (code == 1) {
                     this.pageObj.pdlist = [];
-                    this.pageObj.pageNum = 0; 
+                    this.pageObj.pageNum = 0;
                 }
                 this.pageObj.params['keyword'] = this.pageObj.keyword;
                 this.pageObj.record = false;
@@ -335,6 +370,31 @@
                 }
 
                 httpRequest(param);
+            },
+
+            toDetails: function (id, type) {
+                window.location.href = rootName + "/pages/ency/details.html?type=" + type + "&id=" + id; // 跳转详情
+            },
+
+            //loading
+            loadingAndNoNetwork(){
+                var _data = mySessionStorage.getter('homeListData')
+                if(_data){
+                    this.self.loading.show = false
+                    this.self.page.show = true
+                }else {
+                    for (let i = 1; i < 6; i++) {
+                        setTimeout(()=>{
+                            if(this.self.page.data){
+                                this.self.loading.show = false
+                                this.self.page.show = true
+                            }
+                        },i*500)
+                    }
+                }
+                setTimeout(()=>{
+                    this.self.loading.show = false
+                },overTime)
             }
         }
     });

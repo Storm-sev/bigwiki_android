@@ -92,7 +92,7 @@ switch (upiosAnd().type) {
 
         //调研报告下载链接
         var researchReportDownUrl = function (url) {
-            console.log(url)
+            navigation.setting.downfile(url)
         }
         break;
     case 2:
@@ -121,7 +121,6 @@ switch (upiosAnd().type) {
             }, function onCleanError(){
 
             });
-
 
         };
 
