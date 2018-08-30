@@ -313,7 +313,7 @@ const BanDatails = {
     template: `<div class="banner">
                     <div :style="{height: iv_height}"><img class="lazy" :data-original="datas.url" alt=""></div>
                     <div class="banner_title">
-                      <h3>{{datas.title}}</h3>
+                      <h3>{{datas.title == '杭州刺绣' ? '刺绣馆' : datas.title}}</h3>
                       <i @click="scrollBtn" v-if="dowm"></i>
                     </div>
                 </div>`,
