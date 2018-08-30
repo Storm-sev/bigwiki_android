@@ -103,7 +103,7 @@ public class IosAlertDialog {
         return this;
     }
 
-    public IosAlertDialog setCancelable(boolean cancel) {
+    public IosAlertDialog cs(boolean cancel) {
         dialog.setCancelable(cancel);
         return this;
     }

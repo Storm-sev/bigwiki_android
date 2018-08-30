@@ -321,7 +321,7 @@
             toLogin() {
                 var url = rootName + "/pages/login/login.html";
                 if (this.phone) {
-                    url = url + "?phone=" + this.phone;
+                  url = url + "?phone=" + this.phone + '&returnUrl=' +getHttpParam('returnUrl');
                 }
                 window.location.href = url;
             },

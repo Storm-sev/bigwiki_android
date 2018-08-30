@@ -58,7 +58,7 @@ public class DownLoadManager {
         File appDir = new File(imgDir);
 
         if (!appDir.exists()) {
-            appDir.mkdir();
+            appDir.mkdirs();
         }
 
         String fileName = System.currentTimeMillis() + ".jpg";
