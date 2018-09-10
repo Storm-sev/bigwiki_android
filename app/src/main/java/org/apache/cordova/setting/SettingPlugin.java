@@ -35,6 +35,8 @@ import org.apache.cordova.Whitelist;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 import storm_lib.utils.AppUtils;
