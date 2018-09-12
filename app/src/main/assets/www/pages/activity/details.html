@@ -6,6 +6,11 @@
     <title></title>
     <link rel="icon" type="image/x-icon" href="../../assets-wiki/images/favicon.ico"/>
     <link rel="stylesheet" href="../../assets-wiki/css/information.css?t=201807310944">
+    <style media="screen">
+      .information .details .main-content .txt img{
+        width: 100%;
+      }
+    </style>
 </head>
 <body style="top: 0px; position: fixed;">
 <div id="information" class="information">
@@ -66,6 +71,7 @@
 <script src="../../assets-wiki/js/tpls.js?t=201807310944"></script>
 <script src="../../assets-wiki/js/information.js?t=201807310944"></script>
 <script>
+
     var app = new Vue({
         el: '#information',
         data: {
@@ -114,7 +120,11 @@
                 getInformationDetail(1, (res) => {
                     if (res.code == 0) {
                         //处理时间格式
-                        res.data.time = differTime(res.data.startDate.replace(new RegExp(/-/gm), "/"), res.data.endDate.replace(new RegExp(/-/gm), "/"))
+                        if(res.data.startDate && res.data.endDate){
+                            res.data.time = differTime(res.data.startDate.replace(new RegExp(/-/gm), "/"), res.data.endDate.replace(new RegExp(/-/gm), "/"))
+                        }else{
+                            res.data.time=''
+                        }
                         this.self.detail = res.data
                         document.title = res.data.title + '_非遗大百科'
                         this.share = appDetailShare(res.data, hrefUrl.actidetails+getHttpParam('id'))

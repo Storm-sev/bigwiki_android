@@ -1,8 +1,8 @@
 // const domain = "http://123.57.174.187:8080/"; // 线上域名地址
 //const rootName = "/info"; // 部署tomcat时候的目录名称
 
-const domain = "http://test2.diich.com:8080"; // 测试名地址
-//const domain = "http://www.diich.com"; // 正式名称地址
+//const domain = "http://test2.diich.com:8080"; // 测试名地址
+const domain = "http://www.diich.com"; // 正式名称地址
 
 const androidRoute = "file:///android_asset/www"; // android绝对路径
 const iosRoute = ""; // ios绝对路径

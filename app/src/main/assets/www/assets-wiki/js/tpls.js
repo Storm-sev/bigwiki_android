@@ -286,22 +286,23 @@ const newsItem = {
         data: []
     },
     template: `<section class="news-item">
-                    <a class="link"  :href="item.href" v-for="item in data">
+                    <a class="link"  :href="item.href" v-for="item in data"  :class="item.className">
                         <div class="desc">
                             <i class="icon-hot" v-if="item.flag"></i>
                             <h3>{{item.title}}</h3>
                             <div class="info">
-                                <span class="source">{{item.source}}</span>
+                                <span class="source" v-if="item.source">{{item.source}}</span>
                                 <span class="time">{{item.time}}</span>
                             </div>
                         </div>
-                        <div class="img" :class="item.className">
+                        <div class="img">
                            <img v-for="img in item.imgUrls" class="lazy" :data-original="img">
                         </div>
                     </a>
                 </section>`,
     methods: {}
 }
+
 
 
 /**

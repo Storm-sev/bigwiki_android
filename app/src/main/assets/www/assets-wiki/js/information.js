@@ -448,7 +448,7 @@ var getInformationDetail = function (type, callback, eCallback) {
                 attributeId == CODE_INFORMATION_TITLE && (format.title = data[i].content)
                 //头图
                 if (attributeId == CODE_INFORMATION_HEAD) {
-                    if (data[i].resourceList[0].uri) {
+                    if (data[i].resourceList[0] && data[i].resourceList[0].uri) {
                         let _uri = data[i].resourceList[0].uri
                         if (_uri.indexOf('http') == -1) {
                             _uri = ossInformation + _uri
@@ -477,7 +477,8 @@ var getInformationDetail = function (type, callback, eCallback) {
                     if (!format.shareContent) {
                         format.shareContent = data[i].content
                     }
-                    temp.text = clearHtml(data[i].content)
+//                    temp.text = clearHtml(data[i].content)
+                        temp.text = data[i].content
                     format.content.push(temp)
 
                 }

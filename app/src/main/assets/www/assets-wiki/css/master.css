@@ -1991,3 +1991,77 @@ html, body, .box {
     background: none; }
 
 /*# sourceMappingURL=master.css.map */
+.news-item {
+  position: relative;
+  -webkit-transition: all 1s ease-in-out;
+  margin: 0 0.3733333333rem; }
+  .news-item .link {
+    border-bottom: 1px solid rgba(221, 221, 221, 0.6);
+    padding: 0.32rem 0 0.2666666667rem 0;
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    color: #1b1b1b; }
+    .news-item .link .desc {
+      width: 100%;
+      float: left;
+      flex: 1;
+      position: relative;
+      padding-right: 0.2933333333rem; }
+      .news-item .link .desc h3 {
+        font-size: 0.4266666667rem;
+        max-height: 1.12rem;
+        line-height: 0.56rem;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        font-weight: normal; }
+      .news-item .link .desc .info {
+        color: #a6a6a6;
+        font-size: 0.2666666667rem;
+        margin-top: 0.2666666667rem;
+        height: 0.3733333333rem;
+        overflow: hidden;
+        display: flex; }
+        .news-item .link .desc .info .source {
+          margin-left: 0.2666666667rem; }
+      .news-item .link .desc .icon-hot {
+        background: url(../images/news/news-icon-hot2@2x.png) no-repeat;
+        -webkit-background-size: 0.7733333333rem auto;
+        background-size: 0.7733333333rem auto;
+        width: 0.7733333333rem;
+        height: 0.4933333333rem;
+        position: absolute;
+        right: 0.2666666667rem;
+        bottom: 0; }
+    .news-item .link .img {
+      font-size: 0; }
+      .news-item .link .img img {
+        width: 2.9866666667rem;
+        -webkit-border-radius: 0.0266666667rem;
+        border-radius: 0.0266666667rem; }
+      .news-item .link .img.len1 {
+        width: 2.9866666667rem;
+        height: 1.84rem;
+        float: left; }
+    .news-item .link.len2 {
+      flex-direction: column; }
+      .news-item .link.len2 .img {
+        margin-top: 0.2666666667rem; }
+        .news-item .link.len2 .img img:nth-child(2) {
+          margin: 0 0.1333333333rem; }
+    .news-item .link:last-child {
+      border: 0; }
+    .news-item .link.active {
+      flex-direction: column; }
+      .news-item .link.active .desc {
+        padding-right: 0; }
+        .news-item .link.active .desc .icon-hot {
+          bottom: 0.24rem; }
+        .news-item .link.active .desc .info {
+          margin-bottom: 0.3466666667rem; }
+      .news-item .link.active .img {
+        display: inline-block;
+        display: flex;
+        justify-content: space-between; }
